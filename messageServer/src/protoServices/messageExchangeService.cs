@@ -5,6 +5,7 @@ using database.mongo;
 using Grpc.Core;
 using gRpcProtos;
 using Microsoft.AspNetCore.Server.HttpSys;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace messageServer.src.protoServices
@@ -16,9 +17,12 @@ namespace messageServer.src.protoServices
         private static ConcurrentDictionary<string, IServerStreamWriter<gRpcProtos.Message>> _dic =
             new();
 
-        public MessageService()
+        public MessageService(IOptions<MongoDbSettings> mongoOptions)
         {
-            _dbContext = new MongoDbContext("mongodb://localhost:27017/", "chitChat");
+            _dbContext = new MongoDbContext(
+                mongoOptions.Value.ConnectionString,
+                mongoOptions.Value.Database
+            );
         }
 
         public override async Task MessageStreaming(

@@ -17,7 +17,7 @@ namespace client
         {
             InitializeComponent();
 
-            _channel = GrpcChannel.ForAddress("https://localhost:7293/");
+            _channel = GrpcChannel.ForAddress();
             _client = new MessageExchangeService.MessageExchangeServiceClient(_channel);
         }
 
@@ -51,34 +51,34 @@ namespace client
 
         private void SendClicked(object sender, EventArgs e)
         {
-            //_streamingCall ??= _client.MessageStreaming();
-            //_streamingCall.RequestStream.WriteAsync(
-            //    new Message
-            //    {
-            //        Context = SendTextBox.Text,
-            //        RoomId = RoomId,
-            //        UserId = _userId,
-            //        Timestamp = DateTime.UtcNow.ToTimestamp(),
-            //    }
-            //);
+            _streamingCall ??= _client.MessageStreaming();
+            _streamingCall.RequestStream.WriteAsync(
+                new Message
+                {
+                    Context = SendTextBox.Text,
+                    RoomId = RoomId,
+                    UserId = _userId,
+                    Timestamp = DateTime.UtcNow.ToTimestamp(),
+                }
+            );
 
-            //if (_messageThread is null)
-            //{
-            //    _messageThread = new Thread(async () =>
-            //    {
-            //        await foreach (
-            //            Message? response in _streamingCall.ResponseStream.ReadAllAsync()
-            //        )
-            //        {
-            //            ReceivedText += response.Context + Environment.NewLine;
-            //            SendText = string.Empty;
-            //        }
-            //    })
-            //    {
-            //        IsBackground = true,
-            //    };
-            //    _messageThread.Start();
-            //}
+            if (_messageThread is null)
+            {
+                _messageThread = new Thread(async () =>
+                {
+                    await foreach (
+                        Message? response in _streamingCall.ResponseStream.ReadAllAsync()
+                    )
+                    {
+                        ReceivedText += response.Context + Environment.NewLine;
+                        SendText = string.Empty;
+                    }
+                })
+                {
+                    IsBackground = true,
+                };
+                _messageThread.Start();
+            }
         }
 
         private void ExistingRoomBox_TextChanged(object sender, EventArgs e) { }
