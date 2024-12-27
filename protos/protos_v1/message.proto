@@ -1,0 +1,41 @@
+syntax = "proto3";
+package messages;
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "gRpcProtos";
+
+service MessageExchangeService
+{
+	rpc MessageStreaming(stream Message) returns (stream Message);
+	rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+	rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse);
+}
+
+message Message
+{
+	string roomId = 1;
+	string userId = 2;
+	string context = 3;
+	google.protobuf.Timestamp timestamp = 4;
+}
+
+message CreateUserRequest
+{
+	string email = 1;
+	string username = 2;
+}
+
+message CreateUserResponse
+{
+	string userId = 1;
+}
+
+message CreateRoomRequest
+{
+	string name = 1;
+}
+
+message CreateRoomResponse
+{
+	string roomId = 1;
+}
