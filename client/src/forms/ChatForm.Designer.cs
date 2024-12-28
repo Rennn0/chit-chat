@@ -1,6 +1,4 @@
-﻿using client.src.forms;
-
-namespace client
+﻿namespace client.forms
 {
     partial class ChatForm
     {

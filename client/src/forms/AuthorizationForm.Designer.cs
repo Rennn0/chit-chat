@@ -1,4 +1,4 @@
-﻿namespace client.src.forms
+﻿namespace client.forms
 {
     partial class AuthorizationForm
     {
@@ -30,20 +30,19 @@
         {
             components = new System.ComponentModel.Container();
             bindings.AuthorizationBinding authorizationBinding1 = new bindings.AuthorizationBinding();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AuthorizationForm));
             UsernameBox = new TextBox();
             authorizationBindingBindingSource = new BindingSource(components);
             PasswordBox = new TextBox();
             AutoFillButton = new Button();
             PasswordCheckBox = new CheckBox();
             EnterButton = new Button();
-            pictureBox1 = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)authorizationBindingBindingSource).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // UsernameBox
             // 
-            UsernameBox.DataBindings.Add(new Binding("Text", authorizationBindingBindingSource, "Username", true, DataSourceUpdateMode.OnPropertyChanged));
+            UsernameBox.DataBindings.Add(new Binding("Text", authorizationBindingBindingSource, "G_username", true, DataSourceUpdateMode.OnPropertyChanged));
             UsernameBox.Location = new Point(25, 25);
             UsernameBox.Name = "UsernameBox";
             UsernameBox.PlaceholderText = "Username ";
@@ -52,18 +51,18 @@
             // 
             // authorizationBindingBindingSource
             // 
-            authorizationBinding1.Password = "";
-            authorizationBinding1.PasswordChar = '*';
+            authorizationBinding1.G_password = "";
+            authorizationBinding1.G_passwordChar = '*';
+            authorizationBinding1.G_userId = "";
+            authorizationBinding1.G_username = "";
             authorizationBinding1.PasswordChecked = false;
-            authorizationBinding1.UserId = "";
-            authorizationBinding1.Username = "";
             authorizationBindingBindingSource.DataSource = authorizationBinding1;
             authorizationBindingBindingSource.Position = 0;
             // 
             // PasswordBox
             // 
-            PasswordBox.DataBindings.Add(new Binding("Text", authorizationBindingBindingSource, "Password", true, DataSourceUpdateMode.OnPropertyChanged));
-            PasswordBox.DataBindings.Add(new Binding("PasswordChar", authorizationBindingBindingSource, "PasswordChar", true, DataSourceUpdateMode.OnPropertyChanged));
+            PasswordBox.DataBindings.Add(new Binding("Text", authorizationBindingBindingSource, "G_password", true, DataSourceUpdateMode.OnPropertyChanged));
+            PasswordBox.DataBindings.Add(new Binding("PasswordChar", authorizationBindingBindingSource, "G_passwordChar", true, DataSourceUpdateMode.OnPropertyChanged));
             PasswordBox.Location = new Point(25, 71);
             PasswordBox.Name = "PasswordBox";
             PasswordBox.PasswordChar = '#';
@@ -94,43 +93,37 @@
             // EnterButton
             // 
             EnterButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            EnterButton.Location = new Point(149, 203);
+            EnterButton.Location = new Point(149, 211);
             EnterButton.Name = "EnterButton";
-            EnterButton.Size = new Size(184, 37);
+            EnterButton.Size = new Size(167, 29);
             EnterButton.TabIndex = 5;
             EnterButton.Text = "Enter";
             EnterButton.UseVisualStyleBackColor = true;
             EnterButton.Click += EnterButton_Click;
             // 
-            // pictureBox1
-            // 
-            pictureBox1.Location = new Point(339, 69);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(126, 137);
-            pictureBox1.TabIndex = 6;
-            pictureBox1.TabStop = false;
-            // 
             // AuthorizationForm
             // 
+            AcceptButton = EnterButton;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Snow;
             ClientSize = new Size(484, 261);
             ControlBox = false;
-            Controls.Add(pictureBox1);
             Controls.Add(EnterButton);
             Controls.Add(PasswordCheckBox);
             Controls.Add(AutoFillButton);
             Controls.Add(PasswordBox);
             Controls.Add(UsernameBox);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            HelpButton = true;
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            ImeMode = ImeMode.Hiragana;
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "AuthorizationForm";
             Text = "Gate";
             Load += AuthorizationForm_Load;
             ((System.ComponentModel.ISupportInitialize)authorizationBindingBindingSource).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -142,6 +135,5 @@
         private CheckBox PasswordCheckBox;
         private BindingSource authorizationBindingBindingSource;
         private Button EnterButton;
-        private PictureBox pictureBox1;
     }
 }

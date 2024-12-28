@@ -1,7 +1,5 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using client.src.forms;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -9,7 +7,7 @@ using gRpcProtos;
 using LLibrary.Guards;
 using Message = gRpcProtos.Message;
 
-namespace client
+namespace client.forms
 {
     public partial class ChatForm : Form
     {
@@ -29,7 +27,7 @@ namespace client
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        private async void CreateAccClicked(object sender, EventArgs e) { }
+        private void CreateAccClicked(object sender, EventArgs e) { }
 
         //    CreateUserResponse call = await _client.CreateUserAsync(
         //        new CreateUserRequest { Email = Email, Username = Username }
@@ -39,7 +37,7 @@ namespace client
         //    UserLabel.Text += _userId;
         //}
 
-        private async void CreateRoomClicked(object sender, EventArgs e)
+        private void CreateRoomClicked(object sender, EventArgs e)
         {
             //CreateRoomResponse call = await _client.CreateRoomAsync(
             //    new CreateRoomRequest { Name = RoomName }
@@ -62,13 +60,16 @@ namespace client
             );
 
             if (_messageThread is not null)
+            {
                 return;
+            }
             _messageThread = new Thread(ReadMessageStream) { IsBackground = true };
             _messageThread.Start();
         }
 
         private async void ReadMessageStream()
         {
+            Guard.AgainstNull(_streamingCall);
             await foreach (Message? response in _streamingCall.ResponseStream.ReadAllAsync())
             {
                 //ReceivedText += response.Context + Environment.NewLine;

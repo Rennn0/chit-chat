@@ -1,28 +1,35 @@
 ﻿using System.Collections.Concurrent;
-using System.Formats.Asn1;
 using database.entities;
+using database.interfaces;
 using database.mongo;
 using Grpc.Core;
 using gRpcProtos;
-using Microsoft.AspNetCore.Server.HttpSys;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using Message = database.entities.Message;
 
-namespace messageServer.src.protoServices
+namespace messageServer.protoServices
 {
     public class MessageService : MessageExchangeService.MessageExchangeServiceBase
     {
-        private readonly MongoDbContext _dbContext;
+        private readonly IDatabaseAdapter<User> _userDb;
+        private readonly IDatabaseAdapter<Room> _roomDb;
+        private readonly IDatabaseAdapter<Message> _messageDb;
 
-        private static ConcurrentDictionary<string, IServerStreamWriter<gRpcProtos.Message>> _dic =
-            new();
+        private static readonly ConcurrentDictionary<
+            string,
+            IServerStreamWriter<gRpcProtos.Message>
+        > _dic = new();
 
-        public MessageService(IOptions<MongoDbSettings> mongoOptions)
+        public MessageService(
+            IDatabaseAdapter<User> userDb,
+            IDatabaseAdapter<Room> roomDb,
+            IDatabaseAdapter<Message> messageDb
+        )
         {
-            _dbContext = new MongoDbContext(
-                mongoOptions.Value.ConnectionString,
-                mongoOptions.Value.Database
-            );
+            _userDb = userDb;
+            _roomDb = roomDb;
+            _messageDb = messageDb;
         }
 
         public override async Task MessageStreaming(
@@ -31,21 +38,14 @@ namespace messageServer.src.protoServices
             ServerCallContext context
         )
         {
-            IClientSessionHandle session = await _dbContext.SessionAsync;
-
             await foreach (gRpcProtos.Message? request in requestStream.ReadAllAsync())
             {
                 try
                 {
-                    _dic.TryAdd(request.UserId, responseStream);
+                    _dic.TryAdd(request.AuthorUserId, responseStream);
 
-                    await _dbContext.Messages.InsertOneAsync(
-                        new database.entities.Message
-                        {
-                            Context = request.Context,
-                            RoomId = request.RoomId,
-                            UserId = request.UserId,
-                        }
+                    await _messageDb.CreateAsync(
+                        new Message(request.RoomId, request.AuthorUserId, request.Context)
                     );
 
                     FilterDefinition<Room> filter = Builders<Room>.Filter.Eq(
@@ -55,13 +55,12 @@ namespace messageServer.src.protoServices
 
                     UpdateDefinition<Room> update = Builders<Room>.Update.AddToSet(
                         r => r.Users,
-                        request.UserId
+                        request.AuthorUserId
                     );
 
-                    await _dbContext.Rooms.UpdateOneAsync(
-                        filter,
-                        update,
-                        options: new UpdateOptions { IsUpsert = true }
+                    await _roomDb.UpdateAsync(
+                        r => r.Id == request.RoomId,
+                        new Dictionary<string, object>() { ["Users"] = request.AuthorUserId }
                     );
 
                     await NotifyNewMessageInRoom(request.RoomId, request);
@@ -78,9 +77,31 @@ namespace messageServer.src.protoServices
             ServerCallContext context
         )
         {
-            User user = new User { Email = request.Email, Username = request.Username };
-            await _dbContext.Users.InsertOneAsync(user);
-            return new CreateUserResponse { UserId = user.Id };
+            User? existingUser = (
+                await _userDb.GetByAsync(u => u.Username == request.Username.Trim('\r', '\n', ' '))
+            ).FirstOrDefault();
+
+            if (existingUser is not null)
+            {
+                return existingUser.VerifyPassword(request.Password)
+                    ? new CreateUserResponse()
+                    {
+                        Code = CreateUserResponse.Types.CODE.Created,
+                        UserId = existingUser.Id,
+                    }
+                    : new CreateUserResponse()
+                    {
+                        Code = CreateUserResponse.Types.CODE.UsernameUsed,
+                    };
+            }
+
+            User user = new User(request.Password, request.Username);
+            await _userDb.CreateAsync(user);
+            return new CreateUserResponse
+            {
+                UserId = user.Id,
+                Code = CreateUserResponse.Types.CODE.Created,
+            };
         }
 
         public override async Task<CreateRoomResponse> CreateRoom(
@@ -88,8 +109,8 @@ namespace messageServer.src.protoServices
             ServerCallContext context
         )
         {
-            Room room = new Room { Name = request.Name };
-            await _dbContext.Rooms.InsertOneAsync(room);
+            Room room = new Room(request.Name, request.HostUserId);
+            await _roomDb.CreateAsync(room);
             return new CreateRoomResponse { RoomId = room.Id };
         }
 
@@ -98,7 +119,7 @@ namespace messageServer.src.protoServices
             Console.WriteLine($"{_dic.Count}");
             foreach (KeyValuePair<string, IServerStreamWriter<gRpcProtos.Message>> kvp in _dic)
             {
-                Console.WriteLine($"Sender _ {message.UserId}, UserId _ {kvp.Key}");
+                Console.WriteLine($"Sender _ {message.AuthorUserId}, UserId _ {kvp.Key}");
 
                 try
                 {

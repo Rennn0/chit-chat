@@ -1,18 +1,20 @@
-﻿using System.Collections;
-using System.Media;
-using System.Resources;
-using System.Text;
+﻿using System.Media;
 using client.bindings;
 using client.Properties;
+using Grpc.Net.Client;
+using gRpcProtos;
 using LLibrary.Guards;
+using Timer = System.Threading.Timer;
 
-namespace client.src.forms
+namespace client.forms
 {
     public partial class AuthorizationForm : Form
     {
         public AuthorizationForm()
         {
             InitializeComponent();
+            this.Icon = Resources.ButterflyIcon;
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void AuthorizationForm_Load(object sender, EventArgs e) { }
@@ -22,79 +24,47 @@ namespace client.src.forms
             AuthorizationBinding bind = Guard.AgainstNull(
                 authorizationBindingBindingSource.Current as AuthorizationBinding
             );
+            string[] randomUsernames = Resources.RandomUsernames.Split(',');
             Random r = new Random();
-            bind.Username =
-                _randomUsernames[r.Next(0, _randomUsernames.Length)]
-                + System.Security.Principal.WindowsIdentity.GetCurrent().Name;
             byte[] b = new byte[16];
             r.NextBytes(b);
-            bind.Password = Convert.ToHexString(b);
-        }
 
-        private static readonly string[] _randomUsernames =
-        [
-            "PixelTitan2037",
-            "CaptainLovegood_",
-            "TechnoMover2048",
-            "PirateSamurai_",
-            "VelvetPirate_",
-            "SushiGazer_",
-            "SilverHawk_",
-            "MountainDancer_",
-            "CrimsonWolf2048",
-            "ElectricExplorer_",
-            "CrimsonRed_",
-            "EnigmaAdventure_",
-            "RogueTitan2038",
-            "MelodyEagle_",
-            "EnigmaExplorer_",
-            "LunaSoul_",
-            "CaptainMaster_",
-            "TangoVortex_",
-            "MountainGazer_",
-            "ZenMistress_",
-            "BalletWillow_",
-            "QuantumNebula2048",
-            "EchoLullaby_",
-            "SushiTornado2048",
-            "SushiComet2048",
-            "WhisperingLovegood_",
-            "TechnoSymphony_",
-            "StardustMystic_",
-            "BalletCrafter_",
-            "CyberSeeker_",
-            "JazzHawk_",
-            "JazzMystic_",
-            "CaptainFire_",
-            "ElectricTrance_",
-            "BalletStrider_",
-            "QuasarLullaby_",
-            "StardustAdventure_",
-            "PixelPirate_",
-            "AlphaComet_",
-            "RubyAdventure_",
-            "JazzRed2048",
-            "CyberDynamo_",
-            "JazzTornado_",
-            "MidnightMover2048",
-            "EmeraldMystic_",
-            "PixelMystic_",
-            "RogueAdventure_",
-            "MelodyMaster_",
-            "SongbirdDancer_",
-            "HarmonyStrider_",
-        ];
+            bind.G_username =
+                randomUsernames[r.Next(0, randomUsernames.Length)].Replace("\"", string.Empty)
+                + System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            bind.G_password = Convert.ToHexString(b);
+        }
 
         private void EnterButton_Click(object sender, EventArgs e)
         {
-            var aaBytes = Properties.Resources.AaaScream;
-            using MemoryStream ms = new MemoryStream();
-            aaBytes.CopyTo(ms);
-            ms.Seek(0, SeekOrigin.Begin);
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox1.Image = Resources.Icon;
-            SoundPlayer player = new SoundPlayer(ms);
-            player.Play();
+            GrpcChannel channel = GrpcChannel.ForAddress(
+                Guard.AgainstNull(Properties.Resources.MessageServerUrl)
+            );
+
+            MessageExchangeService.MessageExchangeServiceClient client =
+                new MessageExchangeService.MessageExchangeServiceClient(channel);
+
+            AuthorizationBinding bind = Guard.AgainstNull(
+                authorizationBindingBindingSource.Current as AuthorizationBinding
+            );
+
+            CreateUserResponse response = Guard.AgainstNull(
+                client.CreateUser(
+                    new CreateUserRequest { Password = bind.G_password, Username = bind.G_username }
+                )
+            );
+
+            if (response.Code == CreateUserResponse.Types.CODE.UsernameUsed)
+            {
+                AutoFillButton_Click(this, EventArgs.Empty);
+            }
+            else
+            {
+                MessageBox.Show(response.UserId);
+            }
+
+            //Settings.Default.token = response.UserId;
+            //Settings.Default.Save();
         }
     }
 }

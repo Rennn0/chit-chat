@@ -79,12 +79,12 @@ namespace client.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Bitmap Icon {
+        internal static System.Drawing.Icon ButterflyIcon {
             get {
-                object obj = ResourceManager.GetObject("Icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                object obj = ResourceManager.GetObject("ButterflyIcon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -94,6 +94,42 @@ namespace client.Properties {
         internal static string MessageServerUrl {
             get {
                 return ResourceManager.GetString("MessageServerUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;PixelTitan2037&quot;,
+        ///&quot;CaptainLovegood_&quot;,
+        ///&quot;TechnoMover2048&quot;,
+        ///&quot;PirateSamurai_&quot;,
+        ///&quot;VelvetPirate_&quot;,
+        ///&quot;SushiGazer_&quot;,
+        ///&quot;SilverHawk_&quot;,
+        ///&quot;MountainDancer_&quot;,
+        ///&quot;CrimsonWolf2048&quot;,
+        ///&quot;ElectricExplorer_&quot;,
+        ///&quot;CrimsonRed_&quot;,
+        ///&quot;EnigmaAdventure_&quot;,
+        ///&quot;RogueTitan2038&quot;,
+        ///&quot;MelodyEagle_&quot;,
+        ///&quot;EnigmaExplorer_&quot;,
+        ///&quot;LunaSoul_&quot;,
+        ///&quot;CaptainMaster_&quot;,
+        ///&quot;TangoVortex_&quot;,
+        ///&quot;MountainGazer_&quot;,
+        ///&quot;ZenMistress_&quot;,
+        ///&quot;BalletWillow_&quot;,
+        ///&quot;QuantumNebula2048&quot;,
+        ///&quot;EchoLullaby_&quot;,
+        ///&quot;SushiTornado2048&quot;,
+        ///&quot;SushiComet2048&quot;,
+        ///&quot;WhisperingLovegood_&quot;,
+        ///&quot;TechnoSymphony_&quot;,
+        ///&quot; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string RandomUsernames {
+            get {
+                return ResourceManager.GetString("RandomUsernames", resourceCulture);
             }
         }
     }

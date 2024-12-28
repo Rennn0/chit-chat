@@ -5,13 +5,13 @@ namespace database.mongo
 {
     public class MongoDbContext
     {
-        private readonly IMongoDatabase _database;
-        private readonly MongoClient _client;
+        public readonly IMongoDatabase Database;
+        internal readonly MongoClient _client;
 
         public MongoDbContext(string connectionString, string databaseName)
         {
             _client = new MongoClient(connectionString);
-            _database = _client.GetDatabase(databaseName);
+            Database = _client.GetDatabase(databaseName);
 
             EnsureCollectionExists(nameof(Room));
             EnsureCollectionExists(nameof(User));
@@ -20,22 +20,20 @@ namespace database.mongo
             CreateIndexes();
         }
 
-        public Task<IClientSessionHandle> SessionAsync => _client.StartSessionAsync();
-
-        public IMongoCollection<Room> Rooms => _database.GetCollection<Room>(nameof(Room));
-        public IMongoCollection<User> Users => _database.GetCollection<User>(nameof(User));
+        public IMongoCollection<Room> Rooms => Database.GetCollection<Room>(nameof(Room));
+        public IMongoCollection<User> Users => Database.GetCollection<User>(nameof(User));
         public IMongoCollection<Message> Messages =>
-            _database.GetCollection<Message>(nameof(Message));
+            Database.GetCollection<Message>(nameof(Message));
 
         private void EnsureCollectionExists(string collectionName)
         {
-            if (!_database.ListCollectionNames().ToList().Contains(collectionName))
-                _database.CreateCollection(collectionName);
+            if (!Database.ListCollectionNames().ToList().Contains(collectionName))
+                Database.CreateCollection(collectionName);
         }
 
         private void CreateIndexes()
         {
-            IMongoCollection<Message> messageCollection = _database.GetCollection<Message>(
+            IMongoCollection<Message> messageCollection = Database.GetCollection<Message>(
                 nameof(Message)
             );
             messageCollection.Indexes.CreateMany(
@@ -43,12 +41,20 @@ namespace database.mongo
                     new CreateIndexModel<Message>(
                         Builders<Message>
                             .IndexKeys.Ascending(m => m.RoomId)
-                            .Ascending(m => m.UserId)
+                            .Ascending(m => m.AuthorUserId)
                     ),
                     new CreateIndexModel<Message>(
-                        Builders<Message>.IndexKeys.Hashed(m => m.UserId)
+                        Builders<Message>.IndexKeys.Hashed(m => m.AuthorUserId)
                     ),
                 ]
+            );
+
+            IMongoCollection<User> userCollection = Database.GetCollection<User>(nameof(User));
+            userCollection.Indexes.CreateOne(
+                new CreateIndexModel<User>(
+                    Builders<User>.IndexKeys.Ascending(u => u.Username),
+                    new CreateIndexOptions { Unique = true }
+                )
             );
         }
     }

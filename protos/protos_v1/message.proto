@@ -14,25 +14,32 @@ service MessageExchangeService
 message Message
 {
 	string roomId = 1;
-	string userId = 2;
+	string authorUserId = 2;
 	string context = 3;
 	google.protobuf.Timestamp timestamp = 4;
 }
 
 message CreateUserRequest
 {
-	string email = 1;
+	string password = 1;
 	string username = 2;
 }
 
 message CreateUserResponse
 {
 	string userId = 1;
+	enum CODE {
+		created = 0 ;
+		wrongPassword = 1;
+		usernameUsed = 2;
+	}
+	CODE code = 2 ;
 }
 
 message CreateRoomRequest
 {
 	string name = 1;
+	string hostUserId=2;
 }
 
 message CreateRoomResponse

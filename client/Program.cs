@@ -1,7 +1,8 @@
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Diagnostics;
-using client.src.forms;
+using client.forms;
+using client.Properties;
 
 namespace client
 {
@@ -13,10 +14,39 @@ namespace client
         [STAThread]
         private static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
+            Application.ThreadException += Application_ThreadException;
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             ApplicationConfiguration.Initialize();
-            Application.Run(new AuthorizationForm());
+
+            Application.Run(new Authenticator());
+        }
+
+        private static void TaskScheduler_UnobservedTaskException(
+            object? sender,
+            UnobservedTaskExceptionEventArgs e
+        )
+        {
+            MessageBox.Show(e.Exception.Message, @"Task Error", MessageBoxButtons.OK);
+            e.SetObserved();
+        }
+
+        private static void CurrentDomain_UnhandledException(
+            object sender,
+            UnhandledExceptionEventArgs e
+        )
+        {
+            MessageBox.Show(
+                ((Exception)e.ExceptionObject).Message,
+                @"Domain Error",
+                MessageBoxButtons.OK
+            );
+        }
+
+        private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            MessageBox.Show(e.Exception.Message, @"Thread Error", MessageBoxButtons.OK);
         }
     }
 }
