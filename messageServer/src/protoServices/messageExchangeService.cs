@@ -37,10 +37,7 @@ namespace messageServer.src.protoServices
             {
                 try
                 {
-                    if (!_dic.ContainsKey(request.UserId))
-                    {
-                        _dic[request.UserId] = responseStream;
-                    }
+                    _dic.TryAdd(request.UserId, responseStream);
 
                     await _dbContext.Messages.InsertOneAsync(
                         new database.entities.Message

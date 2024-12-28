@@ -1,6 +1,8 @@
-﻿namespace client
+﻿using client.src.forms;
+
+namespace client
 {
-    partial class MainForm
+    partial class ChatForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -29,8 +31,6 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            MainFormBindings mainFormBindings1 = new MainFormBindings();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             button1 = new Button();
             SendTextBox = new RichTextBox();
             ReceiveTextBox = new RichTextBox();
@@ -39,22 +39,11 @@
             UserLabel = new Label();
             button3 = new Button();
             UsernameBox = new TextBox();
-            mainFormBindingsBindingSource = new BindingSource(components);
             EmailBox = new TextBox();
             label3 = new Label();
             label4 = new Label();
             RoomBox = new TextBox();
             ExistingRoomBox = new TextBox();
-            statusStrip1 = new StatusStrip();
-            AXAXA = new ToolStripStatusLabel();
-            toolStripProgressBar1 = new ToolStripProgressBar();
-            toolStripDropDownButton1 = new ToolStripDropDownButton();
-            asdasdasToolStripMenuItem = new ToolStripMenuItem();
-            ragindaToolStripMenuItem = new ToolStripMenuItem();
-            shechemaToolStripMenuItem = new ToolStripMenuItem();
-            saveFileDialog1 = new SaveFileDialog();
-            ((System.ComponentModel.ISupportInitialize)mainFormBindingsBindingSource).BeginInit();
-            statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // button1
@@ -127,7 +116,6 @@
             // UsernameBox
             // 
             UsernameBox.BorderStyle = BorderStyle.FixedSingle;
-            UsernameBox.DataBindings.Add(new Binding("Text", mainFormBindingsBindingSource, "Text", true, DataSourceUpdateMode.OnPropertyChanged));
             UsernameBox.Location = new Point(32, 27);
             UsernameBox.Name = "UsernameBox";
             UsernameBox.Size = new Size(227, 23);
@@ -135,14 +123,9 @@
             // 
             // mainFormBindingsBindingSource
             // 
-            mainFormBindings1.Email = "";
-            mainFormBindings1.Text = "";
-            mainFormBindingsBindingSource.DataSource = mainFormBindings1;
-            mainFormBindingsBindingSource.Position = 0;
             // 
             // EmailBox
             // 
-            EmailBox.DataBindings.Add(new Binding("Text", mainFormBindingsBindingSource, "Email", true, DataSourceUpdateMode.OnPropertyChanged));
             EmailBox.Location = new Point(32, 68);
             EmailBox.Name = "EmailBox";
             EmailBox.Size = new Size(227, 23);
@@ -182,63 +165,14 @@
             ExistingRoomBox.TabIndex = 12;
             ExistingRoomBox.TextChanged += ExistingRoomBox_TextChanged;
             // 
-            // statusStrip1
+            // mainFormBindingsBindingSource1
             // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { AXAXA, toolStripProgressBar1, toolStripDropDownButton1 });
-            statusStrip1.Location = new Point(0, 644);
-            statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(749, 22);
-            statusStrip1.TabIndex = 13;
-            statusStrip1.Text = "statusStrip1";
             // 
-            // AXAXA
-            // 
-            AXAXA.Name = "AXAXA";
-            AXAXA.Size = new Size(89, 17);
-            AXAXA.Text = "qweqweqwewq";
-            AXAXA.Click += toolStripStatusLabel1_Click;
-            // 
-            // toolStripProgressBar1
-            // 
-            toolStripProgressBar1.Name = "toolStripProgressBar1";
-            toolStripProgressBar1.Size = new Size(100, 16);
-            toolStripProgressBar1.Value = 30;
-            // 
-            // toolStripDropDownButton1
-            // 
-            toolStripDropDownButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripDropDownButton1.DropDownItems.AddRange(new ToolStripItem[] { asdasdasToolStripMenuItem, ragindaToolStripMenuItem });
-            toolStripDropDownButton1.Image = (Image)resources.GetObject("toolStripDropDownButton1.Image");
-            toolStripDropDownButton1.ImageTransparentColor = Color.Magenta;
-            toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            toolStripDropDownButton1.Size = new Size(29, 20);
-            toolStripDropDownButton1.Text = "toolStripDropDownButton1";
-            // 
-            // asdasdasToolStripMenuItem
-            // 
-            asdasdasToolStripMenuItem.Name = "asdasdasToolStripMenuItem";
-            asdasdasToolStripMenuItem.Size = new Size(180, 22);
-            asdasdasToolStripMenuItem.Text = "asdasdas";
-            // 
-            // ragindaToolStripMenuItem
-            // 
-            ragindaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { shechemaToolStripMenuItem });
-            ragindaToolStripMenuItem.Name = "ragindaToolStripMenuItem";
-            ragindaToolStripMenuItem.Size = new Size(180, 22);
-            ragindaToolStripMenuItem.Text = "raginda";
-            // 
-            // shechemaToolStripMenuItem
-            // 
-            shechemaToolStripMenuItem.Name = "shechemaToolStripMenuItem";
-            shechemaToolStripMenuItem.Size = new Size(128, 22);
-            shechemaToolStripMenuItem.Text = "shechema";
-            // 
-            // MainForm
+            // ChatForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(749, 666);
-            Controls.Add(statusStrip1);
             Controls.Add(ExistingRoomBox);
             Controls.Add(RoomBox);
             Controls.Add(label4);
@@ -252,12 +186,9 @@
             Controls.Add(SendTextBox);
             Controls.Add(button1);
             Controls.Add(UsernameBox);
-            Name = "MainForm";
+            Name = "ChatForm";
             Text = "ChitChat";
             Load += MainForm_Load;
-            ((System.ComponentModel.ISupportInitialize)mainFormBindingsBindingSource).EndInit();
-            statusStrip1.ResumeLayout(false);
-            statusStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -277,14 +208,5 @@
         private Label label4;
         private TextBox RoomBox;
         private TextBox ExistingRoomBox;
-        private BindingSource mainFormBindingsBindingSource;
-        private StatusStrip statusStrip1;
-        private ToolStripStatusLabel AXAXA;
-        private ToolStripProgressBar toolStripProgressBar1;
-        private ToolStripDropDownButton toolStripDropDownButton1;
-        private ToolStripMenuItem asdasdasToolStripMenuItem;
-        private ToolStripMenuItem ragindaToolStripMenuItem;
-        private ToolStripMenuItem shechemaToolStripMenuItem;
-        private SaveFileDialog saveFileDialog1;
     }
 }

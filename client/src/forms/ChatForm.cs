@@ -1,23 +1,26 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using client.src.forms;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
 using gRpcProtos;
+using LLibrary.Guards;
 using Message = gRpcProtos.Message;
 
 namespace client
 {
-    public partial class MainForm : Form
+    public partial class ChatForm : Form
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public MainForm()
+        public ChatForm()
         {
             InitializeComponent();
-
-            _channel = GrpcChannel.ForAddress();
+            _channel = GrpcChannel.ForAddress(
+                Guard.AgainstNull(Properties.Resources.MessageServerUrl)
+            );
             _client = new MessageExchangeService.MessageExchangeServiceClient(_channel);
         }
 
@@ -38,10 +41,6 @@ namespace client
 
         private async void CreateRoomClicked(object sender, EventArgs e)
         {
-            MainFormBindings binding = mainFormBindingsBindingSource.DataSource as MainFormBindings;
-
-            binding.Text += "ZOROOOO";
-
             //CreateRoomResponse call = await _client.CreateRoomAsync(
             //    new CreateRoomRequest { Name = RoomName }
             //);
@@ -56,28 +55,24 @@ namespace client
                 new Message
                 {
                     Context = SendTextBox.Text,
-                    RoomId = RoomId,
-                    UserId = _userId,
+                    //RoomId = RoomId,
+                    //UserId = _userId,
                     Timestamp = DateTime.UtcNow.ToTimestamp(),
                 }
             );
 
-            if (_messageThread is null)
+            if (_messageThread is not null)
+                return;
+            _messageThread = new Thread(ReadMessageStream) { IsBackground = true };
+            _messageThread.Start();
+        }
+
+        private async void ReadMessageStream()
+        {
+            await foreach (Message? response in _streamingCall.ResponseStream.ReadAllAsync())
             {
-                _messageThread = new Thread(async () =>
-                {
-                    await foreach (
-                        Message? response in _streamingCall.ResponseStream.ReadAllAsync()
-                    )
-                    {
-                        ReceivedText += response.Context + Environment.NewLine;
-                        SendText = string.Empty;
-                    }
-                })
-                {
-                    IsBackground = true,
-                };
-                _messageThread.Start();
+                //ReceivedText += response.Context + Environment.NewLine;
+                //SendText = string.Empty;
             }
         }
 
@@ -89,21 +84,8 @@ namespace client
         private AsyncDuplexStreamingCall<Message, Message>? _streamingCall;
         private Thread? _messageThread;
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            saveFileDialog1.ShowDialog(this);
-        }
+        private void MainForm_Load(object sender, EventArgs e) { }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
-
-        private void toolStripMenuItem1_Click(object sender, EventArgs e) { }
-
-        private void bindingSource1_CurrentChanged(object sender, EventArgs e) { }
-
-        private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e) { }
-
-        private void toolTip1_Popup(object sender, PopupEventArgs e) { }
-
-        private void toolStripStatusLabel1_Click(object sender, EventArgs e) { }
+        private void mainFormBindingsBindingSource_CurrentChanged(object sender, EventArgs e) { }
     }
 }
