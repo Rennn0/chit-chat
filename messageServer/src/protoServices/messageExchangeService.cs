@@ -1,11 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using database.entities;
 using database.interfaces;
-using database.mongo;
 using Grpc.Core;
 using gRpcProtos;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
 using Message = database.entities.Message;
 
 namespace messageServer.protoServices
@@ -16,10 +13,14 @@ namespace messageServer.protoServices
         private readonly IDatabaseAdapter<Room> _roomDb;
         private readonly IDatabaseAdapter<Message> _messageDb;
 
+        /// <summary>
+        ///     ოთახი იქმენა კონკრეტული იდ_ით, ოთახში ემატებიან კლიენტები თავიანთი იდ_ით +
+        ///     ნაკადი სადაც სერვერიდან წასული მესიჯები მიუვათ
+        /// </summary>
         private static readonly ConcurrentDictionary<
             string,
-            IServerStreamWriter<gRpcProtos.Message>
-        > _dic = new();
+            LinkedList<(string userId, IServerStreamWriter<gRpcProtos.Message> stream)>
+        > _rooms = new();
 
         public MessageService(
             IDatabaseAdapter<User> userDb,
@@ -38,40 +39,18 @@ namespace messageServer.protoServices
             ServerCallContext context
         )
         {
-            await foreach (gRpcProtos.Message? request in requestStream.ReadAllAsync())
-            {
-                try
-                {
-                    _dic.TryAdd(request.AuthorUserId, responseStream);
-
-                    await _messageDb.CreateAsync(
-                        new Message(request.RoomId, request.AuthorUserId, request.Context)
-                    );
-
-                    FilterDefinition<Room> filter = Builders<Room>.Filter.Eq(
-                        r => r.Id,
-                        request.RoomId
-                    );
-
-                    UpdateDefinition<Room> update = Builders<Room>.Update.AddToSet(
-                        r => r.Users,
-                        request.AuthorUserId
-                    );
-
-                    await _roomDb.UpdateAsync(
-                        r => r.Id == request.RoomId,
-                        new Dictionary<string, object>() { ["Users"] = request.AuthorUserId }
-                    );
-
-                    await NotifyNewMessageInRoom(request.RoomId, request);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }
+            await foreach (gRpcProtos.Message? request in requestStream.ReadAllAsync()) { }
         }
 
+        /// <summary>
+        ///     სახელით უნიკალურია კლიენტი.
+        ///     პაროლის არასწორად შეყვანისას არ ვეუბნები რომ შეეშალა,
+        ///     ითველბა რომ სახელი გამოყენებულია და მორჩა.
+        ///     ახალი სახელის დროს პირდაპირ ანგარიში იქმნება.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override async Task<CreateUserResponse> CreateUser(
             CreateUserRequest request,
             ServerCallContext context
@@ -114,19 +93,6 @@ namespace messageServer.protoServices
             return new CreateRoomResponse { RoomId = room.Id };
         }
 
-        private async Task NotifyNewMessageInRoom(string roomId, gRpcProtos.Message message)
-        {
-            Console.WriteLine($"{_dic.Count}");
-            foreach (KeyValuePair<string, IServerStreamWriter<gRpcProtos.Message>> kvp in _dic)
-            {
-                Console.WriteLine($"Sender _ {message.AuthorUserId}, UserId _ {kvp.Key}");
-
-                try
-                {
-                    await kvp.Value.WriteAsync(message);
-                }
-                catch { }
-            }
-        }
+        private async Task NotifyNewMessageInRoom(string roomId, gRpcProtos.Message message) { }
     }
 }

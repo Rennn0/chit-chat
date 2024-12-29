@@ -57,14 +57,16 @@ namespace client.forms
             if (response.Code == CreateUserResponse.Types.CODE.UsernameUsed)
             {
                 AutoFillButton_Click(this, EventArgs.Empty);
-            }
-            else
-            {
-                MessageBox.Show(response.UserId);
+                return;
             }
 
-            //Settings.Default.token = response.UserId;
-            //Settings.Default.Save();
+            Settings.Default.token = response.UserId;
+            Settings.Default.Save();
+
+            this.Hide();
+            ChatForm cf = new ChatForm();
+            cf.Closing += (s, a) => this.Dispose();
+            cf.Show();
         }
     }
 }

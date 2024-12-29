@@ -28,183 +28,141 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            button1 = new Button();
-            SendTextBox = new RichTextBox();
-            ReceiveTextBox = new RichTextBox();
-            button2 = new Button();
-            RoomLabel = new Label();
-            UserLabel = new Label();
-            button3 = new Button();
-            UsernameBox = new TextBox();
-            EmailBox = new TextBox();
-            label3 = new Label();
-            label4 = new Label();
-            RoomBox = new TextBox();
-            ExistingRoomBox = new TextBox();
+            MainPanel = new Panel();
+            panel1 = new Panel();
+            TopLayout = new FlowLayoutPanel();
+            menuStrip1 = new MenuStrip();
+            roomToolStripMenuItem = new ToolStripMenuItem();
+            joinToolStripMenuItem = new ToolStripMenuItem();
+            createToolStripMenuItem = new ToolStripMenuItem();
+            listOnlineToolStripMenuItem = new ToolStripMenuItem();
+            settingsToolStripMenuItem = new ToolStripMenuItem();
+            roomsControl1 = new controls.RoomsControl();
+            MainPanel.SuspendLayout();
+            panel1.SuspendLayout();
+            TopLayout.SuspendLayout();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
-            // button1
+            // MainPanel
             // 
-            button1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            button1.Location = new Point(32, 247);
-            button1.Name = "button1";
-            button1.Size = new Size(230, 50);
-            button1.TabIndex = 0;
-            button1.Text = "Send";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += SendClicked;
+            MainPanel.Controls.Add(panel1);
+            MainPanel.Controls.Add(TopLayout);
+            MainPanel.Dock = DockStyle.Fill;
+            MainPanel.Location = new Point(0, 0);
+            MainPanel.Name = "MainPanel";
+            MainPanel.Size = new Size(762, 611);
+            MainPanel.TabIndex = 0;
             // 
-            // SendTextBox
+            // panel1
             // 
-            SendTextBox.Location = new Point(32, 339);
-            SendTextBox.Name = "SendTextBox";
-            SendTextBox.Size = new Size(295, 127);
-            SendTextBox.TabIndex = 1;
-            SendTextBox.Text = "";
+            panel1.BackColor = Color.Silver;
+            panel1.Controls.Add(roomsControl1);
+            panel1.Dock = DockStyle.Fill;
+            panel1.Location = new Point(0, 27);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(762, 584);
+            panel1.TabIndex = 1;
             // 
-            // ReceiveTextBox
+            // TopLayout
             // 
-            ReceiveTextBox.Location = new Point(355, 339);
-            ReceiveTextBox.Name = "ReceiveTextBox";
-            ReceiveTextBox.Size = new Size(309, 127);
-            ReceiveTextBox.TabIndex = 2;
-            ReceiveTextBox.Text = "";
+            TopLayout.BackColor = Color.Transparent;
+            TopLayout.Controls.Add(menuStrip1);
+            TopLayout.Dock = DockStyle.Top;
+            TopLayout.Location = new Point(0, 0);
+            TopLayout.Name = "TopLayout";
+            TopLayout.Size = new Size(762, 27);
+            TopLayout.TabIndex = 0;
+            TopLayout.Paint += TopLayout_Paint;
             // 
-            // button2
+            // menuStrip1
             // 
-            button2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            button2.Location = new Point(32, 97);
-            button2.Name = "button2";
-            button2.Size = new Size(230, 50);
-            button2.TabIndex = 3;
-            button2.Text = "Create acc";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += CreateAccClicked;
+            menuStrip1.Dock = DockStyle.Fill;
+            menuStrip1.GripStyle = ToolStripGripStyle.Visible;
+            menuStrip1.Items.AddRange(new ToolStripItem[] { roomToolStripMenuItem, settingsToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.RenderMode = ToolStripRenderMode.Professional;
+            menuStrip1.Size = new Size(124, 24);
+            menuStrip1.TabIndex = 0;
+            menuStrip1.Text = "menuStrip1";
             // 
-            // RoomLabel
+            // roomToolStripMenuItem
             // 
-            RoomLabel.AutoSize = true;
-            RoomLabel.Location = new Point(468, 22);
-            RoomLabel.Name = "RoomLabel";
-            RoomLabel.Size = new Size(45, 15);
-            RoomLabel.TabIndex = 4;
-            RoomLabel.Text = "room : ";
+            roomToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { joinToolStripMenuItem, createToolStripMenuItem, listOnlineToolStripMenuItem });
+            roomToolStripMenuItem.Name = "roomToolStripMenuItem";
+            roomToolStripMenuItem.Size = new Size(51, 20);
+            roomToolStripMenuItem.Text = "Room";
             // 
-            // UserLabel
+            // joinToolStripMenuItem
             // 
-            UserLabel.AutoSize = true;
-            UserLabel.Location = new Point(32, 174);
-            UserLabel.Name = "UserLabel";
-            UserLabel.Size = new Size(35, 15);
-            UserLabel.TabIndex = 5;
-            UserLabel.Text = "user :";
+            joinToolStripMenuItem.Name = "joinToolStripMenuItem";
+            joinToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.J;
+            joinToolStripMenuItem.Size = new Size(173, 22);
+            joinToolStripMenuItem.Text = "Join";
+            joinToolStripMenuItem.Click += joinToolStripMenuItem_Click;
             // 
-            // button3
+            // createToolStripMenuItem
             // 
-            button3.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            button3.Location = new Point(468, 97);
-            button3.Name = "button3";
-            button3.Size = new Size(230, 50);
-            button3.TabIndex = 6;
-            button3.Text = "Create room";
-            button3.UseVisualStyleBackColor = true;
-            button3.Click += CreateRoomClicked;
+            createToolStripMenuItem.Name = "createToolStripMenuItem";
+            createToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.C;
+            createToolStripMenuItem.Size = new Size(173, 22);
+            createToolStripMenuItem.Text = "Create";
+            createToolStripMenuItem.Click += createToolStripMenuItem_Click;
             // 
-            // UsernameBox
+            // listOnlineToolStripMenuItem
             // 
-            UsernameBox.BorderStyle = BorderStyle.FixedSingle;
-            UsernameBox.Location = new Point(32, 27);
-            UsernameBox.Name = "UsernameBox";
-            UsernameBox.Size = new Size(227, 23);
-            UsernameBox.TabIndex = 7;
+            listOnlineToolStripMenuItem.Name = "listOnlineToolStripMenuItem";
+            listOnlineToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.L;
+            listOnlineToolStripMenuItem.Size = new Size(173, 22);
+            listOnlineToolStripMenuItem.Text = "List online";
+            listOnlineToolStripMenuItem.Click += listOnlineToolStripMenuItem_Click;
             // 
-            // mainFormBindingsBindingSource
+            // settingsToolStripMenuItem
             // 
+            settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            settingsToolStripMenuItem.Size = new Size(61, 20);
+            settingsToolStripMenuItem.Text = "Settings";
             // 
-            // EmailBox
+            // roomsControl1
             // 
-            EmailBox.Location = new Point(32, 68);
-            EmailBox.Name = "EmailBox";
-            EmailBox.Size = new Size(227, 23);
-            EmailBox.TabIndex = 8;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(32, 50);
-            label3.Name = "label3";
-            label3.Size = new Size(39, 15);
-            label3.TabIndex = 9;
-            label3.Text = "email ";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(32, 9);
-            label4.Name = "label4";
-            label4.Size = new Size(62, 15);
-            label4.TabIndex = 10;
-            label4.Text = "username ";
-            // 
-            // RoomBox
-            // 
-            RoomBox.Location = new Point(468, 68);
-            RoomBox.Name = "RoomBox";
-            RoomBox.Size = new Size(227, 23);
-            RoomBox.TabIndex = 11;
-            // 
-            // ExistingRoomBox
-            // 
-            ExistingRoomBox.Location = new Point(286, 274);
-            ExistingRoomBox.Name = "ExistingRoomBox";
-            ExistingRoomBox.PlaceholderText = "existing room id";
-            ExistingRoomBox.Size = new Size(227, 23);
-            ExistingRoomBox.TabIndex = 12;
-            ExistingRoomBox.TextChanged += ExistingRoomBox_TextChanged;
-            // 
-            // mainFormBindingsBindingSource1
-            // 
+            roomsControl1.Dock = DockStyle.Fill;
+            roomsControl1.Location = new Point(0, 0);
+            roomsControl1.Name = "roomsControl1";
+            roomsControl1.Size = new Size(762, 584);
+            roomsControl1.TabIndex = 0;
             // 
             // ChatForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(749, 666);
-            Controls.Add(ExistingRoomBox);
-            Controls.Add(RoomBox);
-            Controls.Add(label4);
-            Controls.Add(label3);
-            Controls.Add(EmailBox);
-            Controls.Add(button3);
-            Controls.Add(UserLabel);
-            Controls.Add(RoomLabel);
-            Controls.Add(button2);
-            Controls.Add(ReceiveTextBox);
-            Controls.Add(SendTextBox);
-            Controls.Add(button1);
-            Controls.Add(UsernameBox);
+            BackColor = Color.White;
+            ClientSize = new Size(762, 611);
+            Controls.Add(MainPanel);
             Name = "ChatForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "ChitChat";
             Load += MainForm_Load;
+            MainPanel.ResumeLayout(false);
+            panel1.ResumeLayout(false);
+            TopLayout.ResumeLayout(false);
+            TopLayout.PerformLayout();
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private Button button1;
-        private RichTextBox SendTextBox;
-        private RichTextBox ReceiveTextBox;
-        private Button button2;
-        private Label RoomLabel;
-        private Label UserLabel;
-        private Button button3;
-        private TextBox UsernameBox;
-        private TextBox EmailBox;
-        private Label label3;
-        private Label label4;
-        private TextBox RoomBox;
-        private TextBox ExistingRoomBox;
+        private Panel MainPanel;
+        private FlowLayoutPanel TopLayout;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem roomToolStripMenuItem;
+        private ToolStripMenuItem joinToolStripMenuItem;
+        private ToolStripMenuItem createToolStripMenuItem;
+        private ToolStripMenuItem listOnlineToolStripMenuItem;
+        private ToolStripMenuItem settingsToolStripMenuItem;
+        private Panel panel1;
+        private controls.RoomsControl roomsControl1;
     }
 }

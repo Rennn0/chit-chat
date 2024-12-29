@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using client.Properties;
+using client.src.forms;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -11,8 +13,6 @@ namespace client.forms
 {
     public partial class ChatForm : Form
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         public ChatForm()
         {
             InitializeComponent();
@@ -20,64 +20,8 @@ namespace client.forms
                 Guard.AgainstNull(Properties.Resources.MessageServerUrl)
             );
             _client = new MessageExchangeService.MessageExchangeServiceClient(_channel);
+            this.Icon = Resources.ButterflyIcon;
         }
-
-        protected void OnPropertyChanged([CallerMemberName] string property = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-        }
-
-        private void CreateAccClicked(object sender, EventArgs e) { }
-
-        //    CreateUserResponse call = await _client.CreateUserAsync(
-        //        new CreateUserRequest { Email = Email, Username = Username }
-        //    );
-
-        //    _userId = call.UserId;
-        //    UserLabel.Text += _userId;
-        //}
-
-        private void CreateRoomClicked(object sender, EventArgs e)
-        {
-            //CreateRoomResponse call = await _client.CreateRoomAsync(
-            //    new CreateRoomRequest { Name = RoomName }
-            //);
-            //RoomId = call.RoomId;
-            //RoomLabel.Text += RoomId;
-        }
-
-        private void SendClicked(object sender, EventArgs e)
-        {
-            _streamingCall ??= _client.MessageStreaming();
-            _streamingCall.RequestStream.WriteAsync(
-                new Message
-                {
-                    Context = SendTextBox.Text,
-                    //RoomId = RoomId,
-                    //UserId = _userId,
-                    Timestamp = DateTime.UtcNow.ToTimestamp(),
-                }
-            );
-
-            if (_messageThread is not null)
-            {
-                return;
-            }
-            _messageThread = new Thread(ReadMessageStream) { IsBackground = true };
-            _messageThread.Start();
-        }
-
-        private async void ReadMessageStream()
-        {
-            Guard.AgainstNull(_streamingCall);
-            await foreach (Message? response in _streamingCall.ResponseStream.ReadAllAsync())
-            {
-                //ReceivedText += response.Context + Environment.NewLine;
-                //SendText = string.Empty;
-            }
-        }
-
-        private void ExistingRoomBox_TextChanged(object sender, EventArgs e) { }
 
         private readonly GrpcChannel _channel;
         private readonly MessageExchangeService.MessageExchangeServiceClient _client;
@@ -85,8 +29,26 @@ namespace client.forms
         private AsyncDuplexStreamingCall<Message, Message>? _streamingCall;
         private Thread? _messageThread;
 
-        private void MainForm_Load(object sender, EventArgs e) { }
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            this.Text += $@" - {Settings.Default.token}";
+        }
 
-        private void mainFormBindingsBindingSource_CurrentChanged(object sender, EventArgs e) { }
+        private void TopLayout_Paint(object sender, PaintEventArgs e) { }
+
+        private void listOnlineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("hi u clieck ctrl l");
+        }
+
+        private void createToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("hi u clieck ctrl alt c");
+        }
+
+        private void joinToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("hi u clieck ctrl j");
+        }
     }
 }
