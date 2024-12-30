@@ -51,7 +51,7 @@
             MainPanel.Dock = DockStyle.Fill;
             MainPanel.Location = new Point(0, 0);
             MainPanel.Name = "MainPanel";
-            MainPanel.Size = new Size(762, 611);
+            MainPanel.Size = new Size(1066, 630);
             MainPanel.TabIndex = 0;
             // 
             // panel1
@@ -61,7 +61,7 @@
             panel1.Dock = DockStyle.Fill;
             panel1.Location = new Point(0, 27);
             panel1.Name = "panel1";
-            panel1.Size = new Size(762, 584);
+            panel1.Size = new Size(1066, 603);
             panel1.TabIndex = 1;
             // 
             // roomsControl1
@@ -69,7 +69,7 @@
             roomsControl1.Dock = DockStyle.Fill;
             roomsControl1.Location = new Point(0, 0);
             roomsControl1.Name = "roomsControl1";
-            roomsControl1.Size = new Size(762, 584);
+            roomsControl1.Size = new Size(1066, 603);
             roomsControl1.TabIndex = 0;
             // 
             // TopLayout
@@ -79,7 +79,7 @@
             TopLayout.Dock = DockStyle.Top;
             TopLayout.Location = new Point(0, 0);
             TopLayout.Name = "TopLayout";
-            TopLayout.Size = new Size(762, 27);
+            TopLayout.Size = new Size(1066, 27);
             TopLayout.TabIndex = 0;
             TopLayout.Paint += TopLayout_Paint;
             // 
@@ -91,7 +91,7 @@
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.RenderMode = ToolStripRenderMode.Professional;
-            menuStrip1.Size = new Size(244, 24);
+            menuStrip1.Size = new Size(124, 24);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -107,7 +107,7 @@
             joinToolStripMenuItem.Image = Properties.Resources.enter;
             joinToolStripMenuItem.Name = "joinToolStripMenuItem";
             joinToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.J;
-            joinToolStripMenuItem.Size = new Size(180, 22);
+            joinToolStripMenuItem.Size = new Size(173, 22);
             joinToolStripMenuItem.Text = "Join";
             joinToolStripMenuItem.Click += joinToolStripMenuItem_Click;
             // 
@@ -116,7 +116,7 @@
             createToolStripMenuItem.Image = Properties.Resources.meeting;
             createToolStripMenuItem.Name = "createToolStripMenuItem";
             createToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.C;
-            createToolStripMenuItem.Size = new Size(180, 22);
+            createToolStripMenuItem.Size = new Size(173, 22);
             createToolStripMenuItem.Text = "Create";
             createToolStripMenuItem.Click += createToolStripMenuItem_Click;
             // 
@@ -124,7 +124,7 @@
             // 
             listOnlineToolStripMenuItem.Name = "listOnlineToolStripMenuItem";
             listOnlineToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.L;
-            listOnlineToolStripMenuItem.Size = new Size(180, 22);
+            listOnlineToolStripMenuItem.Size = new Size(173, 22);
             listOnlineToolStripMenuItem.Text = "List online";
             listOnlineToolStripMenuItem.Click += listOnlineToolStripMenuItem_Click;
             // 
@@ -139,7 +139,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(762, 611);
+            ClientSize = new Size(1066, 630);
             Controls.Add(MainPanel);
             Name = "ChatForm";
             StartPosition = FormStartPosition.CenterScreen;

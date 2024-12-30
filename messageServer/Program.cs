@@ -46,7 +46,9 @@ app.Use(
         await next.Invoke();
     }
 );
-app.MapGrpcService<MessageService>();
+
+app.MapGrpcService<MessageExchange>();
+app.MapGrpcService<RoomExchange>();
 
 RabbitSettings rabbitSettings = app.Services.GetRequiredService<IOptions<RabbitSettings>>().Value;
 new Thread(() =>

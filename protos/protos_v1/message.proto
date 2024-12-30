@@ -47,3 +47,4 @@ message CreateRoomResponse
 {
 	string roomId = 1;
 }
+

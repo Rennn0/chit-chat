@@ -5,13 +5,15 @@ using database.interfaces;
 using Grpc.Core;
 using gRpcProtos;
 using llibrary.SharedObjects.Room;
+using messageServer.extensions;
 using messageServer.rabbit;
 using Newtonsoft.Json;
 using Message = database.entities.Message;
+using RoomTransferObject = llibrary.SharedObjects.Room.RoomTransferObject;
 
 namespace messageServer.protoServices
 {
-    public class MessageService : MessageExchangeService.MessageExchangeServiceBase
+    public class MessageExchange : MessageExchangeService.MessageExchangeServiceBase
     {
         private readonly IDatabaseAdapter<User> _userDb;
         private readonly IDatabaseAdapter<Room> _roomDb;
@@ -27,7 +29,7 @@ namespace messageServer.protoServices
             HashSet<(string userId, IServerStreamWriter<gRpcProtos.Message> stream)>
         > Rooms = new();
 
-        public MessageService(
+        public MessageExchange(
             IDatabaseAdapter<User> userDb,
             IDatabaseAdapter<Room> roomDb,
             IDatabaseAdapter<Message> messageDb
@@ -126,16 +128,12 @@ namespace messageServer.protoServices
             ServerCallContext context
         )
         {
-            Room room = new Room(request.Name, request.HostUserId);
+            Room room = request.Map();
+
             await _roomDb.CreateAsync(room);
 
-            RoomTransferObject rto = new RoomTransferObject
-            {
-                Name = request.Name,
-                HostUserId = request.HostUserId,
-                Description = request.Description,
-                RoomId = room.Id,
-            };
+            RoomTransferObject rto = room.Map();
+
             string rtoString = JsonConvert.SerializeObject(rto);
 
             RabbitRoomPublisher.Messages.TryAdd(rtoString);

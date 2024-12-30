@@ -17,7 +17,7 @@
   </ItemGroup>
 
 	<ItemGroup>
-	  <Protobuf Include="protos_v1\message.proto" GrpcService="Both" AdditionalImportDirs="$(Protobuf_ProtoPath)" />
+	  <Protobuf Include="protos_v1\*.proto" GrpcService="Both" AdditionalImportDirs="$(Protobuf_ProtoPath)" />
 	</ItemGroup>
 	
 </Project>

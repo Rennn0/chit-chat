@@ -1,17 +1,21 @@
 ﻿using System.Text;
+using System.Windows.Forms;
 using client.bindings;
-using llibrary.SharedObjects.Room;
+using client.Properties;
+using Grpc.Net.Client;
+using gRpcProtos;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RoomTransferObject = llibrary.SharedObjects.Room.RoomTransferObject;
 using Timer = System.Threading.Timer;
 
 namespace client.controls
 {
     public partial class RoomsControl : UserControl
     {
-        private ConnectionFactory _factory;
+        private readonly ConnectionFactory _factory;
         private IConnection? _connection;
 
         public RoomsControl()
@@ -26,6 +30,27 @@ namespace client.controls
         {
             //new Timer(_ => KeepRoomsUpdated(), null, 1000, -1);
             new Thread(KeepRoomsUpdated).Start();
+            roomsControlBindingBindingSource.RemoveAt(0);
+
+            GrpcChannel channel = GrpcChannel.ForAddress(Resources.MessageServerUrl);
+            RoomExchangeService.RoomExchangeServiceClient client =
+                new RoomExchangeService.RoomExchangeServiceClient(channel);
+            ListAvailableRoomsResponse? response = await client.ListAvailableRoomsAsync(
+                new ListAvailableRoomsRequest()
+            );
+            foreach (gRpcProtos.RoomTransferObject roomTransferObject in response.Rooms)
+            {
+                roomsControlBindingBindingSource.Add(
+                    new RoomsControlBinding()
+                    {
+                        G_description = roomTransferObject.Description,
+                        G_hostUserId = roomTransferObject.HostUserId,
+                        G_roomId = roomTransferObject.RoomId,
+                        G_roomName = roomTransferObject.Name,
+                        G_participants = roomTransferObject.Participants,
+                    }
+                );
+            }
         }
 
         private async Task InitRabbitConnection()
@@ -82,6 +107,14 @@ namespace client.controls
             {
                 File.WriteAllText("dump.txt", exception.Message);
             }
+        }
+
+        private void joinToolStripMenuItem_Click(object sender, EventArgs e) { }
+
+        private void RoomDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridView? dataGrid = sender as DataGridView;
+            var cell = dataGrid.Rows[e.RowIndex];
         }
     }
 }

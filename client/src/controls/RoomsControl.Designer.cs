@@ -69,6 +69,7 @@
             RoomDataGrid.Name = "RoomDataGrid";
             RoomDataGrid.Size = new Size(726, 490);
             RoomDataGrid.TabIndex = 0;
+            RoomDataGrid.CellContentClick += RoomDataGrid_CellContentClick;
             // 
             // groomIdDataGridViewTextBoxColumn
             // 
@@ -81,13 +82,14 @@
             // 
             RoomMenuStrip.Items.AddRange(new ToolStripItem[] { joinToolStripMenuItem });
             RoomMenuStrip.Name = "RoomMenuStrip";
-            RoomMenuStrip.Size = new Size(181, 48);
+            RoomMenuStrip.Size = new Size(96, 26);
             // 
             // joinToolStripMenuItem
             // 
             joinToolStripMenuItem.Name = "joinToolStripMenuItem";
-            joinToolStripMenuItem.Size = new Size(180, 22);
+            joinToolStripMenuItem.Size = new Size(95, 22);
             joinToolStripMenuItem.Text = "Join";
+            joinToolStripMenuItem.Click += joinToolStripMenuItem_Click;
             // 
             // groomNameDataGridViewTextBoxColumn
             // 

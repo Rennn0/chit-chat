@@ -1,0 +1,27 @@
+syntax = "proto3";
+package rooms;
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "gRpcProtos";
+
+service RoomExchangeService
+{
+	rpc ListAvailableRooms(ListAvailableRoomsRequest) returns (ListAvailableRoomsResponse);
+}
+
+message ListAvailableRoomsRequest
+{
+    optional string requestId = 1;
+}
+message ListAvailableRoomsResponse
+{
+    repeated RoomTransferObject rooms = 1;
+}
+
+message RoomTransferObject {
+    string room_id = 1;           
+    string host_user_id = 2;      
+    string name = 3;              
+    string description = 4;       
+    int32 participants = 5;       
+}
