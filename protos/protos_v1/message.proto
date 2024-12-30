@@ -16,7 +16,7 @@ message Message
 	string roomId = 1;
 	string authorUserId = 2;
 	string context = 3;
-	google.protobuf.Timestamp timestamp = 4;
+	optional google.protobuf.Timestamp timestamp = 4;
 }
 
 message CreateUserRequest
@@ -39,7 +39,8 @@ message CreateUserResponse
 message CreateRoomRequest
 {
 	string name = 1;
-	string hostUserId=2;
+	string hostUserId = 2;
+	optional string description = 3;
 }
 
 message CreateRoomResponse

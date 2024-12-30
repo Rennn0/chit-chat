@@ -60,8 +60,9 @@ namespace client.forms
                 return;
             }
 
+            // TODO diskze sheinaxe
             Settings.Default.token = response.UserId;
-            Settings.Default.Save();
+            //Settings.Default.Save();
 
             this.Hide();
             ChatForm cf = new ChatForm();

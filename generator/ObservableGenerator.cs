@@ -27,7 +27,7 @@ namespace generator
                 IEnumerable<ClassDeclarationSyntax> classDeclarations = root.DescendantNodes()
                     .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax>();
 
-                foreach (var classDeclaration in classDeclarations)
+                foreach (ClassDeclarationSyntax classDeclaration in classDeclarations)
                 {
                     INamedTypeSymbol? classSymbol = (INamedTypeSymbol?)
                         compilation.GetSemanticModel(tree).GetDeclaredSymbol(classDeclaration);

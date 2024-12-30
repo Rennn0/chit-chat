@@ -81,12 +81,12 @@
             // 
             RoomMenuStrip.Items.AddRange(new ToolStripItem[] { joinToolStripMenuItem });
             RoomMenuStrip.Name = "RoomMenuStrip";
-            RoomMenuStrip.Size = new Size(96, 26);
+            RoomMenuStrip.Size = new Size(181, 48);
             // 
             // joinToolStripMenuItem
             // 
             joinToolStripMenuItem.Name = "joinToolStripMenuItem";
-            joinToolStripMenuItem.Size = new Size(95, 22);
+            joinToolStripMenuItem.Size = new Size(180, 22);
             joinToolStripMenuItem.Text = "Join";
             // 
             // groomNameDataGridViewTextBoxColumn

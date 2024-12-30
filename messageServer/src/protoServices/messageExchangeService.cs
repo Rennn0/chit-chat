@@ -1,8 +1,12 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using database.entities;
 using database.interfaces;
 using Grpc.Core;
 using gRpcProtos;
+using llibrary.SharedObjects.Room;
+using messageServer.rabbit;
+using Newtonsoft.Json;
 using Message = database.entities.Message;
 
 namespace messageServer.protoServices
@@ -12,6 +16,7 @@ namespace messageServer.protoServices
         private readonly IDatabaseAdapter<User> _userDb;
         private readonly IDatabaseAdapter<Room> _roomDb;
         private readonly IDatabaseAdapter<Message> _messageDb;
+        private static int Counter = 0;
 
         /// <summary>
         ///     ოთახი იქმენა კონკრეტული იდ_ით, ოთახში ემატებიან კლიენტები თავიანთი იდ_ით +
@@ -19,8 +24,8 @@ namespace messageServer.protoServices
         /// </summary>
         private static readonly ConcurrentDictionary<
             string,
-            LinkedList<(string userId, IServerStreamWriter<gRpcProtos.Message> stream)>
-        > _rooms = new();
+            HashSet<(string userId, IServerStreamWriter<gRpcProtos.Message> stream)>
+        > Rooms = new();
 
         public MessageService(
             IDatabaseAdapter<User> userDb,
@@ -33,13 +38,55 @@ namespace messageServer.protoServices
             _messageDb = messageDb;
         }
 
+        /// <summary>
+        ///     მესიჯების გაცვლა სერვერსა ყველა კლიენტს შორის
+        /// </summary>
+        /// <param name="requestStream"></param>
+        /// <param name="responseStream"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override async Task MessageStreaming(
             IAsyncStreamReader<gRpcProtos.Message> requestStream,
             IServerStreamWriter<gRpcProtos.Message> responseStream,
             ServerCallContext context
         )
         {
-            await foreach (gRpcProtos.Message? request in requestStream.ReadAllAsync()) { }
+            await foreach (gRpcProtos.Message? request in requestStream.ReadAllAsync())
+            {
+                UpdateDictionary(request, responseStream);
+
+                await UpdateDatabase(request);
+
+                await NotifyNewMessageInRoom(request);
+            }
+        }
+
+        private async Task UpdateDatabase(gRpcProtos.Message request)
+        {
+            Message newMessage = new Message(request.RoomId, request.AuthorUserId, request.Context);
+            await _messageDb.CreateAsync(newMessage);
+
+            int updated = await _roomDb.UpdateAsync(
+                r => r.Id == request.RoomId,
+                new Dictionary<string, object>() { ["Users"] = newMessage.AuthorUserId }
+            );
+        }
+
+        // TODO strimebis lifecycle sakontroloa, connect / disconnect
+        private void UpdateDictionary(
+            gRpcProtos.Message request,
+            IServerStreamWriter<gRpcProtos.Message> responseStream
+        )
+        {
+            if (!Rooms.ContainsKey(request.RoomId))
+            {
+                Rooms[request.RoomId] = new HashSet<(
+                    string userId,
+                    IServerStreamWriter<gRpcProtos.Message> stream
+                )>(new ClientComparer());
+            }
+
+            Rooms[request.RoomId].Add((request.AuthorUserId, responseStream));
         }
 
         /// <summary>
@@ -60,20 +107,55 @@ namespace messageServer.protoServices
                 await _userDb.GetByAsync(u => u.Username == request.Username.Trim('\r', '\n', ' '))
             ).FirstOrDefault();
 
-            if (existingUser is not null)
+            if (existingUser is null)
             {
-                return existingUser.VerifyPassword(request.Password)
-                    ? new CreateUserResponse()
-                    {
-                        Code = CreateUserResponse.Types.CODE.Created,
-                        UserId = existingUser.Id,
-                    }
-                    : new CreateUserResponse()
-                    {
-                        Code = CreateUserResponse.Types.CODE.UsernameUsed,
-                    };
+                return await CreateNewUser(request);
             }
 
+            return VerifyUserRequest(request, existingUser);
+        }
+
+        /// <summary>
+        ///     ახალი ჰოსტი
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override async Task<CreateRoomResponse> CreateRoom(
+            CreateRoomRequest request,
+            ServerCallContext context
+        )
+        {
+            Room room = new Room(request.Name, request.HostUserId);
+            await _roomDb.CreateAsync(room);
+
+            RoomTransferObject rto = new RoomTransferObject
+            {
+                Name = request.Name,
+                HostUserId = request.HostUserId,
+                Description = request.Description,
+                RoomId = room.Id,
+            };
+            string rtoString = JsonConvert.SerializeObject(rto);
+
+            RabbitRoomPublisher.Messages.TryAdd(rtoString);
+
+            return new CreateRoomResponse { RoomId = room.Id };
+        }
+
+        private CreateUserResponse VerifyUserRequest(CreateUserRequest request, User existingUser)
+        {
+            return existingUser.VerifyPassword(request.Password)
+                ? new CreateUserResponse()
+                {
+                    Code = CreateUserResponse.Types.CODE.Created,
+                    UserId = existingUser.Id,
+                }
+                : new CreateUserResponse() { Code = CreateUserResponse.Types.CODE.UsernameUsed };
+        }
+
+        private async Task<CreateUserResponse> CreateNewUser(CreateUserRequest request)
+        {
             User user = new User(request.Password, request.Username);
             await _userDb.CreateAsync(user);
             return new CreateUserResponse
@@ -83,16 +165,48 @@ namespace messageServer.protoServices
             };
         }
 
-        public override async Task<CreateRoomResponse> CreateRoom(
-            CreateRoomRequest request,
-            ServerCallContext context
-        )
+        private async Task NotifyNewMessageInRoom(gRpcProtos.Message message)
         {
-            Room room = new Room(request.Name, request.HostUserId);
-            await _roomDb.CreateAsync(room);
-            return new CreateRoomResponse { RoomId = room.Id };
+            if (
+                Rooms.TryGetValue(
+                    message.RoomId,
+                    out HashSet<(
+                        string userId,
+                        IServerStreamWriter<gRpcProtos.Message> stream
+                    )>? roomClients
+                )
+            )
+            {
+                // TODO strimi chaweramde shesamowmebelia
+                foreach (
+                    (
+                        string? userId,
+                        IServerStreamWriter<gRpcProtos.Message>? serverStreamWriter
+                    ) in roomClients
+                )
+                {
+                    await serverStreamWriter.WriteAsync(message);
+                }
+            }
         }
 
-        private async Task NotifyNewMessageInRoom(string roomId, gRpcProtos.Message message) { }
+        private class ClientComparer
+            : IEqualityComparer<(string userId, IServerStreamWriter<gRpcProtos.Message> stream)>
+        {
+            public bool Equals(
+                (string userId, IServerStreamWriter<gRpcProtos.Message> stream) x,
+                (string userId, IServerStreamWriter<gRpcProtos.Message> stream) y
+            )
+            {
+                return x.userId == y.userId;
+            }
+
+            public int GetHashCode(
+                [DisallowNull] (string userId, IServerStreamWriter<gRpcProtos.Message> stream) obj
+            )
+            {
+                return obj.userId.GetHashCode();
+            }
+        }
     }
 }
