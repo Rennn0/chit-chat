@@ -64,4 +64,5 @@ new Thread(() =>
     IsBackground = true,
 }.Start();
 
+app.MapGet("/", () => "Hello there");
 app.Run();

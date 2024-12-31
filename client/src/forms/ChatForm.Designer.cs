@@ -104,7 +104,6 @@
             // 
             // joinToolStripMenuItem
             // 
-            joinToolStripMenuItem.Image = Properties.Resources.enter;
             joinToolStripMenuItem.Name = "joinToolStripMenuItem";
             joinToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.J;
             joinToolStripMenuItem.Size = new Size(173, 22);
@@ -113,7 +112,6 @@
             // 
             // createToolStripMenuItem
             // 
-            createToolStripMenuItem.Image = Properties.Resources.meeting;
             createToolStripMenuItem.Name = "createToolStripMenuItem";
             createToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Alt | Keys.C;
             createToolStripMenuItem.Size = new Size(173, 22);

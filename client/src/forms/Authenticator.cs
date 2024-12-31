@@ -17,9 +17,9 @@ namespace client.forms
             await Task.Delay(1000);
             this.Hide();
 
-            Form next = string.IsNullOrEmpty(Settings.Default.token)
+            Form next = new AuthorizationForm(); /*string.IsNullOrEmpty(Settings.Default.token)
                 ? new AuthorizationForm()
-                : new ChatForm();
+                : new ChatForm();*/
 
             next.Closing += Next_Closing;
             next.Show();

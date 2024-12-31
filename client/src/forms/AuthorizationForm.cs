@@ -1,9 +1,11 @@
 ﻿using System.Media;
 using client.bindings;
+using client.globals;
 using client.Properties;
 using Grpc.Net.Client;
 using gRpcProtos;
 using LLibrary.Guards;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Timer = System.Threading.Timer;
 
 namespace client.forms
@@ -37,9 +39,8 @@ namespace client.forms
 
         private void EnterButton_Click(object sender, EventArgs e)
         {
-            GrpcChannel channel = GrpcChannel.ForAddress(
-                Guard.AgainstNull(Properties.Resources.MessageServerUrl)
-            );
+            MessageBox.Show(Resources.MessageServerUrl);
+            GrpcChannel channel = Globals.GetGrpcChannel();
 
             MessageExchangeService.MessageExchangeServiceClient client =
                 new MessageExchangeService.MessageExchangeServiceClient(channel);

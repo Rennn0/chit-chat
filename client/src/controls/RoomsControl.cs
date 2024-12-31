@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Windows.Forms;
 using client.bindings;
+using client.globals;
 using client.Properties;
 using Grpc.Net.Client;
 using gRpcProtos;
@@ -23,7 +24,11 @@ namespace client.controls
             InitializeComponent();
             this.Load += RoomsControl_Loaded;
 
-            _factory = new ConnectionFactory { HostName = "localhost" };
+            _factory = new ConnectionFactory
+            {
+                HostName = Resources.RabbitHost,
+                Port = int.Parse(Resources.RabbitPort),
+            };
         }
 
         private async void RoomsControl_Loaded(object? sender, EventArgs e)
@@ -32,7 +37,7 @@ namespace client.controls
             new Thread(KeepRoomsUpdated).Start();
             roomsControlBindingBindingSource.RemoveAt(0);
 
-            GrpcChannel channel = GrpcChannel.ForAddress(Resources.MessageServerUrl);
+            GrpcChannel channel = Globals.GetGrpcChannel();
             RoomExchangeService.RoomExchangeServiceClient client =
                 new RoomExchangeService.RoomExchangeServiceClient(channel);
             ListAvailableRoomsResponse? response = await client.ListAvailableRoomsAsync(
@@ -55,18 +60,29 @@ namespace client.controls
 
         private async Task InitRabbitConnection()
         {
-            _connection = await _factory.CreateConnectionAsync();
-            IChannel channel = await _connection.CreateChannelAsync();
-            await channel.ExchangeDeclareAsync("rooms", ExchangeType.Fanout);
-            QueueDeclareOk queue = await channel.QueueDeclareAsync(
-                exclusive: true,
-                durable: false,
-                autoDelete: true
-            );
-            await channel.QueueBindAsync(queue.QueueName, "rooms", string.Empty);
-            AsyncEventingBasicConsumer consumer = new AsyncEventingBasicConsumer(channel);
-            consumer.ReceivedAsync += Rooms_Consumer_ReceivedAsync;
-            await channel.BasicConsumeAsync(queue.QueueName, true, consumer: consumer);
+            try
+            {
+                _connection = await _factory.CreateConnectionAsync();
+                IChannel channel = await _connection.CreateChannelAsync();
+                await channel.ExchangeDeclareAsync("rooms", ExchangeType.Fanout);
+                QueueDeclareOk queue = await channel.QueueDeclareAsync(
+                    exclusive: true,
+                    durable: false,
+                    autoDelete: true
+                );
+                await channel.QueueBindAsync(queue.QueueName, "rooms", string.Empty);
+                AsyncEventingBasicConsumer consumer = new AsyncEventingBasicConsumer(channel);
+                consumer.ReceivedAsync += Rooms_Consumer_ReceivedAsync;
+                await channel.BasicConsumeAsync(queue.QueueName, true, consumer: consumer);
+            }
+            catch (Exception e)
+            {
+                string msg =
+                    JsonConvert.SerializeObject(e)
+                    + $"{Environment.NewLine}{Resources.RabbitPort} - {Resources.RabbitHost}";
+
+                File.WriteAllText("threaddump.txt", msg);
+            }
         }
 
         private Task Rooms_Consumer_ReceivedAsync(object sender, BasicDeliverEventArgs @event)
@@ -100,8 +116,6 @@ namespace client.controls
             {
                 if (_connection is null || !_connection.IsOpen)
                     InitRabbitConnection().Wait();
-
-                throw new Exception("qweqewqq");
             }
             catch (Exception exception)
             {

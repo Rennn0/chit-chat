@@ -89,41 +89,29 @@ namespace client.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap enter {
-            get {
-                object obj = ResourceManager.GetObject("enter", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap icons8_room_64 {
-            get {
-                object obj = ResourceManager.GetObject("icons8-room-64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap meeting {
-            get {
-                object obj = ResourceManager.GetObject("meeting", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to https://localhost:7293/.
+        ///   Looks up a localized string similar to https://10.115.50.49:7293.
         /// </summary>
         internal static string MessageServerUrl {
             get {
                 return ResourceManager.GetString("MessageServerUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 10.115.50.49.
+        /// </summary>
+        internal static string RabbitHost {
+            get {
+                return ResourceManager.GetString("RabbitHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 5672.
+        /// </summary>
+        internal static string RabbitPort {
+            get {
+                return ResourceManager.GetString("RabbitPort", resourceCulture);
             }
         }
         
