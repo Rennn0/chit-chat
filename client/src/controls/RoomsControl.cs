@@ -3,6 +3,8 @@ using System.Windows.Forms;
 using client.bindings;
 using client.globals;
 using client.Properties;
+using GeneratedSettings;
+using generator;
 using Grpc.Net.Client;
 using gRpcProtos;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -26,8 +28,8 @@ namespace client.controls
 
             _factory = new ConnectionFactory
             {
-                HostName = Resources.RabbitHost,
-                Port = int.Parse(Resources.RabbitPort),
+                HostName = RuntimeTrexSettings.Get(TrexSettings.RabbitHost),
+                Port = int.Parse(RuntimeTrexSettings.Get(TrexSettings.RabbitPort)),
             };
         }
 
@@ -77,9 +79,8 @@ namespace client.controls
             }
             catch (Exception e)
             {
-                string msg =
-                    JsonConvert.SerializeObject(e)
-                    + $"{Environment.NewLine}{Resources.RabbitPort} - {Resources.RabbitHost}";
+                string msg = JsonConvert.SerializeObject(e);
+                //+ $"{Environment.NewLine}{} - {Resources.RabbitHost}";
 
                 File.WriteAllText("threaddump.txt", msg);
             }

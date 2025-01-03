@@ -70,48 +70,12 @@ namespace client.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to luka danelia.
-        /// </summary>
-        internal static string Author {
-            get {
-                return ResourceManager.GetString("Author", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon ButterflyIcon {
             get {
                 object obj = ResourceManager.GetObject("ButterflyIcon", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to https://10.115.50.49:7293.
-        /// </summary>
-        internal static string MessageServerUrl {
-            get {
-                return ResourceManager.GetString("MessageServerUrl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 10.115.50.49.
-        /// </summary>
-        internal static string RabbitHost {
-            get {
-                return ResourceManager.GetString("RabbitHost", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 5672.
-        /// </summary>
-        internal static string RabbitPort {
-            get {
-                return ResourceManager.GetString("RabbitPort", resourceCulture);
             }
         }
         

@@ -173,19 +173,7 @@
   <data name="ButterflyIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\butterfly-side-view-with-detailed-wings.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="MessageServerUrl" xml:space="preserve">
-    <value>https://10.115.50.49:7293</value>
-  </data>
-  <data name="Author" xml:space="preserve">
-    <value>luka danelia</value>
-  </data>
   <data name="AaaScream" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\AaaScream.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="RabbitHost" xml:space="preserve">
-    <value>10.115.50.49</value>
-  </data>
-  <data name="RabbitPort" xml:space="preserve">
-    <value>5672</value>
   </data>
 </root>

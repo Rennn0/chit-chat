@@ -1,4 +1,5 @@
-﻿using Grpc.Net.Client;
+﻿using generator;
+using Grpc.Net.Client;
 
 namespace client.globals;
 
@@ -13,9 +14,9 @@ public static class Globals
         };
         return insecure
             ? GrpcChannel.ForAddress(
-                Properties.Resources.MessageServerUrl,
+                RuntimeTrexSettings.Get(TrexSettings.MessageServerUrl),
                 new GrpcChannelOptions { HttpHandler = httpHandler }
             )
-            : GrpcChannel.ForAddress(Properties.Resources.MessageServerUrl);
+            : GrpcChannel.ForAddress(RuntimeTrexSettings.Get(TrexSettings.MessageServerUrl));
     }
 }

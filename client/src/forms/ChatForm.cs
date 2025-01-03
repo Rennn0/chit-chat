@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using client.Properties;
 using client.src.forms;
+using generator;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -17,7 +18,7 @@ namespace client.forms
         {
             InitializeComponent();
             _channel = GrpcChannel.ForAddress(
-                Guard.AgainstNull(Properties.Resources.MessageServerUrl)
+                RuntimeTrexSettings.Get(TrexSettings.MessageServerUrl)
             );
             _client = new MessageExchangeService.MessageExchangeServiceClient(_channel);
             this.Icon = Resources.ButterflyIcon;
@@ -31,7 +32,7 @@ namespace client.forms
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.Text += $@" - {Settings.Default.token}";
+            this.Text += $@" - {RuntimeTrexSettings.Get(TrexSettings.Token)}";
         }
 
         private void TopLayout_Paint(object sender, PaintEventArgs e) { }
