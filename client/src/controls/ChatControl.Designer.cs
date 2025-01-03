@@ -1,15 +1,13 @@
-﻿using client.controls;
-
-namespace client.forms
+﻿namespace client.controls
 {
-    partial class ChatForm
+    partial class ChatControl
     {
-        /// <summary>
+        /// <summary> 
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
+        /// <summary> 
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -22,37 +20,39 @@ namespace client.forms
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        #region Component Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
-            chatControl1 = new ChatControl(_roomId,_userId);
+            MessagePanel = new FlowLayoutPanel();
             SuspendLayout();
             // 
-            // chatControl1
+            // MessagePanel
             // 
-            chatControl1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            chatControl1.Location = new Point(12, 27);
-            chatControl1.Name = "chatControl1";
-            chatControl1.Size = new Size(833, 454);
-            chatControl1.TabIndex = 0;
+            MessagePanel.Dock = DockStyle.Fill;
+            MessagePanel.FlowDirection = FlowDirection.TopDown;
+            MessagePanel.Location = new Point(0, 0);
+            MessagePanel.Name = "MessagePanel";
+            MessagePanel.Size = new Size(723, 473);
+            MessagePanel.TabIndex = 0;
             // 
-            // ChatForm
+            // ChatControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(857, 574);
-            Controls.Add(chatControl1);
-            Name = "ChatForm";
+            AutoScroll = true;
+            Controls.Add(MessagePanel);
+            Name = "ChatControl";
+            Size = new Size(723, 473);
             ResumeLayout(false);
         }
 
         #endregion
 
-        private ChatControl chatControl1;
+        private FlowLayoutPanel MessagePanel;
     }
 }

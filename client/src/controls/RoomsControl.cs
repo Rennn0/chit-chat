@@ -1,18 +1,16 @@
 ﻿using System.Text;
-using System.Windows.Forms;
 using client.bindings;
+using client.extensions;
+using client.forms;
 using client.globals;
-using client.Properties;
 using GeneratedSettings;
 using generator;
 using Grpc.Net.Client;
 using gRpcProtos;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RoomTransferObject = llibrary.SharedObjects.Room.RoomTransferObject;
-using Timer = System.Threading.Timer;
 
 namespace client.controls
 {
@@ -28,35 +26,32 @@ namespace client.controls
 
             _factory = new ConnectionFactory
             {
-                HostName = RuntimeTrexSettings.Get(TrexSettings.RabbitHost),
-                Port = int.Parse(RuntimeTrexSettings.Get(TrexSettings.RabbitPort)),
+                HostName = TrexSettigns.RabbitHost,
+                Port = int.Parse(TrexSettigns.RabbitPort),
             };
         }
 
         private async void RoomsControl_Loaded(object? sender, EventArgs e)
         {
-            //new Timer(_ => KeepRoomsUpdated(), null, 1000, -1);
-            new Thread(KeepRoomsUpdated).Start();
-            roomsControlBindingBindingSource.RemoveAt(0);
-
-            GrpcChannel channel = Globals.GetGrpcChannel();
-            RoomExchangeService.RoomExchangeServiceClient client =
-                new RoomExchangeService.RoomExchangeServiceClient(channel);
-            ListAvailableRoomsResponse? response = await client.ListAvailableRoomsAsync(
-                new ListAvailableRoomsRequest()
-            );
-            foreach (gRpcProtos.RoomTransferObject roomTransferObject in response.Rooms)
+            try
             {
-                roomsControlBindingBindingSource.Add(
-                    new RoomsControlBinding()
-                    {
-                        G_description = roomTransferObject.Description,
-                        G_hostUserId = roomTransferObject.HostUserId,
-                        G_roomId = roomTransferObject.RoomId,
-                        G_roomName = roomTransferObject.Name,
-                        G_participants = roomTransferObject.Participants,
-                    }
+                //new Timer(_ => KeepRoomsUpdated(), null, 1000, -1);
+                new Thread(KeepRoomsUpdated).Start();
+                roomsControlBindingBindingSource.RemoveAt(0);
+
+                GrpcChannel channel = Globals.GetGrpcChannel();
+                RoomExchangeService.RoomExchangeServiceClient client = new(channel);
+                ListAvailableRoomsResponse? response = await client.ListAvailableRoomsAsync(
+                    new ListAvailableRoomsRequest()
                 );
+                foreach (gRpcProtos.RoomTransferObject roomTransferObject in response.Rooms)
+                {
+                    roomsControlBindingBindingSource.Add(roomTransferObject.Map());
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
             }
         }
 
@@ -66,23 +61,26 @@ namespace client.controls
             {
                 _connection = await _factory.CreateConnectionAsync();
                 IChannel channel = await _connection.CreateChannelAsync();
-                await channel.ExchangeDeclareAsync("rooms", ExchangeType.Fanout);
+                await channel.ExchangeDeclareAsync(TrexSettigns.RabbitQueue, ExchangeType.Fanout);
                 QueueDeclareOk queue = await channel.QueueDeclareAsync(
                     exclusive: true,
                     durable: false,
                     autoDelete: true
                 );
-                await channel.QueueBindAsync(queue.QueueName, "rooms", string.Empty);
-                AsyncEventingBasicConsumer consumer = new AsyncEventingBasicConsumer(channel);
+                await channel.QueueBindAsync(
+                    queue.QueueName,
+                    TrexSettigns.RabbitQueue,
+                    string.Empty
+                );
+                AsyncEventingBasicConsumer consumer = new(channel);
                 consumer.ReceivedAsync += Rooms_Consumer_ReceivedAsync;
                 await channel.BasicConsumeAsync(queue.QueueName, true, consumer: consumer);
             }
             catch (Exception e)
             {
                 string msg = JsonConvert.SerializeObject(e);
-                //+ $"{Environment.NewLine}{} - {Resources.RabbitHost}";
 
-                File.WriteAllText("threaddump.txt", msg);
+                await File.WriteAllTextAsync(TrexSettigns.DumpFile, msg);
             }
         }
 
@@ -96,16 +94,7 @@ namespace client.controls
                 RoomTransferObject rto =
                     JsonConvert.DeserializeObject<RoomTransferObject>(message)
                     ?? new RoomTransferObject();
-                roomsControlBindingBindingSource.Add(
-                    new RoomsControlBinding()
-                    {
-                        G_description = rto.Description,
-                        G_hostUserId = rto.HostUserId,
-                        G_roomId = rto.RoomId,
-                        G_roomName = rto.Name,
-                        G_participants = rto.Participants,
-                    }
-                );
+                roomsControlBindingBindingSource.Add(rto.Map());
             });
 
             return Task.CompletedTask;
@@ -120,7 +109,7 @@ namespace client.controls
             }
             catch (Exception exception)
             {
-                File.WriteAllText("dump.txt", exception.Message);
+                File.WriteAllText(TrexSettigns.DumpFile + DateTime.Now, exception.Message);
             }
         }
 
@@ -128,11 +117,17 @@ namespace client.controls
 
         private void RoomDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            DataGridView? dataGrid = sender as DataGridView;
-            var cell = dataGrid.Rows[e.RowIndex];
+            if (sender is not DataGridView dataGrid)
+                return;
+
+            if (dataGrid.Rows[e.RowIndex].DataBoundItem is not RoomsControlBinding binding)
+                return;
+
+            ChatForm cf = new ChatForm(
+                binding.G_roomId,
+                RuntimeTrexSettings.Get(TrexSettings.Token)
+            );
+            cf.Show();
         }
     }
 }
-
-
-// TODO klientis tokenis crypt

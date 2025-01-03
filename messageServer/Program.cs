@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using database;
 using database.interfaces;
 using database.mongo;

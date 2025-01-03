@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 
 namespace generator;
 
@@ -58,6 +57,8 @@ namespace generator
 
         public static void UpdateSetting(string key, string value)
         {
+            if( _settingsCache is null ) LoadSettings();
+
             lock(_lock)
             {
                 if (!File.Exists(_settingsFile)) return;
@@ -69,7 +70,7 @@ namespace generator
                 {
                     if (lines[i].StartsWith(key + ""=""))
                     {
-                        lines[i] = $""{key} = {value}"";
+                        lines[i] = $""{key}={value}"";
                         keyFound = true;
                         break;
                     }
@@ -77,8 +78,10 @@ namespace generator
 
                 if (!keyFound)
                 {
-                    lines.Add($""{key} = {value}"");
+                    lines.Add($""{key}={value}"");
                 }
+
+                _settingsCache[key]=value;
 
                 File.WriteAllLines(_settingsFile, lines);
                 
@@ -91,7 +94,10 @@ namespace generator
             {
                 var newSettings = new Dictionary<string, string>();
 
-                if (!File.Exists(_settingsFile)) return;
+                if (!File.Exists(_settingsFile)) 
+                {
+                    _settingsCache = newSettings;
+                }
 
                 System.Diagnostics.Debug.WriteLine($""[Loading Settings From {_settingsFile}]"");
 
@@ -102,14 +108,12 @@ namespace generator
                     var parts = line.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
                     if (parts.Length == 2)
                     {
-                        string key = parts[0].Trim();
-                        string value = parts[1].Trim();
-                        newSettings[key] = value;
+                        newSettings[parts[0].Trim()] =  parts[1].Trim();
                     }
                 }
 
                 LogChanges(newSettings);
-                _settingsCache = newSettings;
+                _settingsCache  = newSettings;
             }
         }
 
@@ -150,6 +154,8 @@ namespace generator
 
         public static string Get(string key)
         {
+            if( _settingsCache is null ) LoadSettings();
+
             if (_settingsCache.TryGetValue(key, out var value))
             {
                 return value;

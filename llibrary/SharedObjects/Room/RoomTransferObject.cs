@@ -7,5 +7,6 @@ public class RoomTransferObject
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public int Participants { get; set; }
+
     public List<string>? ParticipantIds;
 }

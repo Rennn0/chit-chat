@@ -1,14 +1,10 @@
-﻿using System.Media;
-using client.bindings;
+﻿using client.bindings;
 using client.globals;
 using client.Properties;
-using GeneratedSettings;
 using generator;
 using Grpc.Net.Client;
 using gRpcProtos;
 using LLibrary.Guards;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Timer = System.Threading.Timer;
 
 namespace client.forms
 {
@@ -29,7 +25,7 @@ namespace client.forms
                 authorizationBindingBindingSource.Current as AuthorizationBinding
             );
             string[] randomUsernames = Resources.RandomUsernames.Split(',');
-            Random r = new Random();
+            Random r = new();
             byte[] b = new byte[16];
             r.NextBytes(b);
 
@@ -44,34 +40,29 @@ namespace client.forms
             AuthorizationBinding bind = Guard.AgainstNull(
                 authorizationBindingBindingSource.Current as AuthorizationBinding
             );
-            MessageBox.Show(RuntimeTrexSettings.Get(TrexSettings.Token));
-            RuntimeTrexSettings.UpdateSetting(TrexSettings.Token, bind.G_username);
-            //GrpcChannel channel = Globals.GetGrpcChannel();
 
-            //MessageExchangeService.MessageExchangeServiceClient client =
-            //    new MessageExchangeService.MessageExchangeServiceClient(channel);
+            GrpcChannel channel = Globals.GetGrpcChannel();
 
+            MessageExchangeService.MessageExchangeServiceClient client = new(channel);
 
-            //CreateUserResponse response = Guard.AgainstNull(
-            //    client.CreateUser(
-            //        new CreateUserRequest { Password = bind.G_password, Username = bind.G_username }
-            //    )
-            //);
+            CreateUserResponse response = Guard.AgainstNull(
+                client.CreateUser(
+                    new CreateUserRequest { Password = bind.G_password, Username = bind.G_username }
+                )
+            );
 
-            //if (response.Code == CreateUserResponse.Types.CODE.UsernameUsed)
-            //{
-            //    AutoFillButton_Click(this, EventArgs.Empty);
-            //    return;
-            //}
+            if (response.Code == CreateUserResponse.Types.CODE.UsernameUsed)
+            {
+                AutoFillButton_Click(this, EventArgs.Empty);
+                return;
+            }
 
-            //// TODO diskze sheinaxe
-            //Settings.Default.token = response.UserId;
-            ////Settings.Default.Save();
+            RuntimeTrexSettings.UpdateSetting(TrexSettings.Token, response.UserId);
 
-            //this.Hide();
-            //ChatForm cf = new ChatForm();
-            //cf.Closing += (s, a) => this.Dispose();
-            //cf.Show();
+            this.Hide();
+            RoomsForm cf = new();
+            cf.Closing += (s, a) => this.Dispose();
+            cf.Show();
         }
     }
 }

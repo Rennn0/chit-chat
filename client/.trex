@@ -1,4 +1,6 @@
-MessageServerUrl = https://10.115.50.49:7293
-RabbitHost = 10.115.50.49
-RabbitPort = 5672
-Token =
+MessageServerUrl=https://10.115.50.49:7293
+RabbitHost=10.115.50.49
+RabbitPort=5672
+RabbitQueue=rooms
+DumpFile=threaddump.txt
+Token= 

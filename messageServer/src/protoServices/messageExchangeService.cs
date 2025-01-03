@@ -2,9 +2,9 @@
 using System.Diagnostics.CodeAnalysis;
 using database.entities;
 using database.interfaces;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using gRpcProtos;
-using llibrary.SharedObjects.Room;
 using messageServer.extensions;
 using messageServer.rabbit;
 using Newtonsoft.Json;
@@ -18,7 +18,6 @@ namespace messageServer.protoServices
         private readonly IDatabaseAdapter<User> _userDb;
         private readonly IDatabaseAdapter<Room> _roomDb;
         private readonly IDatabaseAdapter<Message> _messageDb;
-        private static int Counter = 0;
 
         /// <summary>
         ///     ოთახი იქმენა კონკრეტული იდ_ით, ოთახში ემატებიან კლიენტები თავიანთი იდ_ით +
@@ -38,6 +37,27 @@ namespace messageServer.protoServices
             _userDb = userDb;
             _roomDb = roomDb;
             _messageDb = messageDb;
+        }
+
+        public override async Task<PreloadMessageResponse> PreloadMessages(
+            PreloadMessagesRequest request,
+            ServerCallContext context
+        )
+        {
+            IEnumerable<Message> list = await _messageDb.GetByAsync(m =>
+                m.RoomId == request.RoomId
+            );
+            PreloadMessageResponse response = new();
+            response.Messages.AddRange(
+                list.Select(x => new PreloadMessageListObject
+                {
+                    Context = x.Context,
+                    Timestamp = x.Timestamp.ToTimestamp(),
+                    UserId = x.AuthorUserId,
+                })
+            );
+
+            return response;
         }
 
         /// <summary>

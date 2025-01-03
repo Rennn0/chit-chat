@@ -9,6 +9,7 @@ service MessageExchangeService
 	rpc MessageStreaming(stream Message) returns (stream Message);
 	rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
 	rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse);
+	rpc PreloadMessages(PreloadMessagesRequest) returns (PreloadMessageResponse);
 }
 
 message Message
@@ -48,3 +49,20 @@ message CreateRoomResponse
 	string roomId = 1;
 }
 
+message PreloadMessagesRequest
+{
+	string roomId = 1;
+	optional string userId = 2;
+}
+
+message PreloadMessageResponse
+{
+	repeated PreloadMessageListObject messages = 1;
+}
+
+message PreloadMessageListObject
+{
+	string userId = 1;
+	string context = 2;
+	google.protobuf.Timestamp timestamp = 3;
+}
