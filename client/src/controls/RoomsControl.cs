@@ -27,6 +27,8 @@ namespace client.controls
             _factory = new ConnectionFactory
             {
                 HostName = TrexSettigns.RabbitHost,
+                UserName = TrexSettigns.RabbitUsername,
+                Password = TrexSettigns.RabbitPassword,
                 Port = int.Parse(TrexSettigns.RabbitPort),
             };
         }
@@ -67,6 +69,7 @@ namespace client.controls
                     durable: false,
                     autoDelete: true
                 );
+
                 await channel.QueueBindAsync(
                     queue.QueueName,
                     TrexSettigns.RabbitQueue,
