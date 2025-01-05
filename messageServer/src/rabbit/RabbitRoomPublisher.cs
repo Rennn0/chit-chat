@@ -3,12 +3,13 @@ using System.Text;
 using LLibrary.Guards;
 using RabbitMQ.Client;
 
-namespace messageServer.rabbit;
+namespace messageServer.src.rabbit;
 
 public class RabbitRoomPublisher : BasicPublisher, IDisposable
 {
-    private const string _exchange = "rooms";
-    private object _lock = new object();
+    private const string _exchange = "chit-chat";
+    private const string _queue = "rooms";
+    private readonly object _lock = new object();
     public static BlockingCollection<string> Messages = [];
 
     public RabbitRoomPublisher(string host, string username, string password)
@@ -26,7 +27,13 @@ public class RabbitRoomPublisher : BasicPublisher, IDisposable
 
         Guard.AgainstNull(_channel);
         await _channel.ExchangeDeclareAsync(exchange: _exchange, type: ExchangeType.Fanout);
-
+        await _channel.QueueDeclareAsync(
+            queue: _queue,
+            durable: true,
+            exclusive: false,
+            autoDelete: false
+        );
+        await _channel.QueueBindAsync(queue: _queue, exchange: _exchange, routingKey: string.Empty);
         BeginPublishingMessages();
     }
 

@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace messageServer.rabbit;
+namespace messageServer.src.rabbit;
 
 public abstract class BasicPublisher
 {
@@ -10,7 +10,7 @@ public abstract class BasicPublisher
 
     protected BasicPublisher(string host, string username, string password)
     {
-        _connectionFactory = new RabbitMQ.Client.ConnectionFactory()
+        _connectionFactory = new ConnectionFactory()
         {
             UserName = username,
             Password = password,

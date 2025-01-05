@@ -6,12 +6,12 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using gRpcProtos;
 using messageServer.extensions;
-using messageServer.rabbit;
+using messageServer.src.rabbit;
 using Newtonsoft.Json;
 using Message = database.entities.Message;
 using RoomTransferObject = llibrary.SharedObjects.Room.RoomTransferObject;
 
-namespace messageServer.protoServices
+namespace messageServer.src.protoServices
 {
     public class MessageExchange : MessageExchangeService.MessageExchangeServiceBase
     {
@@ -26,7 +26,7 @@ namespace messageServer.protoServices
         private static readonly ConcurrentDictionary<
             string,
             HashSet<(string userId, IServerStreamWriter<gRpcProtos.Message> stream)>
-        > Rooms = new();
+        > _rooms = new();
 
         public MessageExchange(
             IDatabaseAdapter<User> userDb,
@@ -100,15 +100,15 @@ namespace messageServer.protoServices
             IServerStreamWriter<gRpcProtos.Message> responseStream
         )
         {
-            if (!Rooms.ContainsKey(request.RoomId))
+            if (!_rooms.ContainsKey(request.RoomId))
             {
-                Rooms[request.RoomId] = new HashSet<(
+                _rooms[request.RoomId] = new HashSet<(
                     string userId,
                     IServerStreamWriter<gRpcProtos.Message> stream
                 )>(new ClientComparer());
             }
 
-            Rooms[request.RoomId].Add((request.AuthorUserId, responseStream));
+            _rooms[request.RoomId].Add((request.AuthorUserId, responseStream));
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace messageServer.protoServices
         private async Task NotifyNewMessageInRoom(gRpcProtos.Message message)
         {
             if (
-                Rooms.TryGetValue(
+                _rooms.TryGetValue(
                     message.RoomId,
                     out HashSet<(
                         string userId,
