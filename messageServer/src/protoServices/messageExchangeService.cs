@@ -6,7 +6,7 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using gRpcProtos;
 using messageServer.extensions;
-using messageServer.src.rabbit;
+using messageServer.rabbit;
 using Newtonsoft.Json;
 using Message = database.entities.Message;
 using RoomTransferObject = llibrary.SharedObjects.Room.RoomTransferObject;
@@ -77,6 +77,9 @@ namespace messageServer.src.protoServices
             {
                 UpdateDictionary(request, responseStream);
 
+                if (string.IsNullOrWhiteSpace(request.Context))
+                    continue;
+
                 await UpdateDatabase(request);
 
                 await NotifyNewMessageInRoom(request);
@@ -108,7 +111,7 @@ namespace messageServer.src.protoServices
                 )>(new ClientComparer());
             }
 
-            _rooms[request.RoomId].Add((request.AuthorUserId, responseStream));
+            bool added = _rooms[request.RoomId].Add((request.AuthorUserId, responseStream));
         }
 
         /// <summary>

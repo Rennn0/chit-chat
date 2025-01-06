@@ -3,7 +3,7 @@ using System.Text;
 using LLibrary.Guards;
 using RabbitMQ.Client;
 
-namespace messageServer.src.rabbit;
+namespace messageServer.rabbit;
 
 public class RabbitRoomPublisher : BasicPublisher, IDisposable
 {
@@ -26,14 +26,14 @@ public class RabbitRoomPublisher : BasicPublisher, IDisposable
         }
 
         Guard.AgainstNull(_channel);
-        await _channel.ExchangeDeclareAsync(exchange: _exchange, type: ExchangeType.Fanout);
+
         await _channel.QueueDeclareAsync(
             queue: _queue,
             durable: true,
             exclusive: false,
             autoDelete: false
         );
-        await _channel.QueueBindAsync(queue: _queue, exchange: _exchange, routingKey: string.Empty);
+
         BeginPublishingMessages();
     }
 
@@ -48,11 +48,7 @@ public class RabbitRoomPublisher : BasicPublisher, IDisposable
     protected override async Task PublishMessageTask(string message)
     {
         byte[] body = Encoding.UTF8.GetBytes(message);
-        await _channel!.BasicPublishAsync(
-            exchange: _exchange,
-            routingKey: string.Empty,
-            body: body
-        );
+        await _channel!.BasicPublishAsync(exchange: string.Empty, routingKey: _queue, body: body);
     }
 
     public void Dispose()

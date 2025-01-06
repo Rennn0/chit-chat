@@ -64,11 +64,22 @@ namespace client.controls
                 _connection = await _factory.CreateConnectionAsync();
                 IChannel channel = await _connection.CreateChannelAsync();
 
+                await channel.QueueDeclareAsync(
+                    TrexSettigns.RabbitQueue,
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false
+                );
+
                 AsyncEventingBasicConsumer consumer = new(channel);
 
                 consumer.ReceivedAsync += Rooms_Consumer_ReceivedAsync;
 
-                await channel.BasicConsumeAsync(TrexSettigns.RabbitQueue, true, consumer: consumer);
+                await channel.BasicConsumeAsync(
+                    TrexSettigns.RabbitQueue,
+                    autoAck: true,
+                    consumer: consumer
+                );
             }
             catch (Exception e)
             {

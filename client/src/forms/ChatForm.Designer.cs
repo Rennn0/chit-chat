@@ -40,6 +40,7 @@ namespace client.forms
             chatControl1.Name = "chatControl1";
             chatControl1.Size = new Size(833, 454);
             chatControl1.TabIndex = 0;
+            chatControl1.Dock = DockStyle.Fill;
             // 
             // ChatForm
             // 

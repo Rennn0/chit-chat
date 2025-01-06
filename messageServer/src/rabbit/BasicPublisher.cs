@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace messageServer.src.rabbit;
+namespace messageServer.rabbit;
 
 public abstract class BasicPublisher
 {

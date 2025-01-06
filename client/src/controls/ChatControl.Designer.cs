@@ -29,30 +29,61 @@
         private void InitializeComponent()
         {
             MessagePanel = new FlowLayoutPanel();
+            MessageTextBox = new TextBox();
+            SendButton = new Button();
             SuspendLayout();
             // 
             // MessagePanel
             // 
-            MessagePanel.Dock = DockStyle.Fill;
+            MessagePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             MessagePanel.FlowDirection = FlowDirection.TopDown;
             MessagePanel.Location = new Point(0, 0);
             MessagePanel.Name = "MessagePanel";
-            MessagePanel.Size = new Size(723, 473);
+            MessagePanel.Size = new Size(723, 420);
             MessagePanel.TabIndex = 0;
+            // 
+            // MessageTextBox
+            // 
+            MessageTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            MessageTextBox.Font = new Font("Segoe UI", 12F);
+            MessageTextBox.Location = new Point(3, 426);
+            MessageTextBox.Multiline = true;
+            MessageTextBox.Name = "MessageTextBox";
+            MessageTextBox.Size = new Size(594, 44);
+            MessageTextBox.TabIndex = 0;
+            // 
+            // SendButton
+            // 
+            SendButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            SendButton.FlatAppearance.BorderColor = Color.Red;
+            SendButton.FlatAppearance.BorderSize = 3;
+            SendButton.Font = new Font("Segoe UI", 13F);
+            SendButton.Location = new Point(603, 426);
+            SendButton.Name = "SendButton";
+            SendButton.Size = new Size(114, 43);
+            SendButton.TabIndex = 1;
+            SendButton.Text = "Send";
+            SendButton.UseVisualStyleBackColor = true;
+            SendButton.Click += SendButton_Click;
             // 
             // ChatControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
+            Controls.Add(SendButton);
+            Controls.Add(MessageTextBox);
             Controls.Add(MessagePanel);
             Name = "ChatControl";
             Size = new Size(723, 473);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private FlowLayoutPanel MessagePanel;
+        private TextBox MessageTextBox;
+        private Button SendButton;
     }
 }
