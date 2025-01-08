@@ -1,7 +1,6 @@
 ﻿using client.bindings;
 using client.globals;
 using client.Properties;
-using generator;
 using Grpc.Net.Client;
 using gRpcProtos;
 using LLibrary.Guards;
@@ -57,7 +56,8 @@ namespace client.forms
                 return;
             }
 
-            RuntimeTrexSettings.UpdateSetting(TrexSettings.Token, response.UserId);
+            // TODO
+            //RuntimeTrexSettings.UpdateSetting(TrexSettings.Token, response.UserId);
 
             this.Hide();
             RoomsForm cf = new();

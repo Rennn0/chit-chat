@@ -1,8 +1,5 @@
-using System.Collections.Specialized;
-using System.Configuration;
-using System.Diagnostics;
 using client.forms;
-using client.Properties;
+using LLibrary.Guards;
 
 namespace client
 {
@@ -20,6 +17,7 @@ namespace client
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             ApplicationConfiguration.Initialize();
 
+            int affected = LocalSettings.Init();
             Application.Run(new Authenticator());
         }
 

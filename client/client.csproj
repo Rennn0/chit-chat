@@ -52,6 +52,7 @@
 
   <ItemGroup>
     <Folder Include="src\globals\" />
+    <Folder Include="src\custom\" />
   </ItemGroup>
 
 </Project>

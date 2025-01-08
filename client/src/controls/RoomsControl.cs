@@ -3,10 +3,9 @@ using client.bindings;
 using client.extensions;
 using client.forms;
 using client.globals;
-using GeneratedSettings;
-using generator;
 using Grpc.Net.Client;
 using gRpcProtos;
+using LLibrary.Guards;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -26,10 +25,10 @@ namespace client.controls
 
             _factory = new ConnectionFactory
             {
-                HostName = TrexSettigns.RabbitHost,
-                UserName = TrexSettigns.RabbitUsername,
-                Password = TrexSettigns.RabbitPassword,
-                Port = int.Parse(TrexSettigns.RabbitPort),
+                HostName = LocalSettings.Default["RabbitHost"],
+                UserName = LocalSettings.Default["RabbitUsername"],
+                Password = LocalSettings.Default["RabbitPassword"],
+                Port = int.Parse(LocalSettings.Default["RabbitPort"]),
             };
         }
 
@@ -64,11 +63,15 @@ namespace client.controls
                 _connection = await _factory.CreateConnectionAsync();
                 IChannel channel = await _connection.CreateChannelAsync();
 
-                await channel.QueueDeclareAsync(
-                    TrexSettigns.RabbitQueue,
-                    durable: true,
-                    exclusive: false,
-                    autoDelete: false
+                QueueDeclareOk q = await channel.QueueDeclareAsync(
+                    exclusive: true,
+                    durable: false,
+                    autoDelete: true
+                );
+                await channel.QueueBindAsync(
+                    queue: q.QueueName,
+                    exchange: LocalSettings.Default["RabbitRoomExchange"],
+                    routingKey: string.Empty
                 );
 
                 AsyncEventingBasicConsumer consumer = new(channel);
@@ -76,7 +79,7 @@ namespace client.controls
                 consumer.ReceivedAsync += Rooms_Consumer_ReceivedAsync;
 
                 await channel.BasicConsumeAsync(
-                    TrexSettigns.RabbitQueue,
+                    queue: q.QueueName,
                     autoAck: true,
                     consumer: consumer
                 );
@@ -85,7 +88,7 @@ namespace client.controls
             {
                 string msg = JsonConvert.SerializeObject(e);
 
-                await File.WriteAllTextAsync(TrexSettigns.DumpFile, msg);
+                await File.WriteAllTextAsync(LocalSettings.Default["DumpFile"], msg);
             }
         }
 
@@ -114,7 +117,10 @@ namespace client.controls
             }
             catch (Exception exception)
             {
-                File.WriteAllText(TrexSettigns.DumpFile + DateTime.Now, exception.Message);
+                File.WriteAllText(
+                    LocalSettings.Default["DumpFile"] + DateTime.Now,
+                    exception.Message
+                );
             }
         }
 
@@ -128,10 +134,7 @@ namespace client.controls
             if (dataGrid.Rows[e.RowIndex].DataBoundItem is not RoomsControlBinding binding)
                 return;
 
-            ChatForm cf = new ChatForm(
-                binding.G_roomId,
-                RuntimeTrexSettings.Get(TrexSettings.Token)
-            );
+            ChatForm cf = new ChatForm(binding.G_roomId, LocalSettings.Default["Token"]);
             cf.Show();
         }
     }

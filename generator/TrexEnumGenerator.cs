@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace generator;
 
-[Generator]
+//[Generator]
 public class TrexEnumGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)

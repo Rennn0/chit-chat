@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.ComponentModel;
 using client.globals;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -145,4 +146,5 @@ namespace client.controls
             MessageTextBox.Clear();
         }
     }
+
 }

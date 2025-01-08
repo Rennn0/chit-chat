@@ -1,11 +1,11 @@
 ﻿using database.entities;
 using database.interfaces;
-using Google.Protobuf.Collections;
 using Grpc.Core;
 using gRpcProtos;
 
 namespace messageServer.protoServices;
 
+// TODO rabit publisheri esunda gaxdes
 public class RoomExchange : RoomExchangeService.RoomExchangeServiceBase
 {
     private readonly IDatabaseAdapter<Room> _roomDb;

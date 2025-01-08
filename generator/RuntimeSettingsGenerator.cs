@@ -2,7 +2,7 @@
 
 namespace generator;
 
-[Generator]
+//[Generator]
 public class RuntimeSettingsGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)

@@ -1,5 +1,9 @@
+using client.custom;
+using client.globals;
 using client.Properties;
-using generator;
+using Grpc.Net.Client;
+using gRpcProtos;
+using LLibrary.Guards;
 
 namespace client.forms
 {
@@ -14,22 +18,50 @@ namespace client.forms
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.Text += $@" - {RuntimeTrexSettings.Get(TrexSettings.Token)}";
+            this.Text += $@" - {LocalSettings.Default["Token"]}";
         }
 
         private void createToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("hi u clieck ctrl alt c");
+            Form prompt = Prompts.DoubleInputPrompt(
+                "room name ...",
+                "room description",
+                SendCreateRoomRequest
+            );
+
+            prompt.ShowDialog();
         }
 
-        private void joinToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("hi u clieck ctrl j");
-        }
+        private void joinToolStripMenuItem_Click(object sender, EventArgs e) { }
 
+        // TODO es rame uketess ver izavs??
         private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Restart();
+        }
+
+        private async void SendCreateRoomRequest(string name, string description)
+        {
+            try
+            {
+                GrpcChannel channel = Globals.GetGrpcChannel();
+                MessageExchangeService.MessageExchangeServiceClient client = new(channel);
+
+                CreateRoomResponse? res = await client.CreateRoomAsync(
+                    new CreateRoomRequest()
+                    {
+                        Description = description,
+                        HostUserId = LocalSettings.Default["Token"],
+                        Name = name,
+                    }
+                );
+
+                MessageBox.Show(@$"Created new room _ {res.RoomId}");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
     }
 }

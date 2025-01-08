@@ -7,8 +7,7 @@ namespace messageServer.rabbit;
 
 public class RabbitRoomPublisher : BasicPublisher, IDisposable
 {
-    private const string _exchange = "chit-chat";
-    private const string _queue = "rooms";
+    private const string _exchange = "rooms";
     private readonly object _lock = new object();
     public static BlockingCollection<string> Messages = [];
 
@@ -27,11 +26,10 @@ public class RabbitRoomPublisher : BasicPublisher, IDisposable
 
         Guard.AgainstNull(_channel);
 
-        await _channel.QueueDeclareAsync(
-            queue: _queue,
-            durable: true,
-            exclusive: false,
-            autoDelete: false
+        await _channel.ExchangeDeclareAsync(
+            exchange: _exchange,
+            type: ExchangeType.Fanout,
+            durable: true
         );
 
         BeginPublishingMessages();
@@ -47,8 +45,9 @@ public class RabbitRoomPublisher : BasicPublisher, IDisposable
 
     protected override async Task PublishMessageTask(string message)
     {
+        Guard.AgainstNull(_channel);
         byte[] body = Encoding.UTF8.GetBytes(message);
-        await _channel!.BasicPublishAsync(exchange: string.Empty, routingKey: _queue, body: body);
+        await _channel.BasicPublishAsync(exchange: _exchange, routingKey: string.Empty, body: body);
     }
 
     public void Dispose()

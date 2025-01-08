@@ -1,4 +1,4 @@
-﻿using generator;
+﻿using LLibrary.Guards;
 
 namespace client.forms
 {
@@ -16,7 +16,7 @@ namespace client.forms
                 await Task.Delay(1000);
                 this.Hide();
 
-                Form next = string.IsNullOrWhiteSpace(RuntimeTrexSettings.Get(TrexSettings.Token))
+                Form next = string.IsNullOrWhiteSpace(LocalSettings.Default["Token"])
                     ? new AuthorizationForm()
                     : new RoomsForm();
 

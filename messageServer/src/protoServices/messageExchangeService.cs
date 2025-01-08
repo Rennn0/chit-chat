@@ -11,7 +11,8 @@ using Newtonsoft.Json;
 using Message = database.entities.Message;
 using RoomTransferObject = llibrary.SharedObjects.Room.RoomTransferObject;
 
-namespace messageServer.src.protoServices
+// TODO klientis disconect dasacheria
+namespace messageServer.protoServices
 {
     public class MessageExchange : MessageExchangeService.MessageExchangeServiceBase
     {

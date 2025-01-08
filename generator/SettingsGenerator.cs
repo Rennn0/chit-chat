@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace generator;
 
-[Generator]
+//[Generator]
 public class SettingsGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)

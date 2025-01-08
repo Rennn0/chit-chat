@@ -4,7 +4,6 @@ using database.mongo;
 using messageServer;
 using messageServer.protoServices;
 using messageServer.rabbit;
-using messageServer.src.protoServices;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -72,5 +71,5 @@ new Thread(() =>
     IsBackground = true,
 }.Start();
 
-app.MapGet("/", () => "Hello there");
+app.MapGet("/", () => "maisi");
 app.Run();
