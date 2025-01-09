@@ -16,4 +16,8 @@
     <ProjectReference Include="..\protos\protos.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="src\middlewares\" />
+  </ItemGroup>
+
 </Project>

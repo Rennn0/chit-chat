@@ -1,0 +1,36 @@
+﻿using LLibrary.Logging;
+
+namespace llibrary.Http;
+
+public class HttpHandlers
+{
+    private static readonly HttpClientHandler ClientHandler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = (message, cert, chain, err) => true,
+    };
+
+    public static async Task<string> Sync()
+    {
+        using HttpClient client = new(ClientHandler);
+        client.DefaultRequestVersion = new Version(2, 0);
+        client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+
+        const string url = "http://10.115.50.49:5000/sync";
+        try
+        {
+            HttpResponseMessage response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                string content = await response.Content.ReadAsStringAsync();
+                return content;
+            }
+        }
+        catch (Exception e)
+        {
+            Diagnostics.LOG_ERROR(e.Message);
+            throw;
+        }
+
+        return string.Empty;
+    }
+}

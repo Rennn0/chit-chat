@@ -56,8 +56,10 @@ namespace client.forms
                 return;
             }
 
-            // TODO
-            //RuntimeTrexSettings.UpdateSetting(TrexSettings.Token, response.UserId);
+            if (!LocalSettings.UpdateOrCreate("Token", response.UserId))
+            {
+                throw new InvalidOperationException();
+            }
 
             this.Hide();
             RoomsForm cf = new();

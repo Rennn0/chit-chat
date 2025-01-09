@@ -30,6 +30,8 @@ namespace client.controls
                 Password = LocalSettings.Default["RabbitPassword"],
                 Port = int.Parse(LocalSettings.Default["RabbitPort"]),
             };
+
+            RoomDataGrid.EditMode = DataGridViewEditMode.EditProgrammatically;
         }
 
         private async void RoomsControl_Loaded(object? sender, EventArgs e)
@@ -75,7 +77,6 @@ namespace client.controls
                 );
 
                 AsyncEventingBasicConsumer consumer = new(channel);
-
                 consumer.ReceivedAsync += Rooms_Consumer_ReceivedAsync;
 
                 await channel.BasicConsumeAsync(

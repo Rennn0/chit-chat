@@ -5,6 +5,8 @@ namespace client.globals;
 
 public static class Globals
 {
+    public static string Key { get; set; } = string.Empty;
+
     public static GrpcChannel GetGrpcChannel(bool insecure = true)
     {
         HttpClientHandler httpHandler = new HttpClientHandler

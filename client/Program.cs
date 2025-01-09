@@ -1,5 +1,4 @@
 using client.forms;
-using LLibrary.Guards;
 
 namespace client
 {
@@ -17,7 +16,6 @@ namespace client
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             ApplicationConfiguration.Initialize();
 
-            int affected = LocalSettings.Init();
             Application.Run(new Authenticator());
         }
 
@@ -48,3 +46,9 @@ namespace client
         }
     }
 }
+
+
+// TODO active users sveti
+// TODO settingebis menudan cvlileba
+// TODO filebis gaziareba
+// TODO room detalebis dynamic update??? rabbit

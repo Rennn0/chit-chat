@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
-using System.ComponentModel;
+using System.Text;
 using client.globals;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
 using gRpcProtos;
@@ -26,6 +27,16 @@ namespace client.controls
             MessagePanel.FlowDirection = FlowDirection.TopDown;
             MessagePanel.WrapContents = false;
             MessagePanel.AutoScroll = true;
+            MessageTextBox.KeyDown += MessageTextBox_KeyDown;
+            MessagePanel.Padding = new Padding(15, 10, 15, 0);
+        }
+
+        private void MessageTextBox_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                SendButton_Click(this, EventArgs.Empty);
+            }
         }
 
         private async void ChatControl_Load(object? sender, EventArgs e)
@@ -45,17 +56,7 @@ namespace client.controls
                     )
                 )
                 {
-                    Label l = new Label
-                    {
-                        Text = $"""
-                            ({preloadMessageListObject.UserId})
-                            {preloadMessageListObject.Context}
-                            """,
-                        AutoSize = true,
-                        ForeColor =
-                            preloadMessageListObject.UserId == _userId ? Color.Brown : Color.Black,
-                    };
-                    MessagePanel.Controls.Add(l);
+                    AddLabel(preloadMessageListObject);
                 }
 
                 MessageStreaming();
@@ -64,6 +65,42 @@ namespace client.controls
             {
                 MessageBox.Show(exception.Message);
             }
+        }
+
+        private void AddLabel(PreloadMessageListObject obj) =>
+            AddLabel(obj.Context, obj.UserId, obj.Timestamp);
+
+        private void AddLabel(Message obj) =>
+            AddLabel(obj.Context, obj.AuthorUserId, obj.Timestamp);
+
+        private void AddLabel(string context, string userId, Timestamp timestamp)
+        {
+            ToolTip tt =
+                new()
+                {
+                    IsBalloon = false,
+                    ShowAlways = true,
+                    ToolTipIcon = ToolTipIcon.Info,
+                    ToolTipTitle = "Message details",
+                };
+
+            Label l =
+                new()
+                {
+                    Text = $@"{context}",
+                    AutoSize = true,
+                    ForeColor = userId == _userId ? Color.Brown : Color.Black,
+                    Font = new Font("Arial", 18),
+                    BorderStyle = BorderStyle.Fixed3D,
+                    Padding = new Padding(5),
+                    Margin = new Padding(3, 3, 3, 10),
+                };
+
+            StringBuilder sb = new();
+            sb.AppendLine($"Sender {userId}");
+            sb.AppendLine($"Timestamp {timestamp.ToDateTimeOffset().ToLocalTime()}");
+            tt.SetToolTip(l, sb.ToString());
+            MessagePanel.Controls.Add(l);
         }
 
         private void MessageStreaming()
@@ -90,17 +127,7 @@ namespace client.controls
                 Guard.AgainstNull(_call);
                 await foreach (Message response in _call.ResponseStream.ReadAllAsync())
                 {
-                    Invoke(() =>
-                    {
-                        Label l = new Label
-                        {
-                            Text = $@"({response.AuthorUserId}) {response.Context}",
-                            AutoSize = true,
-                            ForeColor =
-                                response.AuthorUserId == _userId ? Color.Brown : Color.Black,
-                        };
-                        MessagePanel.Controls.Add(l);
-                    });
+                    Invoke(() => AddLabel(response));
                 }
             }
             catch (Exception exception)
@@ -142,9 +169,8 @@ namespace client.controls
 
         private void SendButton_Click(object sender, EventArgs e)
         {
-            _messages.TryAdd(MessageTextBox.Text);
+            _messages.TryAdd(MessageTextBox.Text.TrimStart(['\r', '\n']));
             MessageTextBox.Clear();
         }
     }
-
 }

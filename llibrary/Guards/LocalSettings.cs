@@ -1,9 +1,10 @@
-﻿namespace LLibrary.Guards;
+﻿using System.Text;
 
-// TODO binarebshi sheinaxe
+namespace LLibrary.Guards;
+
 public class LocalSettings
 {
-    public static Local Default = new Local();
+    public static Local Default { get; } = new Local();
 
     public class Local
     {
@@ -18,20 +19,19 @@ public class LocalSettings
         }
     }
 
-    public static int Init(string file = ".trex", char spliter = '=')
+    public static int Init(string secret, string file = ".trex", char spliter = '=')
     {
         if (!File.Exists(file))
             throw new FileNotFoundException(file);
 
-        // TODO requesti apidan wamoigos key
-
-        string read = Encryption.ReadFromDisk("maisi");
-
+        _secret = secret;
         _file = file;
         _spliter = spliter;
         _settings = [];
 
-        string[] context = File.ReadAllLines(_file);
+        string[] context = Encryption
+            .ReadFromDisk(encryptionKey: secret, file: file)
+            .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
 
         if (context.Length == 0)
             return 0;
@@ -47,6 +47,29 @@ public class LocalSettings
         return _settings.Count;
     }
 
+    public static bool UpdateOrCreate(string key, string value)
+    {
+        Guard.AgainstNull(_settings);
+        Guard.AgainstNull(_secret);
+        Guard.AgainstNull(_file);
+
+        _settings[key] = value;
+
+        StringBuilder newSettings = new StringBuilder();
+        foreach ((string s, string v) in _settings)
+        {
+            newSettings.AppendLine($"{s}={v}");
+        }
+
+        return !string.IsNullOrEmpty(
+            Encryption.FlushOnDisk(
+                rawText: newSettings.ToString(),
+                encryptionKey: _secret,
+                file: _file
+            )
+        );
+    }
+
     private static bool InvalidLine(string s) =>
         !s.Contains(_spliter ?? '=') || string.IsNullOrWhiteSpace(s);
 
@@ -56,6 +79,7 @@ public class LocalSettings
         return Tuple.Create(parts[0].Trim(), parts[1].Trim());
     }
 
+    private static string? _secret;
     private static string? _file;
     private static char? _spliter;
     private static Dictionary<string, string>? _settings;

@@ -6,10 +6,9 @@ namespace LLibrary.Guards;
 
 public class Encryption
 {
-    private const string _file = ".key";
     private const int _iterations = 20;
 
-    public static void FlushOnDisk(string rawText, string encryptionKey)
+    public static string FlushOnDisk(string rawText, string encryptionKey, string file)
     {
         byte[] bytes = Encoding.UTF8.GetBytes(rawText);
         byte[] salt = new byte[16];
@@ -23,7 +22,8 @@ public class Encryption
         encryptor.Key = passWordBytes.GetBytes(32);
         encryptor.IV = passWordBytes.GetBytes(16);
 
-        using FileStream fs = new FileStream(_file, FileMode.CreateNew);
+        string path = Path.Combine(Directory.GetCurrentDirectory(), file);
+        using FileStream fs = new FileStream(path, FileMode.OpenOrCreate);
         fs.Write(salt, 0, salt.Length);
 
         using CryptoStream cs = new CryptoStream(
@@ -32,14 +32,17 @@ public class Encryption
             CryptoStreamMode.Write
         );
         cs.Write(bytes, 0, bytes.Length);
+
+        return path;
     }
 
-    public static string ReadFromDisk(string encryptionKey)
+    public static string ReadFromDisk(string encryptionKey, string file)
     {
-        if (!File.Exists(_file))
-            throw new FileNotFoundException(_file);
+        string path = Path.Combine(Directory.GetCurrentDirectory(), file);
+        if (!File.Exists(path))
+            throw new FileNotFoundException(path);
 
-        using FileStream fs = new FileStream(_file, FileMode.Open);
+        using FileStream fs = new FileStream(path, FileMode.Open);
         byte[] salt = new byte[16];
         fs.ReadExactly(salt, 0, salt.Length);
 

@@ -32,7 +32,17 @@ namespace client.forms
             prompt.ShowDialog();
         }
 
-        private void joinToolStripMenuItem_Click(object sender, EventArgs e) { }
+        private void joinToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form prompt = Prompts.SingleInputForm("room id", JoinRoomCallback);
+            prompt.ShowDialog();
+        }
+
+        private void JoinRoomCallback(string roomId)
+        {
+            ChatForm cf = new ChatForm(roomId, LocalSettings.Default["Token"]);
+            cf.Show();
+        }
 
         // TODO es rame uketess ver izavs??
         private void refreshToolStripMenuItem_Click(object sender, EventArgs e)

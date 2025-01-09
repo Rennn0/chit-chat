@@ -24,10 +24,10 @@ namespace messageServer.protoServices
         ///     ოთახი იქმენა კონკრეტული იდ_ით, ოთახში ემატებიან კლიენტები თავიანთი იდ_ით +
         ///     ნაკადი სადაც სერვერიდან წასული მესიჯები მიუვათ
         /// </summary>
-        private static readonly ConcurrentDictionary<
+        private static ConcurrentDictionary<
             string,
             HashSet<(string userId, IServerStreamWriter<gRpcProtos.Message> stream)>
-        > _rooms = new();
+        > Rooms { get; } = new();
 
         public MessageExchange(
             IDatabaseAdapter<User> userDb,
@@ -96,23 +96,33 @@ namespace messageServer.protoServices
                 r => r.Id == request.RoomId,
                 new Dictionary<string, object>() { ["Users"] = newMessage.AuthorUserId }
             );
+
+            request.Timestamp = newMessage.Timestamp.ToTimestamp();
         }
 
         // TODO strimebis lifecycle sakontroloa, connect / disconnect
-        private void UpdateDictionary(
+        private static void UpdateDictionary(
             gRpcProtos.Message request,
             IServerStreamWriter<gRpcProtos.Message> responseStream
         )
         {
-            if (!_rooms.ContainsKey(request.RoomId))
+            if (
+                !Rooms.TryGetValue(
+                    request.RoomId,
+                    out HashSet<(
+                        string userId,
+                        IServerStreamWriter<gRpcProtos.Message> stream
+                    )>? hashSet
+                )
+            )
             {
-                _rooms[request.RoomId] = new HashSet<(
+                Rooms[request.RoomId] = new HashSet<(
                     string userId,
                     IServerStreamWriter<gRpcProtos.Message> stream
                 )>(new ClientComparer());
             }
 
-            bool added = _rooms[request.RoomId].Add((request.AuthorUserId, responseStream));
+            bool added = Rooms[request.RoomId].Add((request.AuthorUserId, responseStream));
         }
 
         /// <summary>
@@ -190,7 +200,7 @@ namespace messageServer.protoServices
         private async Task NotifyNewMessageInRoom(gRpcProtos.Message message)
         {
             if (
-                _rooms.TryGetValue(
+                Rooms.TryGetValue(
                     message.RoomId,
                     out HashSet<(
                         string userId,

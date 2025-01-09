@@ -44,10 +44,7 @@
   <ItemGroup>
     <None Update="api.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-      <AdditionalFiles Include=".trex">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </AdditionalFiles> 
+    </None> 
   </ItemGroup>
 
   <ItemGroup>
