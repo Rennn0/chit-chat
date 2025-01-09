@@ -23,6 +23,10 @@ public class Encryption
         encryptor.IV = passWordBytes.GetBytes(16);
 
         string path = Path.Combine(Directory.GetCurrentDirectory(), file);
+
+        if (File.Exists(path))
+            File.Delete(path);
+
         using FileStream fs = new FileStream(path, FileMode.OpenOrCreate);
         fs.Write(salt, 0, salt.Length);
 

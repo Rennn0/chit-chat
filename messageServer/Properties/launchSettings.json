@@ -12,6 +12,7 @@
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+      "externalUrlConfiguration": true, 
       "launchBrowser": false,
       "applicationUrl": "http://0.0.0.0:5038",
       "environmentVariables": {
@@ -21,6 +22,7 @@
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+      "externalUrlConfiguration": true,
       "launchBrowser": false,
       "applicationUrl": "https://0.0.0.0:7293;http://0.0.0.0:5038",
       "environmentVariables": {

@@ -31,7 +31,7 @@ public class LocalSettings
 
         string[] context = Encryption
             .ReadFromDisk(encryptionKey: secret, file: file)
-            .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+            .Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
         if (context.Length == 0)
             return 0;

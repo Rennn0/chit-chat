@@ -1,7 +1,6 @@
 using database;
 using database.interfaces;
 using database.mongo;
-using LLibrary.Logging;
 using messageServer;
 using messageServer.handlers;
 using messageServer.middlewares;
@@ -11,9 +10,6 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-Diagnostics.LOG_ERROR("kakashka");
-Diagnostics.LOG_INFO("kakashka");
-Diagnostics.LOG_WARNING("kakashka");
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(so =>

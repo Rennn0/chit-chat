@@ -5,34 +5,34 @@ namespace LLibrary.Logging;
 public class Diagnostics
 {
     [Flags]
-    public enum ThemeOptions
+    public enum THEME_OPTIONS
     {
         Error = 0x0000_0001,
         Warning = 0x0000_0010,
         Info = Error | Warning,
     }
 
-    public static void LOG_ERROR(string msg, ThemeOptions theme = ThemeOptions.Error) =>
+    public static void LOG_ERROR(string msg, THEME_OPTIONS theme = THEME_OPTIONS.Error) =>
         Flush(msg, theme);
 
-    public static void LOG_WARNING(string msg, ThemeOptions theme = ThemeOptions.Warning) =>
+    public static void LOG_WARNING(string msg, THEME_OPTIONS theme = THEME_OPTIONS.Warning) =>
         Flush(msg, theme);
 
-    public static void LOG_INFO(string msg, ThemeOptions theme = ThemeOptions.Info) =>
+    public static void LOG_INFO(string msg, THEME_OPTIONS theme = THEME_OPTIONS.Info) =>
         Flush(msg, theme);
 
-    private static void ChangeTheme(ThemeOptions theme)
+    private static void ChangeTheme(THEME_OPTIONS theme)
     {
         Console.ForegroundColor = theme switch
         {
-            ThemeOptions.Error => ConsoleColor.Red,
-            ThemeOptions.Warning => ConsoleColor.Yellow,
-            ThemeOptions.Info => ConsoleColor.Green,
+            THEME_OPTIONS.Error => ConsoleColor.Red,
+            THEME_OPTIONS.Warning => ConsoleColor.Yellow,
+            THEME_OPTIONS.Info => ConsoleColor.Green,
             _ => throw new ArgumentOutOfRangeException(nameof(theme), theme, null),
         };
     }
 
-    private static void Flush(string msg, ThemeOptions theme)
+    private static void Flush(string msg, THEME_OPTIONS theme)
     {
         string text = FormatMsg(msg, theme);
         if (HasConsole())
@@ -43,9 +43,9 @@ public class Diagnostics
             Console.Write(
                 $"[{theme switch
                 {
-                    ThemeOptions.Error => "Error",
-                    ThemeOptions.Warning => "Warning",
-                    ThemeOptions.Info => "Log",
+                    THEME_OPTIONS.Error => "Error",
+                    THEME_OPTIONS.Warning => "Warning",
+                    THEME_OPTIONS.Info => "Log",
                     _ => "unknown",
                 }}] "
             );
@@ -76,14 +76,14 @@ public class Diagnostics
         }
     }
 
-    private static string FormatMsg(string msg, ThemeOptions theme)
+    private static string FormatMsg(string msg, THEME_OPTIONS theme)
     {
         string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         string logType = theme switch
         {
-            ThemeOptions.Error => "err",
-            ThemeOptions.Warning => "warning",
-            ThemeOptions.Info => "log",
+            THEME_OPTIONS.Error => "err",
+            THEME_OPTIONS.Warning => "warning",
+            THEME_OPTIONS.Info => "log",
             _ => "unknown",
         };
         return $"[{timestamp}] [{logType}] {msg}";

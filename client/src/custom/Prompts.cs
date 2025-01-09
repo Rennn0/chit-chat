@@ -1,4 +1,4 @@
-﻿namespace client.custom;
+﻿namespace client.src.custom;
 
 public class Prompts
 {
@@ -89,7 +89,7 @@ public class Prompts
         submitButton.Click += async (s, e) =>
         {
             prompt.Close();
-            await Task.Factory.StartNew(() => submitCallback.Invoke(box1.Text, box2.Text));
+            submitCallback.Invoke(box1.Text, box2.Text);
         };
 
         prompt.Controls.Add(box1);

@@ -22,20 +22,20 @@ namespace client.forms
                     MessageBox.Show(@"Server is unavailable");
                     Application.Exit();
                 }
-
-                Encryption.FlushOnDisk(
-                    @"
-MessageServerUrl=http://20.199.82.7:5000
-RabbitHost=20.199.82.7
-RabbitUsername=luka
-RabbitPassword=danelia
-RabbitPort=5672
-RabbitRoomExchange=rooms
-DumpFile=threaddump.txt
-Token= ",
-                    Globals.Key,
-                    ".trex"
-                );
+                // TODO logout
+                //                Encryption.FlushOnDisk(
+                //                    @"
+                //MessageServerUrl=http://20.199.82.7:5000
+                //RabbitHost=20.199.82.7
+                //RabbitUsername=luka
+                //RabbitPassword=danelia
+                //RabbitPort=5672
+                //RabbitRoomExchange=rooms
+                //DumpFile=threaddump.txt
+                //Token= ",
+                //                    Globals.Key,
+                //                    ".trex"
+                //                );
 
                 int affected = LocalSettings.Init(Globals.Key);
                 if (affected == 0)
