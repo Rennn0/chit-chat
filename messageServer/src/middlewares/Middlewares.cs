@@ -1,4 +1,6 @@
-﻿namespace messageServer.middlewares;
+﻿using LLibrary.Logging;
+
+namespace messageServer.middlewares;
 
 public class Middlewares
 {
@@ -9,7 +11,7 @@ public class Middlewares
         QueryString query = context.Request.QueryString;
         DateTime timestamp = DateTime.UtcNow;
 
-        Console.WriteLine($"[{timestamp}] Incoming Request: {method} {path}{query}");
+        Diagnostics.LOG_INFO($"Incoming Request: {method} {path}{query}");
         await next.Invoke();
     }
 }

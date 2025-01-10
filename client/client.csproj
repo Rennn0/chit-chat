@@ -50,6 +50,7 @@
   <ItemGroup>
     <Folder Include="src\globals\" />
     <Folder Include="src\custom\" />
+    <Folder Include="src\rabbit\" />
   </ItemGroup>
 
 </Project>

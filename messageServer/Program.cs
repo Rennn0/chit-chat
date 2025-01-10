@@ -1,6 +1,7 @@
 using database;
 using database.interfaces;
 using database.mongo;
+using LLibrary.Guards;
 using messageServer;
 using messageServer.handlers;
 using messageServer.middlewares;
@@ -37,6 +38,16 @@ builder.Services.AddSingleton<IMongoDatabase>(sp =>
     return mongo.Database;
 });
 
+RabbitSettings config = Guard.AgainstNull(
+    builder.Configuration.GetSection("RabbitSettings").Get<RabbitSettings>()
+);
+builder.Services.AddSingleton<RabbitRoomPublisher>(
+    new RabbitRoomPublisher(config.Host, config.Username, config.Password)
+);
+builder.Services.AddSingleton<RabbitDirectPublisher>(
+    new RabbitDirectPublisher(config.Host, config.Username, config.Password)
+);
+
 builder.Services.AddScoped(typeof(IDatabaseAdapter<>), typeof(MongoDbAdapter<>));
 
 builder.Services.AddGrpc();
@@ -48,18 +59,21 @@ app.Use(Middlewares.Logger);
 app.MapGrpcService<MessageExchange>();
 app.MapGrpcService<RoomExchange>();
 
-RabbitSettings rabbitSettings = app.Services.GetRequiredService<IOptions<RabbitSettings>>().Value;
-new Thread(() =>
-{
-    RabbitRoomPublisher publisher =
-        new(rabbitSettings.Host, rabbitSettings.Username, rabbitSettings.Password);
-    publisher.CreateQueueTask().ConfigureAwait(false);
-})
-{
-    IsBackground = true,
-}.Start();
-
 app.MapGet(pattern: "/sync", requestDelegate: Handlers.SyncHandler());
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    RabbitRoomPublisher rabbitRoomPublisher =
+        scope.ServiceProvider.GetRequiredService<RabbitRoomPublisher>();
+    RabbitDirectPublisher rabbitDirectPublisher =
+        scope.ServiceProvider.GetRequiredService<RabbitDirectPublisher>();
+
+    await Task.WhenAll(
+        rabbitRoomPublisher.InitializeAsync(),
+        rabbitDirectPublisher.InitializeAsync()
+    );
+}
+
 app.Run();
 
 

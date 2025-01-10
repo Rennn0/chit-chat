@@ -15,20 +15,26 @@ public class HttpHandlers
         client.DefaultRequestVersion = new Version(2, 0);
         client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
 
-        const string url = "http://20.199.82.7:5000/sync";
-        try
+        const string url = "http://localhost:5000/sync";
+        const int maxRetries = 23;
+        const int delayMs = 5000;
+
+        for (int attempt = 0; attempt < maxRetries; attempt++)
         {
-            HttpResponseMessage response = await client.GetAsync(url);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                string content = await response.Content.ReadAsStringAsync();
-                return content;
+                HttpResponseMessage response = await client.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    string content = await response.Content.ReadAsStringAsync();
+                    return content;
+                }
             }
-        }
-        catch (Exception e)
-        {
-            Diagnostics.LOG_ERROR(e.Message);
-            throw;
+            catch (Exception e)
+            {
+                Diagnostics.LOG_ERROR(e.Message);
+                await Task.Delay(delayMs);
+            }
         }
 
         return string.Empty;

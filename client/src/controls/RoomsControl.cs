@@ -3,11 +3,12 @@ using client.bindings;
 using client.extensions;
 using client.forms;
 using client.globals;
+using client.rabbit;
 using Grpc.Net.Client;
 using gRpcProtos;
 using LLibrary.Guards;
+using LLibrary.Logging;
 using Newtonsoft.Json;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RoomTransferObject = llibrary.SharedObjects.Room.RoomTransferObject;
 
@@ -15,21 +16,10 @@ namespace client.controls
 {
     public partial class RoomsControl : UserControl
     {
-        private readonly ConnectionFactory _factory;
-        private IConnection? _connection;
-
         public RoomsControl()
         {
             InitializeComponent();
             this.Load += RoomsControl_Loaded;
-
-            _factory = new ConnectionFactory
-            {
-                HostName = LocalSettings.Default["RabbitHost"],
-                UserName = LocalSettings.Default["RabbitUsername"],
-                Password = LocalSettings.Default["RabbitPassword"],
-                Port = int.Parse(LocalSettings.Default["RabbitPort"]),
-            };
 
             RoomDataGrid.EditMode = DataGridViewEditMode.EditProgrammatically;
         }
@@ -62,28 +52,25 @@ namespace client.controls
         {
             try
             {
-                _connection = await _factory.CreateConnectionAsync();
-                IChannel channel = await _connection.CreateChannelAsync();
+                //QueueDeclareOk q = await channel.QueueDeclareAsync(
+                //    exclusive: true,
+                //    durable: false,
+                //    autoDelete: true
+                //);
+                //await channel.QueueBindAsync(
+                //    queue: q.QueueName,
+                //    exchange: LocalSettings.Default["RabbitRoomExchange"],
+                //    routingKey: string.Empty
+                //);
 
-                QueueDeclareOk q = await channel.QueueDeclareAsync(
-                    exclusive: true,
-                    durable: false,
-                    autoDelete: true
-                );
-                await channel.QueueBindAsync(
-                    queue: q.QueueName,
-                    exchange: LocalSettings.Default["RabbitRoomExchange"],
-                    routingKey: string.Empty
-                );
+                //AsyncEventingBasicConsumer consumer = new(channel);
+                //consumer.ReceivedAsync += Rooms_Consumer_ReceivedAsync;
 
-                AsyncEventingBasicConsumer consumer = new(channel);
-                consumer.ReceivedAsync += Rooms_Consumer_ReceivedAsync;
-
-                await channel.BasicConsumeAsync(
-                    queue: q.QueueName,
-                    autoAck: true,
-                    consumer: consumer
-                );
+                //await channel.BasicConsumeAsync(
+                //    queue: q.QueueName,
+                //    autoAck: true,
+                //    consumer: consumer
+                //);
             }
             catch (Exception e)
             {
@@ -113,8 +100,7 @@ namespace client.controls
         {
             try
             {
-                if (_connection is null || !_connection.IsOpen)
-                    InitRabbitConnection().Wait();
+                InitRabbitConnection().Wait();
             }
             catch (Exception exception)
             {
@@ -125,7 +111,29 @@ namespace client.controls
             }
         }
 
-        private void joinToolStripMenuItem_Click(object sender, EventArgs e) { }
+        private async void joinToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                RabbitDirectConsumer consumer =
+                    await RabbitConsumersFactory.GetRabbitDirectConsumerAsync();
+
+                ReadOnlyMemory<byte> rom = Encoding.UTF8.GetBytes("Luka").AsMemory();
+
+                await consumer.DirectMessageAsync(
+                    rom,
+                    (s, @event) =>
+                    {
+                        MessageBox.Show(Encoding.UTF8.GetString(@event.Body.ToArray()));
+                        return Task.CompletedTask;
+                    }
+                );
+            }
+            catch (Exception ex)
+            {
+                Diagnostics.LOG_ERROR(ex.Message);
+            }
+        }
 
         private void RoomDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {

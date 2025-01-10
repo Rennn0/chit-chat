@@ -1,59 +1,50 @@
-﻿using System.Collections.Concurrent;
-using System.Text;
+﻿using System.Text;
 using LLibrary.Guards;
+using LLibrary.Logging;
+using llibrary.rabbit;
 using RabbitMQ.Client;
 
 namespace messageServer.rabbit;
 
-public class RabbitRoomPublisher : BasicPublisher, IDisposable
+public class RabbitRoomPublisher : RabbitBasicObject
 {
     private const string _exchange = "rooms";
-    private readonly object _lock = new object();
-    public static BlockingCollection<string> Messages = [];
 
     public RabbitRoomPublisher(string host, string username, string password)
-        : base(host, username, password)
-    {
-        Console.WriteLine("[RoomPublisher] On");
-    }
+        : base(host, username, password, nameof(RabbitRoomPublisher)) { }
 
-    public override async Task CreateQueueTask()
+    public override async Task InitializeAsync()
     {
-        if (_channel is null || _connection is null)
-        {
-            await InitializeAsync();
-        }
+        await base.InitializeAsync();
 
         Guard.AgainstNull(_channel);
 
         await _channel.ExchangeDeclareAsync(
             exchange: _exchange,
             type: ExchangeType.Fanout,
-            durable: true
+            durable: true,
+            autoDelete: false
         );
 
-        BeginPublishingMessages();
+        Diagnostics.LOG_INFO(nameof(RabbitRoomPublisher));
     }
 
-    private void BeginPublishingMessages()
+    public async void Publish(string message)
     {
-        foreach (string message in Messages.GetConsumingEnumerable())
+        try
         {
-            PublishMessageTask(message).ConfigureAwait(false);
+            Guard.AgainstNull(_channel);
+
+            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+            await _channel.BasicPublishAsync(
+                exchange: _exchange,
+                routingKey: string.Empty,
+                body: messageBytes
+            );
         }
-    }
-
-    protected override async Task PublishMessageTask(string message)
-    {
-        Guard.AgainstNull(_channel);
-        byte[] body = Encoding.UTF8.GetBytes(message);
-        await _channel.BasicPublishAsync(exchange: _exchange, routingKey: string.Empty, body: body);
-    }
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        _connection?.CloseAsync().Wait();
-        _channel?.CloseAsync().Wait();
+        catch (Exception e)
+        {
+            Diagnostics.LOG_ERROR(e.Message);
+        }
     }
 }

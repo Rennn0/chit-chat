@@ -45,7 +45,7 @@ public class Diagnostics
                 {
                     THEME_OPTIONS.Error => "Error",
                     THEME_OPTIONS.Warning => "Warning",
-                    THEME_OPTIONS.Info => "Log",
+                    THEME_OPTIONS.Info => "Info",
                     _ => "unknown",
                 }}] "
             );
@@ -81,9 +81,9 @@ public class Diagnostics
         string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         string logType = theme switch
         {
-            THEME_OPTIONS.Error => "err",
-            THEME_OPTIONS.Warning => "warning",
-            THEME_OPTIONS.Info => "log",
+            THEME_OPTIONS.Error => "Error",
+            THEME_OPTIONS.Warning => "Warning",
+            THEME_OPTIONS.Info => "Info",
             _ => "unknown",
         };
         return $"[{timestamp}] [{logType}] {msg}";
