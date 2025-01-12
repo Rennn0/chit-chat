@@ -3,7 +3,8 @@ using client.bindings;
 using client.extensions;
 using client.forms;
 using client.globals;
-using client.rabbit;
+using client.src.globals;
+using client.src.rabbit;
 using Grpc.Net.Client;
 using gRpcProtos;
 using LLibrary.Guards;
@@ -52,11 +53,16 @@ namespace client.controls
         {
             try
             {
+                RabbitRoomConsumer consumer =
+                    await RabbitConsumersFactory.GetRabbitRoomConsumerAsync();
+                consumer.AttachCallback(Rooms_Consumer_ReceivedAsync);
+
                 //QueueDeclareOk q = await channel.QueueDeclareAsync(
                 //    exclusive: true,
                 //    durable: false,
                 //    autoDelete: true
                 //);
+
                 //await channel.QueueBindAsync(
                 //    queue: q.QueueName,
                 //    exchange: LocalSettings.Default["RabbitRoomExchange"],

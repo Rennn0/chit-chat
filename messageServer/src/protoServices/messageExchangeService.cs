@@ -6,13 +6,13 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using gRpcProtos;
 using messageServer.extensions;
-using messageServer.rabbit;
+using messageServer.src.rabbit;
 using Newtonsoft.Json;
 using Message = database.entities.Message;
 using RoomTransferObject = llibrary.SharedObjects.Room.RoomTransferObject;
 
 // TODO klientis disconect dasacheria
-namespace messageServer.protoServices
+namespace messageServer.src.protoServices
 {
     public class MessageExchange : MessageExchangeService.MessageExchangeServiceBase
     {

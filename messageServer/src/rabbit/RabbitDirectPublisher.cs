@@ -5,7 +5,7 @@ using llibrary.rabbit;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace messageServer.rabbit;
+namespace messageServer.src.rabbit;
 
 public class RabbitDirectPublisher : RabbitBasicObject
 {
@@ -19,7 +19,8 @@ public class RabbitDirectPublisher : RabbitBasicObject
         try
         {
             await base.InitializeAsync();
-            Guard.AgainstNull(_channel);
+            Guard.AgainstNull(Connection);
+            _channel = await Connection.CreateChannelAsync();
 
             await _channel.QueueDeclareAsync(queue: _q, durable: true, autoDelete: false);
             AsyncEventingBasicConsumer consumer = new(_channel);

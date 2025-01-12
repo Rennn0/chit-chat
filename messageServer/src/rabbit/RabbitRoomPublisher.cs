@@ -4,7 +4,7 @@ using LLibrary.Logging;
 using llibrary.rabbit;
 using RabbitMQ.Client;
 
-namespace messageServer.rabbit;
+namespace messageServer.src.rabbit;
 
 public class RabbitRoomPublisher : RabbitBasicObject
 {
@@ -17,8 +17,8 @@ public class RabbitRoomPublisher : RabbitBasicObject
     {
         await base.InitializeAsync();
 
-        Guard.AgainstNull(_channel);
-
+        Guard.AgainstNull(Connection);
+        _channel = await Connection.CreateChannelAsync();
         await _channel.ExchangeDeclareAsync(
             exchange: _exchange,
             type: ExchangeType.Fanout,

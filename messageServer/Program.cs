@@ -6,7 +6,8 @@ using messageServer;
 using messageServer.handlers;
 using messageServer.middlewares;
 using messageServer.protoServices;
-using messageServer.rabbit;
+using messageServer.src.protoServices;
+using messageServer.src.rabbit;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -16,7 +17,6 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(so =>
 {
     so.ConfigureEndpointDefaults(a => a.Protocols = HttpProtocols.Http2);
-    so.ListenAnyIP(5000);
 });
 
 builder.Services.Configure<MongoDbSettings>(
@@ -68,10 +68,9 @@ using (IServiceScope scope = app.Services.CreateScope())
     RabbitDirectPublisher rabbitDirectPublisher =
         scope.ServiceProvider.GetRequiredService<RabbitDirectPublisher>();
 
-    await Task.WhenAll(
-        rabbitRoomPublisher.InitializeAsync(),
-        rabbitDirectPublisher.InitializeAsync()
-    );
+    await rabbitRoomPublisher.InitializeAsync();
+    await rabbitDirectPublisher.InitializeAsync();
+    // TODO erti connection bevri channel
 }
 
 app.Run();

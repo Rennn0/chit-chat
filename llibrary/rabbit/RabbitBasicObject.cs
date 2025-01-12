@@ -5,8 +5,8 @@ namespace llibrary.rabbit;
 public abstract class RabbitBasicObject
 {
     protected readonly ConnectionFactory _connectionFactory;
-    protected IConnection? _connection;
     protected IChannel? _channel;
+    protected static IConnection? Connection { get; set; }
 
     protected RabbitBasicObject(
         string host,
@@ -26,11 +26,12 @@ public abstract class RabbitBasicObject
         };
     }
 
-    public virtual bool IsInitialized => _connection is not null || _channel is not null;
+    public virtual bool IsInitialized => Connection is not null && _channel is not null;
 
     public virtual async Task InitializeAsync()
     {
-        _connection = await _connectionFactory.CreateConnectionAsync();
-        _channel = await _connection.CreateChannelAsync();
+        Connection ??= await _connectionFactory.CreateConnectionAsync();
     }
 }
+
+// TODO exchanges gadawyoba

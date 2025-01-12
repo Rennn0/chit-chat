@@ -4,7 +4,7 @@ using llibrary.rabbit;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace client.rabbit;
+namespace client.src.rabbit;
 
 public class RabbitDirectConsumer : RabbitBasicObject
 {
@@ -28,11 +28,12 @@ public class RabbitDirectConsumer : RabbitBasicObject
     {
         await base.InitializeAsync();
 
-        Guard.AgainstNull(_channel);
+        Guard.AgainstNull(Connection);
+        _channel = await Connection.CreateChannelAsync();
 
         _consumer = new AsyncEventingBasicConsumer(_channel);
 
-        _consumer.ReceivedAsync += (object s, BasicDeliverEventArgs e) =>
+        _consumer.ReceivedAsync += (s, e) =>
         {
             if (
                 string.IsNullOrWhiteSpace(e.BasicProperties.CorrelationId)
