@@ -2,13 +2,13 @@
 
 namespace llibrary.rabbit;
 
-public abstract class RabbitBasicObject
+public abstract class RabbitRootObject
 {
     protected readonly ConnectionFactory _connectionFactory;
     protected IChannel? _channel;
     protected static IConnection? Connection { get; set; }
 
-    protected RabbitBasicObject(string host, string username, string password, int port = 5672)
+    protected RabbitRootObject(string host, string username, string password, int port = 5672)
     {
         _connectionFactory = new ConnectionFactory()
         {

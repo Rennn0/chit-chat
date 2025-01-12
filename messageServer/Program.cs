@@ -44,8 +44,8 @@ RabbitSettings config = Guard.AgainstNull(
 builder.Services.AddSingleton<RoomPublisher>(
     new RoomPublisher(config.Host, config.Username, config.Password)
 );
-builder.Services.AddSingleton<DirectPublisher>(
-    new DirectPublisher(config.Host, config.Username, config.Password)
+builder.Services.AddSingleton<SettingsPublisher>(
+    new SettingsPublisher(queue: "rpc.settings", config.Host, config.Username, config.Password)
 );
 
 builder.Services.AddScoped(typeof(IDatabaseAdapter<>), typeof(MongoDbAdapter<>));
@@ -64,14 +64,13 @@ app.MapGet(pattern: "/sync", requestDelegate: Handlers.SyncHandler());
 using (IServiceScope scope = app.Services.CreateScope())
 {
     RoomPublisher roomPublisher = scope.ServiceProvider.GetRequiredService<RoomPublisher>();
-    DirectPublisher directPublisher = scope.ServiceProvider.GetRequiredService<DirectPublisher>();
+    SettingsPublisher directPublisher =
+        scope.ServiceProvider.GetRequiredService<SettingsPublisher>();
 
     await roomPublisher.InitializeAsync();
     await directPublisher.InitializeAsync();
-    // TODO erti connection bevri channel
 }
 
 app.Run();
-
 
 // TODO rabbitshi monacemebis gacvlis proto rame

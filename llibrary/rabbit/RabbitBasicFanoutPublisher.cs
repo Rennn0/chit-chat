@@ -4,7 +4,7 @@ using RabbitMQ.Client;
 
 namespace llibrary.rabbit;
 
-public abstract class RabbitBasicFanoutPublisher : RabbitBasicObject
+public abstract class RabbitBasicFanoutPublisher : RabbitRootObject
 {
     protected RabbitBasicFanoutPublisher(
         string host,

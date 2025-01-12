@@ -3,14 +3,15 @@ using LLibrary.Guards;
 
 namespace client.src.globals;
 
-public class RabbitConsumersFactory
+public class RabbitConsumerFactory
 {
-    private static DirectConsumer? _rabbitDirectConsumer;
+    private static SettingsConsumer? _rabbitDirectConsumer;
     private static RoomConsumer? _rabbitRoomConsumer;
 
-    public static async Task<DirectConsumer> GetDirectConsumerAsync()
+    public static async Task<SettingsConsumer> GetDirectConsumerAsync()
     {
-        _rabbitDirectConsumer ??= new DirectConsumer(
+        _rabbitDirectConsumer ??= new SettingsConsumer(
+            queue: "rpc.settings",
             host: LocalSettings.Default["RabbitHost"],
             username: LocalSettings.Default["RabbitUsername"],
             password: LocalSettings.Default["RabbitPassword"],

@@ -4,7 +4,7 @@ using RabbitMQ.Client.Events;
 
 namespace llibrary.rabbit;
 
-public class RabbitBasicFanoutConsumer : RabbitBasicObject
+public class RabbitBasicFanoutConsumer : RabbitRootObject
 {
     protected AsyncEventingBasicConsumer? _consumer;
 

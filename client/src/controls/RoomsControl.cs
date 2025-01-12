@@ -53,7 +53,7 @@ namespace client.controls
         {
             try
             {
-                RoomConsumer consumer = await RabbitConsumersFactory.GetRoomConsumerAsync();
+                RoomConsumer consumer = await RabbitConsumerFactory.GetRoomConsumerAsync();
                 consumer.AttachCallback(Rooms_Consumer_ReceivedAsync);
             }
             catch (Exception e)
@@ -99,7 +99,7 @@ namespace client.controls
         {
             try
             {
-                DirectConsumer consumer = await RabbitConsumersFactory.GetDirectConsumerAsync();
+                SettingsConsumer consumer = await RabbitConsumerFactory.GetDirectConsumerAsync();
 
                 ReadOnlyMemory<byte> rom = Encoding.UTF8.GetBytes("Luka").AsMemory();
 
