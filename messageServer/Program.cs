@@ -41,11 +41,11 @@ builder.Services.AddSingleton<IMongoDatabase>(sp =>
 RabbitSettings config = Guard.AgainstNull(
     builder.Configuration.GetSection("RabbitSettings").Get<RabbitSettings>()
 );
-builder.Services.AddSingleton<RabbitRoomPublisher>(
-    new RabbitRoomPublisher(config.Host, config.Username, config.Password)
+builder.Services.AddSingleton<RoomPublisher>(
+    new RoomPublisher(config.Host, config.Username, config.Password)
 );
-builder.Services.AddSingleton<RabbitDirectPublisher>(
-    new RabbitDirectPublisher(config.Host, config.Username, config.Password)
+builder.Services.AddSingleton<DirectPublisher>(
+    new DirectPublisher(config.Host, config.Username, config.Password)
 );
 
 builder.Services.AddScoped(typeof(IDatabaseAdapter<>), typeof(MongoDbAdapter<>));
@@ -63,13 +63,11 @@ app.MapGet(pattern: "/sync", requestDelegate: Handlers.SyncHandler());
 
 using (IServiceScope scope = app.Services.CreateScope())
 {
-    RabbitRoomPublisher rabbitRoomPublisher =
-        scope.ServiceProvider.GetRequiredService<RabbitRoomPublisher>();
-    RabbitDirectPublisher rabbitDirectPublisher =
-        scope.ServiceProvider.GetRequiredService<RabbitDirectPublisher>();
+    RoomPublisher roomPublisher = scope.ServiceProvider.GetRequiredService<RoomPublisher>();
+    DirectPublisher directPublisher = scope.ServiceProvider.GetRequiredService<DirectPublisher>();
 
-    await rabbitRoomPublisher.InitializeAsync();
-    await rabbitDirectPublisher.InitializeAsync();
+    await roomPublisher.InitializeAsync();
+    await directPublisher.InitializeAsync();
     // TODO erti connection bevri channel
 }
 

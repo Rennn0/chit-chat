@@ -53,30 +53,8 @@ namespace client.controls
         {
             try
             {
-                RabbitRoomConsumer consumer =
-                    await RabbitConsumersFactory.GetRabbitRoomConsumerAsync();
+                RoomConsumer consumer = await RabbitConsumersFactory.GetRoomConsumerAsync();
                 consumer.AttachCallback(Rooms_Consumer_ReceivedAsync);
-
-                //QueueDeclareOk q = await channel.QueueDeclareAsync(
-                //    exclusive: true,
-                //    durable: false,
-                //    autoDelete: true
-                //);
-
-                //await channel.QueueBindAsync(
-                //    queue: q.QueueName,
-                //    exchange: LocalSettings.Default["RabbitRoomExchange"],
-                //    routingKey: string.Empty
-                //);
-
-                //AsyncEventingBasicConsumer consumer = new(channel);
-                //consumer.ReceivedAsync += Rooms_Consumer_ReceivedAsync;
-
-                //await channel.BasicConsumeAsync(
-                //    queue: q.QueueName,
-                //    autoAck: true,
-                //    consumer: consumer
-                //);
             }
             catch (Exception e)
             {
@@ -121,8 +99,7 @@ namespace client.controls
         {
             try
             {
-                RabbitDirectConsumer consumer =
-                    await RabbitConsumersFactory.GetRabbitDirectConsumerAsync();
+                DirectConsumer consumer = await RabbitConsumersFactory.GetDirectConsumerAsync();
 
                 ReadOnlyMemory<byte> rom = Encoding.UTF8.GetBytes("Luka").AsMemory();
 

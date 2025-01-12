@@ -5,16 +5,15 @@ namespace client.src.globals;
 
 public class RabbitConsumersFactory
 {
-    private static RabbitDirectConsumer? _rabbitDirectConsumer;
-    private static RabbitRoomConsumer? _rabbitRoomConsumer;
+    private static DirectConsumer? _rabbitDirectConsumer;
+    private static RoomConsumer? _rabbitRoomConsumer;
 
-    public static async Task<RabbitDirectConsumer> GetRabbitDirectConsumerAsync()
+    public static async Task<DirectConsumer> GetDirectConsumerAsync()
     {
-        _rabbitDirectConsumer ??= new RabbitDirectConsumer(
+        _rabbitDirectConsumer ??= new DirectConsumer(
             host: LocalSettings.Default["RabbitHost"],
             username: LocalSettings.Default["RabbitUsername"],
             password: LocalSettings.Default["RabbitPassword"],
-            providedName: nameof(RabbitDirectConsumer),
             port: int.Parse(LocalSettings.Default["RabbitPort"])
         );
 
@@ -26,14 +25,13 @@ public class RabbitConsumersFactory
         return _rabbitDirectConsumer;
     }
 
-    public static async Task<RabbitRoomConsumer> GetRabbitRoomConsumerAsync()
+    public static async Task<RoomConsumer> GetRoomConsumerAsync()
     {
-        _rabbitRoomConsumer ??= new RabbitRoomConsumer(
+        _rabbitRoomConsumer ??= new RoomConsumer(
             host: LocalSettings.Default["RabbitHost"],
             username: LocalSettings.Default["RabbitUsername"],
             password: LocalSettings.Default["RabbitPassword"],
             exchange: LocalSettings.Default["RabbitRoomExchange"],
-            providedName: nameof(RabbitDirectConsumer),
             port: int.Parse(LocalSettings.Default["RabbitPort"])
         );
 

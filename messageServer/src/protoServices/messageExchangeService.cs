@@ -19,7 +19,7 @@ namespace messageServer.src.protoServices
         private readonly IDatabaseAdapter<User> _userDb;
         private readonly IDatabaseAdapter<Room> _roomDb;
         private readonly IDatabaseAdapter<Message> _messageDb;
-        private readonly RabbitRoomPublisher _roomPublisher;
+        private readonly RoomPublisher _basicRoomPublisher;
 
         /// <summary>
         ///     ოთახი იქმენა კონკრეტული იდ_ით, ოთახში ემატებიან კლიენტები თავიანთი იდ_ით +
@@ -34,13 +34,13 @@ namespace messageServer.src.protoServices
             IDatabaseAdapter<User> userDb,
             IDatabaseAdapter<Room> roomDb,
             IDatabaseAdapter<Message> messageDb,
-            RabbitRoomPublisher roomPublisher
+            RoomPublisher basicRoomPublisher
         )
         {
             _userDb = userDb;
             _roomDb = roomDb;
             _messageDb = messageDb;
-            _roomPublisher = roomPublisher;
+            _basicRoomPublisher = basicRoomPublisher;
         }
 
         public override async Task<PreloadMessageResponse> PreloadMessages(
@@ -173,7 +173,7 @@ namespace messageServer.src.protoServices
 
             string rtoString = JsonConvert.SerializeObject(rto);
 
-            _roomPublisher.Publish(rtoString);
+            _basicRoomPublisher.Publish(rtoString);
 
             return new CreateRoomResponse { RoomId = room.Id };
         }

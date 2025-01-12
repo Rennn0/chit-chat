@@ -7,12 +7,12 @@ using RabbitMQ.Client.Events;
 
 namespace messageServer.src.rabbit;
 
-public class RabbitDirectPublisher : RabbitBasicObject
+public class DirectPublisher : RabbitBasicObject
 {
     private const string _q = "direct-q";
 
-    public RabbitDirectPublisher(string host, string username, string password)
-        : base(host, username, password, nameof(RabbitDirectPublisher)) { }
+    public DirectPublisher(string host, string username, string password)
+        : base(host, username, password) { }
 
     public override async Task InitializeAsync()
     {
@@ -28,7 +28,7 @@ public class RabbitDirectPublisher : RabbitBasicObject
 
             await _channel.BasicConsumeAsync(queue: _q, autoAck: true, consumer: consumer);
 
-            Diagnostics.LOG_INFO(nameof(RabbitDirectPublisher));
+            Diagnostics.LOG_INFO(nameof(DirectPublisher));
         }
         catch (Exception e)
         {

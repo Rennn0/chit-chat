@@ -8,13 +8,7 @@ public abstract class RabbitBasicObject
     protected IChannel? _channel;
     protected static IConnection? Connection { get; set; }
 
-    protected RabbitBasicObject(
-        string host,
-        string username,
-        string password,
-        string providedName = nameof(RabbitBasicObject),
-        int port = 5672
-    )
+    protected RabbitBasicObject(string host, string username, string password, int port = 5672)
     {
         _connectionFactory = new ConnectionFactory()
         {
@@ -22,7 +16,6 @@ public abstract class RabbitBasicObject
             Password = password,
             HostName = host,
             Port = port,
-            ClientProvidedName = providedName,
         };
     }
 

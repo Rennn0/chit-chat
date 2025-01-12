@@ -6,20 +6,14 @@ using RabbitMQ.Client.Events;
 
 namespace client.src.rabbit;
 
-public class RabbitDirectConsumer : RabbitBasicObject
+public class DirectConsumer : RabbitBasicObject
 {
     private const string _replyQ = "amq.rabbitmq.reply-to";
     private AsyncEventingBasicConsumer? _consumer;
     private readonly Dictionary<string, AsyncEventHandler<BasicDeliverEventArgs>> _callbacks;
 
-    public RabbitDirectConsumer(
-        string host,
-        string username,
-        string password,
-        string providedName = nameof(RabbitDirectConsumer),
-        int port = 5672
-    )
-        : base(host, username, password, providedName, port)
+    public DirectConsumer(string host, string username, string password, int port = 5672)
+        : base(host, username, password, port)
     {
         _callbacks = [];
     }
