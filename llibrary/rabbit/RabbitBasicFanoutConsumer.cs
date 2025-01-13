@@ -6,10 +6,20 @@ namespace llibrary.rabbit;
 
 public class RabbitBasicFanoutConsumer : RabbitRootObject
 {
+    private readonly string _exchange;
     protected AsyncEventingBasicConsumer? _consumer;
 
-    public RabbitBasicFanoutConsumer(string host, string username, string password, int port = 5672)
-        : base(host, username, password, port) { }
+    public RabbitBasicFanoutConsumer(
+        string host,
+        string username,
+        string password,
+        string exchange = "amq.fanout",
+        int port = 5672
+    )
+        : base(host, username, password, port)
+    {
+        _exchange = exchange;
+    }
 
     public override async Task InitializeAsync()
     {
@@ -25,7 +35,7 @@ public class RabbitBasicFanoutConsumer : RabbitRootObject
         );
         await _channel.QueueBindAsync(
             queue: q.QueueName,
-            exchange: "amq.fanout",
+            exchange: _exchange,
             routingKey: string.Empty
         );
 
