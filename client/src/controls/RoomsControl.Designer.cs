@@ -34,7 +34,6 @@
             RoomDataGrid = new DataGridView();
             groomIdDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             RoomMenuStrip = new ContextMenuStrip(components);
-            joinToolStripMenuItem = new ToolStripMenuItem();
             groomNameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             ghostUserIdDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             gdescriptionDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
@@ -80,17 +79,7 @@
             // 
             // RoomMenuStrip
             // 
-            RoomMenuStrip.Items.AddRange(new ToolStripItem[] { joinToolStripMenuItem });
-            RoomMenuStrip.Name = "RoomMenuStrip";
-            RoomMenuStrip.Size = new Size(96, 26);
-            // 
-            // joinToolStripMenuItem
-            // 
-            joinToolStripMenuItem.Name = "joinToolStripMenuItem";
-            joinToolStripMenuItem.Size = new Size(95, 22);
-            joinToolStripMenuItem.Text = "Join";
-            joinToolStripMenuItem.Click += joinToolStripMenuItem_Click;
-            // 
+            
             // groomNameDataGridViewTextBoxColumn
             // 
             groomNameDataGridViewTextBoxColumn.DataPropertyName = "G_roomName";
@@ -145,7 +134,6 @@
         private DataGridView RoomDataGrid;
         private BindingSource roomsControlBindingBindingSource;
         private ContextMenuStrip RoomMenuStrip;
-        private ToolStripMenuItem joinToolStripMenuItem;
         private DataGridViewTextBoxColumn groomIdDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn groomNameDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn ghostUserIdDataGridViewTextBoxColumn;

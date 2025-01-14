@@ -172,5 +172,15 @@ namespace client.controls
             _messages.TryAdd(MessageTextBox.Text.TrimStart(['\r', '\n']));
             MessageTextBox.Clear();
         }
+
+        // TODO filebis gacvlis feature
+        private void attachToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using OpenFileDialog fileDialog = new();
+            if (fileDialog.ShowDialog() != DialogResult.OK)
+                return;
+            string filePath = fileDialog.FileName;
+            MessageBox.Show(filePath);
+        }
     }
 }

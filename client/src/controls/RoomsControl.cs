@@ -97,21 +97,7 @@ namespace client.controls
 
         private async void joinToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                SettingsConsumer consumer = await RabbitConsumerFactory.GetDirectConsumerAsync();
-
-                ReadOnlyMemory<byte> rom = Encoding.UTF8.GetBytes("Luka").AsMemory();
-
-                await consumer.DirectMessageAsync(
-                    rom,
-                    (s, @event) =>
-                    {
-                        MessageBox.Show(Encoding.UTF8.GetString(@event.Body.ToArray()));
-                        return Task.CompletedTask;
-                    }
-                );
-            }
+            try { }
             catch (Exception ex)
             {
                 Diagnostics.LOG_ERROR(ex.Message);

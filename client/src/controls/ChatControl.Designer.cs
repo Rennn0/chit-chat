@@ -29,18 +29,54 @@
         private void InitializeComponent()
         {
             MessagePanel = new FlowLayoutPanel();
+            menuStrip1 = new MenuStrip();
+            fileToolStripMenuItem = new ToolStripMenuItem();
+            attachToolStripMenuItem = new ToolStripMenuItem();
+            listToolStripMenuItem = new ToolStripMenuItem();
             MessageTextBox = new TextBox();
             SendButton = new Button();
+            MessagePanel.SuspendLayout();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // MessagePanel
             // 
             MessagePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            MessagePanel.Controls.Add(menuStrip1);
             MessagePanel.FlowDirection = FlowDirection.TopDown;
             MessagePanel.Location = new Point(0, 0);
             MessagePanel.Name = "MessagePanel";
             MessagePanel.Size = new Size(723, 420);
             MessagePanel.TabIndex = 0;
+            // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(165, 24);
+            menuStrip1.TabIndex = 0;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { attachToolStripMenuItem, listToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new Size(37, 20);
+            fileToolStripMenuItem.Text = "File";
+            // 
+            // attachToolStripMenuItem
+            // 
+            attachToolStripMenuItem.Name = "attachToolStripMenuItem";
+            attachToolStripMenuItem.Size = new Size(180, 22);
+            attachToolStripMenuItem.Text = "Attach";
+            attachToolStripMenuItem.Click += attachToolStripMenuItem_Click;
+            // 
+            // listToolStripMenuItem
+            // 
+            listToolStripMenuItem.Name = "listToolStripMenuItem";
+            listToolStripMenuItem.Size = new Size(180, 22);
+            listToolStripMenuItem.Text = "List";
             // 
             // MessageTextBox
             // 
@@ -76,6 +112,10 @@
             Controls.Add(MessagePanel);
             Name = "ChatControl";
             Size = new Size(723, 473);
+            MessagePanel.ResumeLayout(false);
+            MessagePanel.PerformLayout();
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -85,5 +125,9 @@
         private FlowLayoutPanel MessagePanel;
         private TextBox MessageTextBox;
         private Button SendButton;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem attachToolStripMenuItem;
+        private ToolStripMenuItem listToolStripMenuItem;
     }
 }

@@ -23,13 +23,13 @@ namespace client.forms
                     Application.Exit();
                 }
 
-                // TODO logout
+                //TODO logout
                 //Encryption.FlushOnDisk(
                 //    @"
                 //MessageServerUrl=http://localhost:5000
-                //RabbitHost=20.199.82.7
+                //RabbitHost=10.0.0.4
                 //RabbitUsername=luka
-                //RabbitPassword=danelia
+                //RabbitPassword=qJo0ToL4%L4r#7Dl
                 //RabbitPort=5672
                 //RabbitRoomExchange=rooms
                 //DumpFile=threaddump.txt

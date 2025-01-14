@@ -32,7 +32,6 @@ public class RabbitConsumerFactory
             host: LocalSettings.Default["RabbitHost"],
             username: LocalSettings.Default["RabbitUsername"],
             password: LocalSettings.Default["RabbitPassword"],
-            exchange: LocalSettings.Default["RabbitRoomExchange"],
             port: int.Parse(LocalSettings.Default["RabbitPort"])
         );
 
