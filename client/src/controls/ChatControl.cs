@@ -1,11 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using System.Text;
 using client.globals;
+using client.network;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
 using gRpcProtos;
 using LLibrary.Guards;
+using LLibrary.Logging;
 using Message = gRpcProtos.Message;
 
 namespace client.controls
@@ -174,13 +176,23 @@ namespace client.controls
         }
 
         // TODO filebis gacvlis feature
-        private void attachToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void attachToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using OpenFileDialog fileDialog = new();
-            if (fileDialog.ShowDialog() != DialogResult.OK)
-                return;
-            string filePath = fileDialog.FileName;
-            MessageBox.Show(filePath);
+            try
+            {
+                using OpenFileDialog fileDialog = new();
+                fileDialog.Multiselect = true;
+                fileDialog.CheckFileExists = true;
+
+                if (fileDialog.ShowDialog() != DialogResult.OK)
+                    return;
+                int bytesWritten = await FileServer.SendFileAsync(fileDialog.FileNames);
+                MessageBox.Show($@"Sent {bytesWritten} bytes");
+            }
+            catch (Exception ex)
+            {
+                Diagnostics.LOG_ERROR(ex.Message);
+            }
         }
     }
 }
