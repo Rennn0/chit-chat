@@ -1,12 +1,13 @@
-﻿using client.src.rabbit;
-using LLibrary.Guards;
+﻿using client.rabbit;
+using llibrary.Guards;
 
-namespace client.src.globals;
+namespace client.globals;
 
 public class RabbitConsumerFactory
 {
     private static SettingsConsumer? _rabbitDirectConsumer;
     private static RoomConsumer? _rabbitRoomConsumer;
+    private static FilePublisher? _filePublisher;
 
     public static async Task<SettingsConsumer> GetDirectConsumerAsync()
     {
@@ -18,7 +19,7 @@ public class RabbitConsumerFactory
             port: int.Parse(LocalSettings.Default["RabbitPort"])
         );
 
-        if (!_rabbitDirectConsumer.IsInitialized)
+        if (!_rabbitDirectConsumer.CompletedInitialization)
         {
             await _rabbitDirectConsumer.InitializeAsync();
         }
@@ -35,11 +36,29 @@ public class RabbitConsumerFactory
             port: int.Parse(LocalSettings.Default["RabbitPort"])
         );
 
-        if (!_rabbitRoomConsumer.IsInitialized)
+        if (!_rabbitRoomConsumer.CompletedInitialization)
         {
             await _rabbitRoomConsumer.InitializeAsync();
         }
 
         return _rabbitRoomConsumer;
+    }
+
+    public static async Task<FilePublisher> GetFilePublisherAsync()
+    {
+        _filePublisher = new FilePublisher(
+            routingKey: "files",
+            host: LocalSettings.Default["RabbitHost"],
+            username: LocalSettings.Default["RabbitUsername"],
+            password: LocalSettings.Default["RabbitPassword"],
+            port: int.Parse(LocalSettings.Default["RabbitPort"])
+        );
+
+        if (!_filePublisher.CompletedInitialization)
+        {
+            await _filePublisher.InitializeAsync();
+        }
+
+        return _filePublisher;
     }
 }

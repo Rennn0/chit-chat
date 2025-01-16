@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace LLibrary.Logging;
+namespace llibrary.Logging;
 
 public class Diagnostics
 {

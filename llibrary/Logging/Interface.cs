@@ -1,7 +1,6 @@
-﻿using Serilog;
-using static LLibrary.Logging.AbstractAdapter;
+﻿using static llibrary.Logging.AbstractAdapter;
 
-namespace LLibrary.Logging
+namespace llibrary.Logging
 {
     public interface ILoggerAdapter
     {
@@ -17,7 +16,11 @@ namespace LLibrary.Logging
         public void OnLogEvent(LoggerEventArgs e);
     }
 
-    public interface ITelegramAdapter : ILoggerAdapter { }
+    public interface ITelegramAdapter : ILoggerAdapter
+    {
+    }
 
-    public interface IDebugAdapter : ILoggerAdapter { }
+    public interface IDebugAdapter : ILoggerAdapter
+    {
+    }
 }

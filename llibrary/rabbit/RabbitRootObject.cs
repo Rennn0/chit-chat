@@ -16,10 +16,11 @@ public abstract class RabbitRootObject
             Password = password,
             HostName = host,
             Port = port,
+            AutomaticRecoveryEnabled = true,
         };
     }
 
-    public virtual bool IsInitialized => Connection is not null && _channel is not null;
+    public virtual bool CompletedInitialization => Connection is not null && _channel is not null;
 
     public virtual async Task InitializeAsync()
     {

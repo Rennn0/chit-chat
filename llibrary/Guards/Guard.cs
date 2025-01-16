@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LLibrary.Guards
+namespace llibrary.Guards
 {
     public static class Guard
     {
         public static T AgainstNull<T>(
             [NotNull] T? argument,
-            [CallerArgumentExpression(nameof(argument))] string? paramName = null
+            [CallerArgumentExpression(nameof(argument))]
+            string? paramName = null
         )
             where T : class
         {

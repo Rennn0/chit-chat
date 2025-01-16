@@ -3,12 +3,11 @@ using client.bindings;
 using client.extensions;
 using client.forms;
 using client.globals;
-using client.src.globals;
-using client.src.rabbit;
+using client.rabbit;
 using Grpc.Net.Client;
 using gRpcProtos;
-using LLibrary.Guards;
-using LLibrary.Logging;
+using llibrary.Guards;
+using llibrary.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client.Events;
 using RoomTransferObject = llibrary.SharedObjects.Room.RoomTransferObject;
@@ -97,7 +96,9 @@ namespace client.controls
 
         private async void joinToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try { }
+            try
+            {
+            }
             catch (Exception ex)
             {
                 Diagnostics.LOG_ERROR(ex.Message);

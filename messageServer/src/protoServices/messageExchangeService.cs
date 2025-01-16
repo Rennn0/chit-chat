@@ -6,13 +6,13 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using gRpcProtos;
 using messageServer.extensions;
-using messageServer.src.rabbit;
+using messageServer.rabbit;
 using Newtonsoft.Json;
 using Message = database.entities.Message;
 using RoomTransferObject = llibrary.SharedObjects.Room.RoomTransferObject;
 
 // TODO klientis disconect dasacheria
-namespace messageServer.src.protoServices
+namespace messageServer.protoServices
 {
     public class MessageExchange : MessageExchangeService.MessageExchangeServiceBase
     {
@@ -115,14 +115,14 @@ namespace messageServer.src.protoServices
                     out HashSet<(
                         string userId,
                         IServerStreamWriter<gRpcProtos.Message> stream
-                    )>? hashSet
+                        )>? hashSet
                 )
             )
             {
                 Rooms[request.RoomId] = new HashSet<(
                     string userId,
                     IServerStreamWriter<gRpcProtos.Message> stream
-                )>(new ClientComparer());
+                    )>(new ClientComparer());
             }
 
             bool added = Rooms[request.RoomId].Add((request.AuthorUserId, responseStream));
@@ -208,7 +208,7 @@ namespace messageServer.src.protoServices
                     out HashSet<(
                         string userId,
                         IServerStreamWriter<gRpcProtos.Message> stream
-                    )>? roomClients
+                        )>? roomClients
                 )
             )
             {

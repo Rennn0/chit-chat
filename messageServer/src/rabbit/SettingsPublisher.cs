@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using llibrary.rabbit;
 
-namespace messageServer.src.rabbit;
+namespace messageServer.rabbit;
 
 public class SettingsPublisher : DirectPublisher
 {
@@ -12,7 +12,9 @@ public class SettingsPublisher : DirectPublisher
         string password,
         int port = 5672
     )
-        : base(queue, host, username, password, port) { }
+        : base(queue, host, username, password, port)
+    {
+    }
 
     public override byte[] ProcessMsg(string msg)
     {

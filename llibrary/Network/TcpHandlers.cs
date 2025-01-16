@@ -1,29 +1,38 @@
 ﻿using System.IO.Compression;
 using System.Net.Sockets;
 using System.Text;
-using FileStream = System.IO.FileStream;
 
-namespace client.network;
+namespace llibrary.Network;
 
-public class FileServer
+public class TcpHandlers
 {
-    /// <summary>
-    ///     fileserverze agzavnis fails da abrunebs chawerili bytebis raodenobas
-    /// </summary>
-    /// <param name="paths"></param>
-    /// <returns></returns>
-    public static async Task<int> SendFileAsync(string[] paths)
-    {
-        const string serverIp = "10.0.0.4";
-        const int port = 8080;
+    private const string _serverIp = "10.0.0.4";
+    private const int _port = 8080;
 
+    /// <summary>
+    ///     fileserverze agzavnis fails
+    /// </summary>
+    /// <param name="paths">failebis absoluturi misamarti</param>
+    /// <param name="ip"></param>
+    /// <param name="port"></param>
+    /// <returns>sheqmnili zip guid</returns>
+    public static async Task<string> SendFileAsync(
+        string[] paths,
+        string ip = _serverIp,
+        int port = _port
+    )
+    {
         string tempZipFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".zip");
         try
         {
             await using (FileStream zipStream = new FileStream(tempZipFile, FileMode.Create))
             {
                 using (
-                    ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Create, false)
+                    ZipArchive zipArchive = new ZipArchive(
+                        zipStream,
+                        ZipArchiveMode.Create,
+                        leaveOpen: false
+                    )
                 )
                 {
                     foreach (string path in paths)
@@ -43,27 +52,33 @@ public class FileServer
             byte[] payload = new byte[
                 fileNameLengthBytes.Length + fileNameBytes.Length + zipData.Length
             ];
-            Buffer.BlockCopy(fileNameLengthBytes, 0, payload, 0, fileNameLengthBytes.Length);
             Buffer.BlockCopy(
-                fileNameBytes,
-                0,
-                payload,
-                fileNameLengthBytes.Length,
-                fileNameBytes.Length
+                src: fileNameLengthBytes,
+                srcOffset: 0,
+                dst: payload,
+                dstOffset: 0,
+                count: fileNameLengthBytes.Length
             );
             Buffer.BlockCopy(
-                zipData,
-                0,
-                payload,
-                fileNameLengthBytes.Length + fileNameBytes.Length,
-                zipData.Length
+                src: fileNameBytes,
+                srcOffset: 0,
+                dst: payload,
+                dstOffset: fileNameLengthBytes.Length,
+                count: fileNameBytes.Length
+            );
+            Buffer.BlockCopy(
+                src: zipData,
+                srcOffset: 0,
+                dst: payload,
+                dstOffset: fileNameLengthBytes.Length + fileNameBytes.Length,
+                count: zipData.Length
             );
 
-            using TcpClient client = new TcpClient(serverIp, port);
+            using TcpClient client = new TcpClient(ip, port);
             await using NetworkStream ns = client.GetStream();
 
             await ns.WriteAsync(payload, 0, payload.Length);
-            return zipData.Length;
+            return Path.GetFileName(tempZipFile);
         }
         finally
         {

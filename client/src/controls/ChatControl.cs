@@ -1,13 +1,14 @@
 ﻿using System.Collections.Concurrent;
 using System.Text;
 using client.globals;
-using client.network;
+using client.rabbit;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
 using gRpcProtos;
-using LLibrary.Guards;
-using LLibrary.Logging;
+using llibrary.Guards;
+using llibrary.Logging;
+using llibrary.Network;
 using Message = gRpcProtos.Message;
 
 namespace client.controls
@@ -186,8 +187,13 @@ namespace client.controls
 
                 if (fileDialog.ShowDialog() != DialogResult.OK)
                     return;
-                int bytesWritten = await FileServer.SendFileAsync(fileDialog.FileNames);
-                MessageBox.Show($@"Sent {bytesWritten} bytes");
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append(await TcpHandlers.SendFileAsync(fileDialog.FileNames));
+                sb.Append(_roomId);
+
+                FilePublisher publisher = await RabbitConsumerFactory.GetFilePublisherAsync();
+                publisher.Publish(message: sb.ToString());
             }
             catch (Exception ex)
             {

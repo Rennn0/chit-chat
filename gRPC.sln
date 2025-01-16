@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "generator", "generator\gene
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fileServer", "fileServer\fileServer.vcxproj", "{75885430-A38D-4099-B565-23C964FA9F49}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fileServerCs", "fileServerCs\fileServerCs.csproj", "{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,18 @@ Global
 		{75885430-A38D-4099-B565-23C964FA9F49}.Release|x64.Build.0 = Release|x64
 		{75885430-A38D-4099-B565-23C964FA9F49}.Release|x86.ActiveCfg = Release|Win32
 		{75885430-A38D-4099-B565-23C964FA9F49}.Release|x86.Build.0 = Release|Win32
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Debug|x64.Build.0 = Debug|Any CPU
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Debug|x86.Build.0 = Debug|Any CPU
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Release|x64.ActiveCfg = Release|Any CPU
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Release|x64.Build.0 = Release|Any CPU
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Release|x86.ActiveCfg = Release|Any CPU
+		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

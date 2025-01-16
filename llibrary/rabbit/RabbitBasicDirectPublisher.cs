@@ -2,16 +2,17 @@
 
 namespace llibrary.rabbit;
 
-public abstract class RabbitBasicFanoutPublisher : RabbitRootPublisher
+public class RabbitBasicDirectPublisher : RabbitRootPublisher
 {
-    protected RabbitBasicFanoutPublisher(
+    public RabbitBasicDirectPublisher(
+        string routingKey,
         string host,
         string username,
         string password,
-        string exchange = "amq.fanout",
+        string exchange = "amq.direct",
         int port = 5672
     )
-        : base(exchange, routingKey: string.Empty, host, username, password, port)
+        : base(exchange, routingKey, host, username, password, port)
     {
     }
 

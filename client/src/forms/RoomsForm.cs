@@ -1,9 +1,9 @@
+using client.custom;
 using client.globals;
 using client.Properties;
-using client.src.custom;
 using Grpc.Net.Client;
 using gRpcProtos;
-using LLibrary.Guards;
+using llibrary.Guards;
 
 namespace client.forms
 {

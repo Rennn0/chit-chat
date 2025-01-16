@@ -2,7 +2,7 @@
 using Serilog.Core;
 using TelegramSink;
 
-namespace LLibrary.Logging;
+namespace llibrary.Logging;
 
 public class TelegramAdapter : AbstractAdapter, ITelegramAdapter
 {

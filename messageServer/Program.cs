@@ -1,23 +1,19 @@
 using database;
 using database.interfaces;
 using database.mongo;
-using LLibrary.Guards;
+using llibrary.Guards;
 using messageServer;
 using messageServer.handlers;
 using messageServer.middlewares;
 using messageServer.protoServices;
-using messageServer.src.protoServices;
-using messageServer.src.rabbit;
+using messageServer.rabbit;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(so =>
-{
-    so.ConfigureEndpointDefaults(a => a.Protocols = HttpProtocols.Http2);
-});
+builder.WebHost.ConfigureKestrel(so => { so.ConfigureEndpointDefaults(a => a.Protocols = HttpProtocols.Http2); });
 
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection(nameof(MongoDbSettings))

@@ -1,4 +1,4 @@
-﻿namespace client.src.custom;
+﻿namespace client.custom;
 
 public class Prompts
 {

@@ -3,7 +3,7 @@ using client.globals;
 using client.Properties;
 using Grpc.Net.Client;
 using gRpcProtos;
-using LLibrary.Guards;
+using llibrary.Guards;
 
 namespace client.forms
 {
@@ -16,7 +16,9 @@ namespace client.forms
             this.StartPosition = FormStartPosition.CenterScreen;
         }
 
-        private void AuthorizationForm_Load(object sender, EventArgs e) { }
+        private void AuthorizationForm_Load(object sender, EventArgs e)
+        {
+        }
 
         private void AutoFillButton_Click(object sender, EventArgs e)
         {

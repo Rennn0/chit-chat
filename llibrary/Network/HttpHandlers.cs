@@ -1,6 +1,6 @@
-﻿using LLibrary.Logging;
+﻿using llibrary.Logging;
 
-namespace llibrary.Http;
+namespace llibrary.Network;
 
 public class HttpHandlers
 {
@@ -24,11 +24,11 @@ public class HttpHandlers
             try
             {
                 HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    string content = await response.Content.ReadAsStringAsync();
-                    return content;
-                }
+                if (!response.IsSuccessStatusCode)
+                    continue;
+
+                string content = await response.Content.ReadAsStringAsync();
+                return content;
             }
             catch (Exception e)
             {

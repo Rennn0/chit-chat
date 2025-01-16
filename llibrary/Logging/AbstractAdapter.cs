@@ -1,8 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using Serilog;
-using TelegramSink;
 
-namespace LLibrary.Logging
+namespace llibrary.Logging
 {
     public abstract class AbstractAdapter : ILoggerAdapter, IDisposable
     {

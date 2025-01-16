@@ -1,6 +1,4 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-
-namespace database.entities
+﻿namespace database.entities
 {
     public class Message : Entity
     {

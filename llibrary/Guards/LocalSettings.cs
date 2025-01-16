@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace LLibrary.Guards;
+namespace llibrary.Guards;
 
 public class LocalSettings
 {

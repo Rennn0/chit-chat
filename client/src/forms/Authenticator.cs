@@ -1,6 +1,6 @@
 ﻿using client.globals;
-using LLibrary.Guards;
-using llibrary.Http;
+using llibrary.Guards;
+using llibrary.Network;
 
 namespace client.forms
 {

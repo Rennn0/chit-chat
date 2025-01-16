@@ -2,7 +2,7 @@
 using System.Text;
 using FileStream = System.IO.FileStream;
 
-namespace LLibrary.Guards;
+namespace llibrary.Guards;
 
 public class Encryption
 {

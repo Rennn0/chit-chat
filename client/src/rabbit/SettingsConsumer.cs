@@ -1,6 +1,6 @@
 ﻿using llibrary.rabbit;
 
-namespace client.src.rabbit;
+namespace client.rabbit;
 
 public class SettingsConsumer : DirectConsumer
 {
@@ -11,5 +11,7 @@ public class SettingsConsumer : DirectConsumer
         string password,
         int port = 5672
     )
-        : base(queue, host, username, password, port) { }
+        : base(queue, host, username, password, port)
+    {
+    }
 }

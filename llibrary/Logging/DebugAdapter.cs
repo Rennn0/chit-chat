@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using Serilog.Core;
 
-namespace LLibrary.Logging
+namespace llibrary.Logging
 {
     public class DebugAdapter : AbstractAdapter, IDebugAdapter
     {

@@ -1,11 +1,14 @@
 ﻿using System.Text;
-using LLibrary.Guards;
-using LLibrary.Logging;
+using llibrary.Guards;
+using llibrary.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace llibrary.rabbit;
 
+/// <summary>
+///     es exchange direct-reply-to iyenebs temp Q sheqmnis magivrad
+/// </summary>
 public abstract class DirectPublisher : RabbitRootObject
 {
     private readonly string _queue;
@@ -64,6 +67,9 @@ public abstract class DirectPublisher : RabbitRootObject
     public abstract byte[] ProcessMsg(string msg);
 }
 
+/// <summary>
+///     es exchange direct-reply-to iyenebs temp Q sheqmnis magivrad
+/// </summary>
 public abstract class DirectConsumer : RabbitRootObject
 {
     private readonly string _queue;

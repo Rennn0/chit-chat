@@ -1,14 +1,11 @@
-﻿using LLibrary.Guards;
+﻿using llibrary.Guards;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace llibrary.rabbit;
 
-public class RabbitBasicFanoutConsumer : RabbitRootObject
+public class RabbitBasicFanoutConsumer : RabbitRootConsumer
 {
-    private readonly string _exchange;
-    protected AsyncEventingBasicConsumer? _consumer;
-
     public RabbitBasicFanoutConsumer(
         string host,
         string username,
@@ -16,9 +13,8 @@ public class RabbitBasicFanoutConsumer : RabbitRootObject
         string exchange = "amq.fanout",
         int port = 5672
     )
-        : base(host, username, password, port)
+        : base(exchange, host, username, password, port)
     {
-        _exchange = exchange;
     }
 
     public override async Task InitializeAsync()
@@ -41,13 +37,5 @@ public class RabbitBasicFanoutConsumer : RabbitRootObject
 
         _consumer = new AsyncEventingBasicConsumer(_channel);
         await _channel.BasicConsumeAsync(queue: q.QueueName, autoAck: true, consumer: _consumer);
-    }
-
-    public virtual void AttachCallback(AsyncEventHandler<BasicDeliverEventArgs> callback)
-    {
-        Guard.AgainstNull(_channel);
-        Guard.AgainstNull(_consumer);
-
-        _consumer.ReceivedAsync += callback;
     }
 }

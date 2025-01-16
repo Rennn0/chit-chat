@@ -1,5 +1,5 @@
 ﻿using Grpc.Net.Client;
-using LLibrary.Guards;
+using llibrary.Guards;
 
 namespace client.globals;
 
