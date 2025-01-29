@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fileServer", "fileServer\fi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fileServerCs", "fileServerCs\fileServerCs.csproj", "{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CC.Shop.Library", "CC.ShopLibrary\CC.Shop.Library.csproj", "{54FA93ED-DCA9-465B-A57E-E527EC2B3281}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,18 @@ Global
 		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Release|x64.Build.0 = Release|Any CPU
 		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Release|x86.ActiveCfg = Release|Any CPU
 		{CDFEE64F-7718-4C54-B1E1-FC62FA1265CA}.Release|x86.Build.0 = Release|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Debug|x64.Build.0 = Debug|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Debug|x86.Build.0 = Debug|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Release|x64.ActiveCfg = Release|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Release|x64.Build.0 = Release|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Release|x86.ActiveCfg = Release|Any CPU
+		{54FA93ED-DCA9-465B-A57E-E527EC2B3281}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
