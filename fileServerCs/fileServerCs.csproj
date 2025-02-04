@@ -9,6 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="EnyimMemcachedCore" Version="3.3.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.1" />
   </ItemGroup>
 

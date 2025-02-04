@@ -16,11 +16,13 @@ namespace llibrary.Logging
         public void OnLogEvent(LoggerEventArgs e);
     }
 
-    public interface ITelegramAdapter : ILoggerAdapter
-    {
-    }
+    public interface ITelegramAdapter : ILoggerAdapter { }
 
-    public interface IDebugAdapter : ILoggerAdapter
-    {
-    }
+    public interface IDebugAdapter : ILoggerAdapter { }
+
+    public interface ICriticalLogger { }
+
+    public interface IWarningLogger { }
+
+    public interface IInformationLogger { }
 }
