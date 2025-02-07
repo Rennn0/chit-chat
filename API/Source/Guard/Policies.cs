@@ -2,6 +2,6 @@
 
 public class Policies
 {
-    public const string AdminRolePolicy = "AdminRole";
-    public const string ElevatedRolePolicy = "ElevatedRole";
+    public const string AdminRolePolicy = "Admin";
+    public const string ElevatedRolePolicy = "Elevated";
 }

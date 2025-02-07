@@ -1,4 +1,6 @@
-﻿using API.Source.Guard;
+﻿using API.Source;
+using API.Source.Factory;
+using API.Source.Guard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,18 +10,30 @@ namespace API.Controllers
     [ApiController]
     public class ApiController : ControllerBase
     {
-        private readonly TokenManager _tokenManager;
+        private readonly IRequestHandlerFactory _factory;
 
-        public ApiController(TokenManager tokenManager)
+        public ApiController(IRequestHandlerFactory factory)
         {
-            _tokenManager = tokenManager;
+            _factory = factory;
         }
 
         [Authorize(Policy = Policies.AdminRolePolicy)]
-        [HttpGet]
-        public IActionResult Get()
+        [HttpPost(nameof(AddNewUser))]
+        public async Task<ResponseModelBase<object>> AddNewUser(
+            [FromBody] AddNewUserRequest request
+        )
         {
-            return Ok("Admin");
+            return await _factory
+                .GetHandler<AddNewUserRequest, ResponseModelBase<object>>()
+                .HandleAsync(request);
+        }
+
+        [HttpPost(nameof(Login))]
+        public async Task<ResponseModelBase<string>> Login([FromBody] LoginRequest request)
+        {
+            return await _factory
+                .GetHandler<LoginRequest, ResponseModelBase<string>>()
+                .HandleAsync(request);
         }
     }
 }

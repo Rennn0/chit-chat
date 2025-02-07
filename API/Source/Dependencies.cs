@@ -1,10 +1,15 @@
 ﻿using System.Text;
 using API.Source.Db;
+using API.Source.Factory;
 using API.Source.Guard;
+using API.Source.Strategy;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace API.Source;
 
@@ -50,28 +55,69 @@ public static class Dependencies
                 };
             });
 
-        services.AddSingleton<TokenManager>(sp => new TokenManager(configuration));
-
-        services.AddAuthorization(options =>
+        services.AddSwaggerGen(options =>
         {
-            options.AddPolicy(
-                name: Policies.AdminRolePolicy,
-                configurePolicy: policy =>
+            options.SwaggerDoc("v1", new OpenApiInfo() { Title = "API", Version = "v1" });
+
+            options.AddSecurityDefinition(
+                "Bearer",
+                new OpenApiSecurityScheme()
                 {
-                    policy.RequireRole("Admin");
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
                 }
             );
 
-            options.AddPolicy(
-                name: Policies.ElevatedRolePolicy,
-                configurePolicy: policy =>
+            options.AddSecurityRequirement(
+                new OpenApiSecurityRequirement()
                 {
-                    policy.RequireClaim("Email");
+                    {
+                        new OpenApiSecurityScheme()
+                        {
+                            Reference = new OpenApiReference()
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer",
+                            },
+                        },
+                        new List<string>()
+                    },
                 }
             );
         });
 
+        services.AddScoped<
+            IRequestHandlerStrategy<AddNewUserRequest, ResponseModelBase<object>>,
+            AddUserStrategy
+        >();
+        services.AddScoped<
+            IRequestHandlerStrategy<LoginRequest, ResponseModelBase<string>>,
+            LoginStrategy
+        >();
+        services.AddScoped<IRequestHandlerFactory, RequestHandlerFactory>();
+
+        services.AddSingleton<TokenManager>(sp => new TokenManager(configuration));
+
+        services
+            .AddAuthorizationBuilder()
+            .AddPolicy(
+                name: Policies.AdminRolePolicy,
+                configurePolicy: p => p.RequireRole("AdminRole")
+            )
+            .AddPolicy(
+                name: Policies.ElevatedRolePolicy,
+                configurePolicy: p => p.RequireClaim("EmailClaim")
+            );
+
+        services.AddFluentValidationAutoValidation();
+        services.AddValidatorsFromAssemblyContaining<Program>();
+
         services.AddControllers();
+        services.AddEndpointsApiExplorer();
+
         return services;
     }
 }

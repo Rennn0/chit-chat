@@ -20,11 +20,7 @@ public class TokenManager
     {
         Debug.Assert(user.Email != null, "user.Email != null");
 
-        List<Claim> claims =
-        [
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-        ];
+        List<Claim> claims = [new Claim(JwtRegisteredClaimNames.Sub, user.Id)];
 
         IList<string> roles = userManager.GetRolesAsync(user).Result;
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
