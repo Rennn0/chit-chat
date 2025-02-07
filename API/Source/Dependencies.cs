@@ -118,6 +118,8 @@ public static class Dependencies
         services.AddControllers();
         services.AddEndpointsApiExplorer();
 
+        services.AddMemoryCache();
+
         return services;
     }
 }
