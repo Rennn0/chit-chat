@@ -1,4 +1,5 @@
-﻿using API.Source.Guard;
+﻿using API.Source.Db;
+using API.Source.Guard;
 using Microsoft.AspNetCore.Identity;
 
 namespace API.Source.Strategy;
@@ -10,11 +11,11 @@ public interface IRequestHandlerStrategy<in TRequest, TResponse>
 
 public class AddUserStrategy : IRequestHandlerStrategy<AddNewUserRequest, ResponseModelBase<object>>
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
     public AddUserStrategy(
-        UserManager<IdentityUser> userManager,
+        UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager
     )
     {
@@ -24,7 +25,11 @@ public class AddUserStrategy : IRequestHandlerStrategy<AddNewUserRequest, Respon
 
     public async Task<ResponseModelBase<object>> HandleAsync(AddNewUserRequest request)
     {
-        IdentityUser user = new IdentityUser { UserName = request.Username, Email = request.Email };
+        ApplicationUser user = new ApplicationUser
+        {
+            UserName = request.Username,
+            Email = request.Email,
+        };
 
         IdentityResult result = await _userManager.CreateAsync(user, request.Password);
 
@@ -47,12 +52,12 @@ public class AddUserStrategy : IRequestHandlerStrategy<AddNewUserRequest, Respon
     }
 }
 
-public class LoginStrategy : IRequestHandlerStrategy<LoginRequest, ResponseModelBase<string>>
+public class ApiKeyStrategy : IRequestHandlerStrategy<LoginRequest, ResponseModelBase<string>>
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly TokenManager _tokenManager;
 
-    public LoginStrategy(UserManager<IdentityUser> userManager, TokenManager tokenManager)
+    public ApiKeyStrategy(UserManager<ApplicationUser> userManager, TokenManager tokenManager)
     {
         _userManager = userManager;
         _tokenManager = tokenManager;
@@ -60,7 +65,7 @@ public class LoginStrategy : IRequestHandlerStrategy<LoginRequest, ResponseModel
 
     public async Task<ResponseModelBase<string>> HandleAsync(LoginRequest request)
     {
-        IdentityUser? user = await _userManager.FindByEmailAsync(request.Email);
+        ApplicationUser? user = await _userManager.FindByEmailAsync(request.Email);
         if (user is null || !await _userManager.CheckPasswordAsync(user, request.Password))
         {
             return new ResponseModelBase<string>()
@@ -70,7 +75,32 @@ public class LoginStrategy : IRequestHandlerStrategy<LoginRequest, ResponseModel
             };
         }
 
-        string token = _tokenManager.GenerateJwtToken(user, _userManager);
+        //string token = await _tokenManager.GenerateJwtToken(user, _userManager);
+        string token = await _tokenManager.GenerateApiKey(user, _userManager);
         return new ResponseModelBase<string>() { Data = token };
+    }
+}
+
+public class ListUsersStrategy
+    : IRequestHandlerStrategy<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>
+{
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public ListUsersStrategy(UserManager<ApplicationUser> userManager)
+    {
+        _userManager = userManager;
+    }
+
+    public Task<ResponseModelBase<IEnumerable<ApplicationUser>>> HandleAsync(
+        ListUsersRequest request
+    )
+    {
+        ResponseModelBase<IEnumerable<ApplicationUser>> result = new ResponseModelBase<
+            IEnumerable<ApplicationUser>
+        >()
+        {
+            Data = _userManager.Users.ToList(),
+        };
+        return Task.FromResult(result);
     }
 }

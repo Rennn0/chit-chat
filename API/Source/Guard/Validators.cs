@@ -4,11 +4,7 @@ namespace API.Source.Guard;
 
 public class AddNewUserRequestValidator : AbstractValidator<AddNewUserRequest>
 {
-    private static readonly HashSet<string> _allowedRoles =
-    [
-        Policies.AdminRolePolicy,
-        Policies.ElevatedRolePolicy,
-    ];
+    private static readonly HashSet<string> _allowedRoles = [Policies.Admin, Policies.Elevated];
 
     public AddNewUserRequestValidator()
     {

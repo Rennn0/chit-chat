@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using API.Source.Db;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -16,13 +16,14 @@ public class TokenManager
         _config = configuration;
     }
 
-    public string GenerateJwtToken(IdentityUser user, UserManager<IdentityUser> userManager)
+    public async Task<string> GenerateJwtToken(
+        ApplicationUser user,
+        UserManager<ApplicationUser> userManager
+    )
     {
-        Debug.Assert(user.Email != null, "user.Email != null");
-
         List<Claim> claims = [new Claim(JwtRegisteredClaimNames.Sub, user.Id)];
 
-        IList<string> roles = userManager.GetRolesAsync(user).Result;
+        IList<string> roles = await userManager.GetRolesAsync(user);
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         SymmetricSecurityKey key = new SymmetricSecurityKey(
@@ -39,5 +40,18 @@ public class TokenManager
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public async Task<string> GenerateApiKey(
+        ApplicationUser user,
+        UserManager<ApplicationUser> userManager
+    )
+    {
+        string key = Guid.NewGuid().ToString("N");
+        user.ApiKey = key;
+        user.ApiKeyExpiry = DateTime.UtcNow.AddYears(1);
+
+        await userManager.UpdateAsync(user);
+        return key;
     }
 }

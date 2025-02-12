@@ -23,4 +23,8 @@
     <Folder Include="Source\Factory\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\llibrary\llibrary.csproj" />
+  </ItemGroup>
+
 </Project>

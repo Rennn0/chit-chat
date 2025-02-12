@@ -1,14 +1,13 @@
-﻿using System.Text;
-using API.Source.Db;
+﻿using API.Source.Db;
 using API.Source.Factory;
 using API.Source.Guard;
 using API.Source.Strategy;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using llibrary.Logging;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace API.Source;
@@ -21,7 +20,7 @@ public static class Dependencies
     )
     {
         services
-            .AddIdentityCore<IdentityUser>(options =>
+            .AddIdentityCore<ApplicationUser>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
                 options.User.RequireUniqueEmail = true;
@@ -38,35 +37,40 @@ public static class Dependencies
         });
 
         services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(
-                            configuration["Jwt:Key"] ?? throw new Exception("Jwt key is required")
-                        )
-                    ),
-                };
-            });
+            .AddAuthentication("ApiKey")
+            .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthHandler>(
+                "ApiKey",
+                configureOptions: null
+            );
+
+        //services
+        //    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        //    .AddJwtBearer(options =>
+        //    {
+        //        options.TokenValidationParameters = new TokenValidationParameters()
+        //        {
+        //            ValidateIssuer = true,
+        //            ValidateAudience = true,
+        //            ValidIssuer = configuration["Jwt:Issuer"],
+        //            ValidAudience = configuration["Jwt:Audience"],
+        //            IssuerSigningKey = new SymmetricSecurityKey(
+        //                Encoding.UTF8.GetBytes(
+        //                    configuration["Jwt:Key"] ?? throw new Exception("Jwt key is required")
+        //                )
+        //            ),
+        //        };
+        //    });
 
         services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo() { Title = "API", Version = "v1" });
 
             options.AddSecurityDefinition(
-                "Bearer",
+                "ApiKey",
                 new OpenApiSecurityScheme()
                 {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
+                    Name = "X-API-KEY",
+                    Type = SecuritySchemeType.ApiKey,
                     In = ParameterLocation.Header,
                 }
             );
@@ -80,7 +84,7 @@ public static class Dependencies
                             Reference = new OpenApiReference()
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer",
+                                Id = "ApiKey",
                             },
                         },
                         new List<string>()
@@ -95,22 +99,47 @@ public static class Dependencies
         >();
         services.AddScoped<
             IRequestHandlerStrategy<LoginRequest, ResponseModelBase<string>>,
-            LoginStrategy
+            ApiKeyStrategy
+        >();
+        services.AddScoped<
+            IRequestHandlerStrategy<
+                ListUsersRequest,
+                ResponseModelBase<IEnumerable<ApplicationUser>>
+            >,
+            ListUsersStrategy
         >();
         services.AddScoped<IRequestHandlerFactory, RequestHandlerFactory>();
 
         services.AddSingleton<TokenManager>(sp => new TokenManager(configuration));
 
+        services.AddTransient<ILogger<IWarningLogger>>(sp =>
+        {
+            using ILoggerFactory factory = LoggerFactory.Create(c => c.AddDebug().AddConsole());
+
+            return factory.CreateLogger<IWarningLogger>();
+        });
+        services.AddTransient<ILogger<IInformationLogger>>(sp =>
+        {
+            using ILoggerFactory factory = LoggerFactory.Create(c => c.AddDebug());
+            return factory.CreateLogger<IInformationLogger>();
+        });
+        //services.AddTransient<ILogger<ICriticalLogger>>(sp =>
+        //{
+        //    Log.Logger = new LoggerConfiguration()
+        //        .WriteTo.File(
+        //            "critical_logs.txt",
+        //            restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Fatal
+        //        )
+        //        .CreateLogger();
+        //    using ILoggerFactory criticalFactory = LoggerFactory.Create(builder =>
+        //        builder.AddSerilog().AddDebug().AddConsole()
+        //    );
+        //    return criticalFactory.CreateLogger<ICriticalLogger>();
+        //});
         services
             .AddAuthorizationBuilder()
-            .AddPolicy(
-                name: Policies.AdminRolePolicy,
-                configurePolicy: p => p.RequireRole("AdminRole")
-            )
-            .AddPolicy(
-                name: Policies.ElevatedRolePolicy,
-                configurePolicy: p => p.RequireClaim("EmailClaim")
-            );
+            .AddPolicy(name: Policies.Admin, configurePolicy: Policies.AdminPolicyConfig)
+            .AddPolicy(name: Policies.Elevated, configurePolicy: Policies.ElevatedPolicyConfig);
 
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<Program>();

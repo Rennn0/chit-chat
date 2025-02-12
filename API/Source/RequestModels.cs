@@ -14,3 +14,11 @@ public class LoginRequest
     public string Email { get; set; }
     public string Password { get; set; }
 }
+
+public class ListUsersRequest
+{
+    public override int GetHashCode()
+    {
+        return 1;
+    }
+}

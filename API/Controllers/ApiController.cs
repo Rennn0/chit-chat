@@ -1,7 +1,8 @@
-﻿using System.Security.Cryptography;
-using API.Source;
+﻿using API.Source;
+using API.Source.Db;
 using API.Source.Factory;
 using API.Source.Guard;
+using llibrary.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,14 +15,20 @@ namespace API.Controllers
     {
         private readonly IRequestHandlerFactory _factory;
         private readonly IMemoryCache _cache;
+        private readonly ILogger<IWarningLogger> _warning;
 
-        public ApiController(IRequestHandlerFactory factory, IMemoryCache cache)
+        public ApiController(
+            IRequestHandlerFactory factory,
+            IMemoryCache cache,
+            ILogger<IWarningLogger> warning
+        )
         {
             _factory = factory;
             _cache = cache;
+            _warning = warning;
         }
 
-        [Authorize(Policy = Policies.AdminRolePolicy)]
+        [Authorize(Policy = Policies.Admin)]
         [HttpPost(nameof(AddNewUser))]
         public async Task<ResponseModelBase<object>> AddNewUser(
             [FromBody] AddNewUserRequest request
@@ -32,34 +39,32 @@ namespace API.Controllers
                 .HandleAsync(request);
         }
 
-        [HttpPost(nameof(Login))]
-        public async Task<ResponseModelBase<string>> Login([FromBody] LoginRequest request)
+        [HttpPost(nameof(ApiKey))]
+        public async Task<ResponseModelBase<string>> ApiKey([FromBody] LoginRequest request)
         {
             return await _factory
                 .GetHandler<LoginRequest, ResponseModelBase<string>>()
                 .HandleAsync(request);
         }
 
-        [HttpGet]
-        public ActionResult Cache()
+        [Authorize(Policy = Policies.Elevated)]
+        [HttpGet(nameof(ListUsers))]
+        public async Task<ResponseModelBase<IEnumerable<ApplicationUser>>?> ListUsers()
         {
-            string? cached = _cache.GetOrCreate(
-                "user",
-                entry =>
+            ListUsersRequest request = new();
+            return await _cache.GetOrCreateAsync(
+                key: request.GetHashCode(),
+                factory: async f =>
                 {
-                    entry.AbsoluteExpiration = DateTimeOffset.UtcNow.AddSeconds(10);
-
-                    byte[] bytes = new byte[16];
-                    using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
-                    {
-                        rng.GetBytes(bytes);
-                    }
-
-                    return Convert.ToBase64String(bytes);
+                    f.AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(1);
+                    return await _factory
+                        .GetHandler<
+                            ListUsersRequest,
+                            ResponseModelBase<IEnumerable<ApplicationUser>>
+                        >()
+                        .HandleAsync(request);
                 }
             );
-
-            return Ok(cached);
         }
     }
 }
