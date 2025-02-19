@@ -4,7 +4,7 @@ using llibrary.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace llibrary.rabbit;
+namespace llibrary.Rabbit;
 
 /// <summary>
 ///     es exchange direct-reply-to iyenebs temp Q sheqmnis magivrad

@@ -1,5 +1,5 @@
 ﻿using llibrary.Logging;
-using llibrary.rabbit;
+using llibrary.Rabbit;
 using Microsoft.Extensions.Logging;
 
 namespace fileServerCs;

@@ -1,4 +1,4 @@
-﻿using llibrary.rabbit;
+﻿using llibrary.Rabbit;
 
 namespace client.rabbit;
 
@@ -12,5 +12,7 @@ public class FilePublisher : RabbitBasicDirectPublisher
         string exchange = "amq.direct",
         int port = 5672
     )
-        : base(routingKey, host, username, password, exchange, port) { }
+        : base(routingKey, host, username, password, exchange, port)
+    {
+    }
 }

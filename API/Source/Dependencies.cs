@@ -1,7 +1,10 @@
 ﻿using API.Source.Db;
 using API.Source.Factory;
-using API.Source.Guard;
-using API.Source.Strategy;
+using API.Source.Guards;
+using API.Source.Strategies;
+using API.Source.Strategies.AddNewUser;
+using API.Source.Strategies.ApiKey;
+using API.Source.Strategies.ListUsers;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using llibrary.Logging;
@@ -93,23 +96,6 @@ public static class Dependencies
             );
         });
 
-        services.AddScoped<
-            IRequestHandlerStrategy<AddNewUserRequest, ResponseModelBase<object>>,
-            AddUserStrategy
-        >();
-        services.AddScoped<
-            IRequestHandlerStrategy<LoginRequest, ResponseModelBase<string>>,
-            ApiKeyStrategy
-        >();
-        services.AddScoped<
-            IRequestHandlerStrategy<
-                ListUsersRequest,
-                ResponseModelBase<IEnumerable<ApplicationUser>>
-            >,
-            ListUsersStrategy
-        >();
-        services.AddScoped<IRequestHandlerFactory, RequestHandlerFactory>();
-
         services.AddSingleton<TokenManager>(sp => new TokenManager(configuration));
 
         services.AddTransient<ILogger<IWarningLogger>>(sp =>
@@ -148,6 +134,32 @@ public static class Dependencies
         services.AddEndpointsApiExplorer();
 
         services.AddMemoryCache();
+
+        services.AddScoped<
+            IRequestStrategy<AddNewUserRequest, ResponseModelBase<object>>,
+            AddUserStrategy
+        >();
+
+        services.AddScoped<
+            IRequestStrategy<LoginRequest, ResponseModelBase<string>>,
+            ApiKeyStrategy
+        >();
+
+        services.AddScoped<
+            IRequestStrategy<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
+            ListUsersStrategy
+        >();
+        services.AddScoped<
+            IRequestStrategy<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
+            FilterUsersStrategy
+        >();
+
+        services.AddScoped<
+            IRequestPipeline<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
+            RequestPipeline<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>
+        >();
+
+        services.AddScoped<IRequestHandlerFactory, RequestHandlerFactory>();
 
         return services;
     }

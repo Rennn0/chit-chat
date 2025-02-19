@@ -1,8 +1,7 @@
 using API.Source;
 using API.Source.Db;
-using API.Source.Guard;
-using API.Source.Strategy;
-using Microsoft.AspNetCore.Authorization;
+using API.Source.Guards;
+using API.Source.Strategies.ApiKey;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Xunit;
@@ -34,10 +33,10 @@ public class ApiControllerTests
         configurationMock.Setup(x => x["Jwt:TTL"]).Returns("1");
 
         TokenManager tokenManager = new(configurationMock.Object);
-        _authorizationServiceMock = new Mock<IAuthorizationService>();
+        //_authorizationServiceMock = new Mock<IAuthorizationService>();
 
         _strategy = new ApiKeyStrategy(_userManagerMock.Object, tokenManager);
-        _listUserStrategy = new ListUsersStrategy(_userManagerMock.Object);
+        //_listUserStrategy = new ListUsersStrategy(_userManagerMock.Object);
     }
 
     [Fact]
@@ -53,7 +52,7 @@ public class ApiControllerTests
             .ReturnsAsync(true);
 
         // Act
-        var result = await _strategy.HandleAsync(request);
+        var result = await _strategy.ExecuteAsync(request);
 
         // Assert
         Assert.True(result.Success);
@@ -74,7 +73,7 @@ public class ApiControllerTests
             .ReturnsAsync((ApplicationUser)null);
 
         // Act
-        var result = await _strategy.HandleAsync(request);
+        var result = await _strategy.ExecuteAsync(request);
 
         // Assert
         Assert.False(result.Success);
@@ -93,7 +92,7 @@ public class ApiControllerTests
             .ReturnsAsync(false);
 
         // Act
-        var result = await _strategy.HandleAsync(request);
+        var result = await _strategy.ExecuteAsync(request);
 
         // Assert
         Assert.False(result.Success);

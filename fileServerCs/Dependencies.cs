@@ -4,6 +4,6 @@ namespace fileServerCs;
 
 public static class Dependencies
 {
-    public static IServiceCollection Services = new ServiceCollection();
-    public static IServiceProvider? Provider;
+    public static IServiceCollection Services { get; } = new ServiceCollection();
+    public static IServiceProvider? Provider { get; set; }
 }

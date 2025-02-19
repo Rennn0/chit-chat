@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace API.Source.Guard;
+namespace API.Source.Guards;
 
 public class Policies
 {

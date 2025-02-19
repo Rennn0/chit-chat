@@ -5,7 +5,7 @@ using API.Source.Db;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
-namespace API.Source.Guard;
+namespace API.Source.Guards;
 
 public class TokenManager
 {
@@ -42,12 +42,12 @@ public class TokenManager
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public async Task<string> GenerateApiKey(
+    public async Task<string?> GenerateApiKey(
         ApplicationUser user,
         UserManager<ApplicationUser> userManager
     )
     {
-        string key = Guid.NewGuid().ToString("N");
+        string? key = Guid.NewGuid().ToString("N");
         user.ApiKey = key;
         user.ApiKeyExpiry = DateTime.UtcNow.AddYears(1);
 

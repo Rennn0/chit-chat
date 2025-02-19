@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
-namespace API.Source.Guard;
+namespace API.Source.Guards;
 
 public class ApiKeyAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {

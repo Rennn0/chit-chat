@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace llibrary.rabbit;
+namespace llibrary.Rabbit;
 
 public abstract class RabbitRootObject
 {

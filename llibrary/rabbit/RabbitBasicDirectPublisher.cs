@@ -1,6 +1,6 @@
 ﻿using llibrary.Guards;
 
-namespace llibrary.rabbit;
+namespace llibrary.Rabbit;
 
 public class RabbitBasicDirectPublisher : RabbitRootPublisher
 {

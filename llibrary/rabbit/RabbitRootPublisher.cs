@@ -3,7 +3,7 @@ using llibrary.Guards;
 using llibrary.Logging;
 using RabbitMQ.Client;
 
-namespace llibrary.rabbit;
+namespace llibrary.Rabbit;
 
 /// <summary>
 ///     override InitializeAsync() shvil klasshi

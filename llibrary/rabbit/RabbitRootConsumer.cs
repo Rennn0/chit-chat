@@ -1,7 +1,7 @@
 ﻿using llibrary.Guards;
 using RabbitMQ.Client.Events;
 
-namespace llibrary.rabbit;
+namespace llibrary.Rabbit;
 
 /// <summary>
 ///     nebismieri consumer aimplementirebs am klass

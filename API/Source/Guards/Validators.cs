@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace API.Source.Guard;
+namespace API.Source.Guards;
 
 public class AddNewUserRequestValidator : AbstractValidator<AddNewUserRequest>
 {

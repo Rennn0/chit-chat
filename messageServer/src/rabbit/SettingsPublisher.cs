@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using llibrary.rabbit;
+using llibrary.Rabbit;
 
 namespace messageServer.rabbit;
 
