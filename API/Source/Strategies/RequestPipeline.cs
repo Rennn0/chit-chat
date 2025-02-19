@@ -3,9 +3,9 @@
 public class RequestPipeline<TRequest, TResponse> : IRequestPipeline<TRequest, TResponse>
     where TResponse : new()
 {
-    private readonly IEnumerable<IRequestStrategy<TRequest, TResponse>> _handlers;
+    private readonly IEnumerable<IRequestHandler<TRequest, TResponse>> _handlers;
 
-    public RequestPipeline(IEnumerable<IRequestStrategy<TRequest, TResponse>> handlers)
+    public RequestPipeline(IEnumerable<IRequestHandler<TRequest, TResponse>> handlers)
     {
         _handlers = handlers;
     }
@@ -16,7 +16,7 @@ public class RequestPipeline<TRequest, TResponse> : IRequestPipeline<TRequest, T
             request
         );
 
-        foreach (IRequestStrategy<TRequest, TResponse> handler in _handlers)
+        foreach (IRequestHandler<TRequest, TResponse> handler in _handlers)
         {
             await handler.ExecuteAsync(context);
         }

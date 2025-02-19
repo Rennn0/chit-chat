@@ -2,8 +2,8 @@
 
 namespace API.Source.Strategies.ListUsers;
 
-public class FilterUsersStrategy
-    : IRequestStrategy<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>
+public class FilterUsersHandler
+    : IRequestHandler<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>
 {
     public Task<ResponseModelBase<IEnumerable<ApplicationUser>>> ExecuteAsync(
         ListUsersRequest request

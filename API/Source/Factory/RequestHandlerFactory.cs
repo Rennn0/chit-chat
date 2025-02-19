@@ -4,7 +4,7 @@ namespace API.Source.Factory;
 
 public interface IRequestHandlerFactory
 {
-    IRequestStrategy<TRequest, TResponse> GetStrategy<TRequest, TResponse>()
+    IRequestHandler<TRequest, TResponse> GetHandler<TRequest, TResponse>()
         where TResponse : new();
 
     IRequestPipeline<TRequest, TResponse> GetPipeline<TRequest, TResponse>();
@@ -19,10 +19,10 @@ public class RequestHandlerFactory : IRequestHandlerFactory
         _provider = provider;
     }
 
-    public IRequestStrategy<TRequest, TResponse> GetStrategy<TRequest, TResponse>()
+    public IRequestHandler<TRequest, TResponse> GetHandler<TRequest, TResponse>()
         where TResponse : new()
     {
-        return _provider.GetRequiredService<IRequestStrategy<TRequest, TResponse>>();
+        return _provider.GetRequiredService<IRequestHandler<TRequest, TResponse>>();
     }
 
     public IRequestPipeline<TRequest, TResponse> GetPipeline<TRequest, TResponse>()

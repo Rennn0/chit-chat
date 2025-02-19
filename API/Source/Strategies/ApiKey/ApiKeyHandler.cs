@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace API.Source.Strategies.ApiKey;
 
-public class ApiKeyStrategy : IRequestStrategy<LoginRequest, ResponseModelBase<string>>
+public class ApiKeyHandler : IRequestHandler<LoginRequest, ResponseModelBase<string>>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly TokenManager _tokenManager;
 
-    public ApiKeyStrategy(UserManager<ApplicationUser> userManager, TokenManager tokenManager)
+    public ApiKeyHandler(UserManager<ApplicationUser> userManager, TokenManager tokenManager)
     {
         _userManager = userManager;
         _tokenManager = tokenManager;

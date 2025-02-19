@@ -11,7 +11,7 @@ namespace API.__tests__;
 public class ApiControllerTests
 {
     private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
-    private readonly ApiKeyStrategy _strategy;
+    private readonly ApiKeyHandler _handler;
 
     public ApiControllerTests()
     {
@@ -35,8 +35,8 @@ public class ApiControllerTests
         TokenManager tokenManager = new(configurationMock.Object);
         //_authorizationServiceMock = new Mock<IAuthorizationService>();
 
-        _strategy = new ApiKeyStrategy(_userManagerMock.Object, tokenManager);
-        //_listUserStrategy = new ListUsersStrategy(_userManagerMock.Object);
+        _handler = new ApiKeyHandler(_userManagerMock.Object, tokenManager);
+        //_listUserStrategy = new ListUsersHandler(_userManagerMock.Object);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class ApiControllerTests
             .ReturnsAsync(true);
 
         // Act
-        var result = await _strategy.ExecuteAsync(request);
+        var result = await _handler.ExecuteAsync(request);
 
         // Assert
         Assert.True(result.Success);
@@ -73,7 +73,7 @@ public class ApiControllerTests
             .ReturnsAsync((ApplicationUser)null);
 
         // Act
-        var result = await _strategy.ExecuteAsync(request);
+        var result = await _handler.ExecuteAsync(request);
 
         // Assert
         Assert.False(result.Success);
@@ -92,7 +92,7 @@ public class ApiControllerTests
             .ReturnsAsync(false);
 
         // Act
-        var result = await _strategy.ExecuteAsync(request);
+        var result = await _handler.ExecuteAsync(request);
 
         // Assert
         Assert.False(result.Success);

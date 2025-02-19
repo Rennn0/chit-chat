@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace API.Source.Strategies.AddNewUser;
 
-public class AddUserStrategy : IRequestStrategy<AddNewUserRequest, ResponseModelBase<object>>
+public class AddUserHandler : IRequestHandler<AddNewUserRequest, ResponseModelBase<object>>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
-    public AddUserStrategy(
+    public AddUserHandler(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager
     )

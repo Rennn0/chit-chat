@@ -1,6 +1,6 @@
 ﻿namespace API.Source.Strategies;
 
-public interface IRequestStrategy<TRequest, TResponse>
+public interface IRequestHandler<TRequest, TResponse>
     where TResponse : new()
 {
     Task<TResponse> ExecuteAsync(TRequest request);

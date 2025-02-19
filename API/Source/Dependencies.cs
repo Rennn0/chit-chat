@@ -136,22 +136,22 @@ public static class Dependencies
         services.AddMemoryCache();
 
         services.AddScoped<
-            IRequestStrategy<AddNewUserRequest, ResponseModelBase<object>>,
-            AddUserStrategy
+            IRequestHandler<AddNewUserRequest, ResponseModelBase<object>>,
+            AddUserHandler
         >();
 
         services.AddScoped<
-            IRequestStrategy<LoginRequest, ResponseModelBase<string>>,
-            ApiKeyStrategy
+            IRequestHandler<LoginRequest, ResponseModelBase<string>>,
+            ApiKeyHandler
         >();
 
         services.AddScoped<
-            IRequestStrategy<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
-            ListUsersStrategy
+            IRequestHandler<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
+            ListUsersHandler
         >();
         services.AddScoped<
-            IRequestStrategy<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
-            FilterUsersStrategy
+            IRequestHandler<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
+            FilterUsersHandler
         >();
 
         services.AddScoped<

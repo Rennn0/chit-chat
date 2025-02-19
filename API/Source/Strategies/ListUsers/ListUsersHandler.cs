@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Source.Strategies.ListUsers;
 
-public class ListUsersStrategy
-    : IRequestStrategy<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>
+public class ListUsersHandler
+    : IRequestHandler<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>
 {
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public ListUsersStrategy(UserManager<ApplicationUser> userManager)
+    public ListUsersHandler(UserManager<ApplicationUser> userManager)
     {
         _userManager = userManager;
     }

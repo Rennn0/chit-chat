@@ -33,7 +33,7 @@ namespace API.Controllers
         )
         {
             return await _factory
-                .GetStrategy<AddNewUserRequest, ResponseModelBase<object>>()
+                .GetHandler<AddNewUserRequest, ResponseModelBase<object>>()
                 .ExecuteAsync(request);
         }
 
@@ -46,7 +46,7 @@ namespace API.Controllers
         public async Task<ResponseModelBase<string>> ApiKey([FromBody] LoginRequest request)
         {
             return await _factory
-                .GetStrategy<LoginRequest, ResponseModelBase<string>>()
+                .GetHandler<LoginRequest, ResponseModelBase<string>>()
                 .ExecuteAsync(request);
         }
 
