@@ -1,7 +1,7 @@
 using API.Source;
 using API.Source.Db;
 using API.Source.Guards;
-using API.Source.Strategies.ApiKey;
+using API.Source.Handlers.ApiKey;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Xunit;

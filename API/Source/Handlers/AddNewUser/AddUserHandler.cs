@@ -1,7 +1,7 @@
 ﻿using API.Source.Db;
 using Microsoft.AspNetCore.Identity;
 
-namespace API.Source.Strategies.AddNewUser;
+namespace API.Source.Handlers.AddNewUser;
 
 public class AddUserHandler : IRequestHandler<AddNewUserRequest, ResponseModelBase<object>>
 {

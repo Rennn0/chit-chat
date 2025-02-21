@@ -1,4 +1,4 @@
-﻿namespace API.Source.Strategies;
+﻿namespace API.Source.Handlers;
 
 public class PipelineContext<TRequest, TResponse>
     where TResponse : new()

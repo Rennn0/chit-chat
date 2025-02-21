@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("[controller]")]
+    [Route("api")]
     [ApiController]
     public class ApiController : ControllerBase
     {
@@ -27,7 +27,7 @@ namespace API.Controllers
         /// This endpoint requires Admin privileges.
         /// </remarks>
         [Authorize(Policy = Policies.Admin)]
-        [HttpPost(nameof(AddNewUser))]
+        [HttpPost(template: "user")]
         public async Task<ResponseModelBase<object>> AddNewUser(
             [FromBody] AddNewUserRequest request
         )
@@ -42,8 +42,8 @@ namespace API.Controllers
         /// </summary>
         /// <param name="request">The login request containing email and password.</param>
         /// <returns>A response model containing the generated API key.</returns>
-        [HttpPost(nameof(ApiKey))]
-        public async Task<ResponseModelBase<string>> ApiKey([FromBody] LoginRequest request)
+        [HttpPost(template: "auth/login")]
+        public async Task<ResponseModelBase<string>> Login([FromBody] LoginRequest request)
         {
             return await _factory
                 .GetHandler<LoginRequest, ResponseModelBase<string>>()
@@ -55,12 +55,35 @@ namespace API.Controllers
         /// </summary>
         /// <returns>A response model containing a list of application users.</returns>
         [Authorize(Policy = Policies.Elevated)]
-        [HttpGet(nameof(ListUsers))]
+        [HttpGet(template: "users")]
         public async Task<ResponseModelBase<IEnumerable<ApplicationUser>>> ListUsers()
         {
             return await _factory
                 .GetPipeline<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>()
                 .ExecuteAsync(new ListUsersRequest());
+        }
+
+        [HttpPost(template: "tenant")]
+        public async Task<ResponseModelBase<AddNewTenantResponse>> AddNewTenant(
+            [FromBody] AddNewTenantRequest request
+        )
+        {
+            return await _factory
+                .GetPipeline<AddNewTenantRequest, ResponseModelBase<AddNewTenantResponse>>()
+                .ExecuteAsync(request);
+        }
+
+        [HttpGet(template: "tenants")]
+        public async Task<ResponseModelBase<IEnumerable<ListTenantsResponse>>> AddNewTenant(
+            [FromQuery] ListTenantsRequest request
+        )
+        {
+            return await _factory
+                .GetPipeline<
+                    ListTenantsRequest,
+                    ResponseModelBase<IEnumerable<ListTenantsResponse>>
+                >()
+                .ExecuteAsync(request);
         }
     }
 }

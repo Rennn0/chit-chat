@@ -1,4 +1,4 @@
-﻿namespace API.Source.Strategies;
+﻿namespace API.Source.Handlers;
 
 public interface IRequestPipeline<in TRequest, TResponse>
 {

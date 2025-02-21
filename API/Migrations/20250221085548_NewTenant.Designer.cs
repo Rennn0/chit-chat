@@ -4,6 +4,7 @@ using API.Source.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250221085548_NewTenant")]
+    partial class NewTenant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,7 +109,7 @@ namespace API.Migrations
                         .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18, 4)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -123,27 +126,27 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6bd9c7d4-6963-4c13-b07a-dd898a315ccb"),
-                            CreatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 9, 51, 46, 490, DateTimeKind.Unspecified).AddTicks(409), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = new Guid("0de9ff14-18f5-4550-8e6f-b73dadc4af30"),
+                            CreatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 8, 55, 48, 697, DateTimeKind.Unspecified).AddTicks(5529), new TimeSpan(0, 0, 0, 0, 0)),
                             Price = 0m,
                             Type = 0,
-                            UpdatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 9, 51, 46, 490, DateTimeKind.Unspecified).AddTicks(410), new TimeSpan(0, 0, 0, 0, 0))
+                            UpdatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 8, 55, 48, 697, DateTimeKind.Unspecified).AddTicks(5530), new TimeSpan(0, 0, 0, 0, 0))
                         },
                         new
                         {
-                            Id = new Guid("e55c43c9-35a6-4b61-95d4-98bfc51a7425"),
-                            CreatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 9, 51, 46, 490, DateTimeKind.Unspecified).AddTicks(412), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = new Guid("ac6d9448-00cb-4d69-b990-2e9f444ee254"),
+                            CreatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 8, 55, 48, 697, DateTimeKind.Unspecified).AddTicks(5533), new TimeSpan(0, 0, 0, 0, 0)),
                             Price = 9.99m,
                             Type = 1,
-                            UpdatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 9, 51, 46, 490, DateTimeKind.Unspecified).AddTicks(413), new TimeSpan(0, 0, 0, 0, 0))
+                            UpdatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 8, 55, 48, 697, DateTimeKind.Unspecified).AddTicks(5534), new TimeSpan(0, 0, 0, 0, 0))
                         },
                         new
                         {
-                            Id = new Guid("e94c39c3-acb2-40bb-befc-debc16d2cda1"),
-                            CreatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 9, 51, 46, 490, DateTimeKind.Unspecified).AddTicks(425), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = new Guid("6de87b5e-8a58-411c-b7bc-8f5469919b99"),
+                            CreatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 8, 55, 48, 697, DateTimeKind.Unspecified).AddTicks(5547), new TimeSpan(0, 0, 0, 0, 0)),
                             Price = 19.99m,
                             Type = 2,
-                            UpdatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 9, 51, 46, 490, DateTimeKind.Unspecified).AddTicks(425), new TimeSpan(0, 0, 0, 0, 0))
+                            UpdatedTime = new DateTimeOffset(new DateTime(2025, 2, 21, 8, 55, 48, 697, DateTimeKind.Unspecified).AddTicks(5547), new TimeSpan(0, 0, 0, 0, 0))
                         });
                 });
 

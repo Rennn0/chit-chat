@@ -1,6 +1,6 @@
 ﻿using API.Source.Db;
 
-namespace API.Source.Strategies.ListUsers;
+namespace API.Source.Handlers.ListUsers;
 
 public class FilterUsersHandler
     : IRequestHandler<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>

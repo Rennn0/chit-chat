@@ -2,7 +2,7 @@
 using API.Source.Guards;
 using Microsoft.AspNetCore.Identity;
 
-namespace API.Source.Strategies.ApiKey;
+namespace API.Source.Handlers.ApiKey;
 
 public class ApiKeyHandler : IRequestHandler<LoginRequest, ResponseModelBase<string>>
 {

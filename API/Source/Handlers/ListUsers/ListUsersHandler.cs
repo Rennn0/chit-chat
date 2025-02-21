@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Source.Strategies.ListUsers;
+namespace API.Source.Handlers.ListUsers;
 
 public class ListUsersHandler
     : IRequestHandler<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>
