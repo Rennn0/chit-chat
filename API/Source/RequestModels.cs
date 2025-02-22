@@ -13,8 +13,15 @@ public class AddNewUserRequest
 
 public class LoginRequest
 {
-    public string Email { get; set; }
+    public string Username { get; set; }
     public string Password { get; set; }
+    public AuthMethod Method { get; set; }
+    public bool CreateKeyIfNotExists { get; set; } = false;
+    public enum AuthMethod
+    {
+        ApiKey,
+        Token
+    }
 }
 
 public class ListUsersRequest

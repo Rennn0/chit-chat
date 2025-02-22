@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250212070756_AppUser")]
-    partial class AppUser
+    [Migration("20250222195346_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,6 +95,81 @@ namespace API.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "bb656271-845e-43ac-ae82-5f95db9eec0a",
+                            AccessFailedCount = 0,
+                            ApiKey = "",
+                            ApiKeyExpiry = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ConcurrencyStamp = "913a3741-8a34-42f1-b3b1-dce61dd69762",
+                            Email = "admin@admin.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@ADMIN.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEM+TkAfcUZV6KLUNWLQ1NwN4sE2CR7o5pEyUTAyF2UzYIjR2HapOU0/UlBKbeV1z6w==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
+                });
+
+            modelBuilder.Entity("API.Source.Db.Models.TenantConfiguration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("UpdatedTime")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TenantConfigurations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1000002,
+                            CreatedTime = new DateTimeOffset(new DateTime(2025, 2, 22, 19, 53, 45, 726, DateTimeKind.Unspecified).AddTicks(6576), new TimeSpan(0, 0, 0, 0, 0)),
+                            Price = 0m,
+                            Type = 0,
+                            UpdatedTime = new DateTimeOffset(new DateTime(2025, 2, 22, 19, 53, 45, 726, DateTimeKind.Unspecified).AddTicks(6578), new TimeSpan(0, 0, 0, 0, 0))
+                        },
+                        new
+                        {
+                            Id = 1000001,
+                            CreatedTime = new DateTimeOffset(new DateTime(2025, 2, 22, 19, 53, 45, 726, DateTimeKind.Unspecified).AddTicks(6581), new TimeSpan(0, 0, 0, 0, 0)),
+                            Price = 9.99m,
+                            Type = 1,
+                            UpdatedTime = new DateTimeOffset(new DateTime(2025, 2, 22, 19, 53, 45, 726, DateTimeKind.Unspecified).AddTicks(6582), new TimeSpan(0, 0, 0, 0, 0))
+                        },
+                        new
+                        {
+                            Id = 1000000,
+                            CreatedTime = new DateTimeOffset(new DateTime(2025, 2, 22, 19, 53, 45, 726, DateTimeKind.Unspecified).AddTicks(6595), new TimeSpan(0, 0, 0, 0, 0)),
+                            Price = 19.99m,
+                            Type = 2,
+                            UpdatedTime = new DateTimeOffset(new DateTime(2025, 2, 22, 19, 53, 45, 726, DateTimeKind.Unspecified).AddTicks(6595), new TimeSpan(0, 0, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -122,6 +197,32 @@ namespace API.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "1175d6a8-75f1-4f79-b509-b85bcdcd5eaa",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "ca897b38-a584-4767-8b01-89ffaacf5bfa",
+                            Name = "Elevated",
+                            NormalizedName = "ELEVATED"
+                        },
+                        new
+                        {
+                            Id = "f3b3b3b3-3b3b-3b3b-3b3b-3b3b3b3b3b3b",
+                            Name = "Moderator",
+                            NormalizedName = "MODERATOR"
+                        },
+                        new
+                        {
+                            Id = "a4f720c0-0f99-4c71-8d8e-797a07f983f4",
+                            Name = "None",
+                            NormalizedName = "NONE"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -209,6 +310,13 @@ namespace API.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "bb656271-845e-43ac-ae82-5f95db9eec0a",
+                            RoleId = "1175d6a8-75f1-4f79-b509-b85bcdcd5eaa"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>

@@ -42,7 +42,7 @@ public class TokenManager
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public async Task<string?> GenerateApiKey(
+    public async Task<string?>  GenerateApiKey(
         ApplicationUser user,
         UserManager<ApplicationUser> userManager
     )

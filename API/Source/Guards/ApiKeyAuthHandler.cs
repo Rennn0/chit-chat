@@ -13,19 +13,6 @@ public class ApiKeyAuthHandler : AuthenticationHandler<AuthenticationSchemeOptio
 {
     private readonly UserManager<ApplicationUser> _userManager;
 
-    [Obsolete("Obsolete")]
-    public ApiKeyAuthHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder,
-        ISystemClock clock,
-        UserManager<ApplicationUser> userManager
-    )
-        : base(options, logger, encoder, clock)
-    {
-        _userManager = userManager;
-    }
-
     public ApiKeyAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,

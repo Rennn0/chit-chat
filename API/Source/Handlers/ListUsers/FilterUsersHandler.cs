@@ -17,7 +17,9 @@ public class FilterUsersHandler
     )
     {
         if (context.Response.Data != null)
-            context.Response.Data = context.Response.Data.Where(u => u.EmailConfirmed).ToList();
+        {
+            context.Response.Data = [.. context.Response.Data.Where(u => u.EmailConfirmed)];
+        }
 
         return Task.CompletedTask;
     }

@@ -4,7 +4,12 @@ namespace API.Source.Guards;
 
 public class AddNewUserRequestValidator : AbstractValidator<AddNewUserRequest>
 {
-    private static readonly HashSet<string> _allowedRoles = [Policies.Admin, Policies.Elevated];
+    private static readonly HashSet<string> _allowedRoles =
+    [
+        Policies.Elevated,
+        Policies.Moderator,
+        Policies.None
+    ];
 
     public AddNewUserRequestValidator()
     {
@@ -19,7 +24,7 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
 {
     public LoginRequestValidator()
     {
-        RuleFor(x => x.Email).NotEmpty().EmailAddress();
+        RuleFor(x => x.Username).NotEmpty();
         RuleFor(x => x.Password).NotEmpty().MinimumLength(8);
     }
 }

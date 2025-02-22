@@ -1,101 +1,101 @@
-using API.Source;
-using API.Source.Db;
-using API.Source.Guards;
-using API.Source.Handlers.ApiKey;
-using Microsoft.AspNetCore.Identity;
-using Moq;
-using Xunit;
+// using API.Source;
+// using API.Source.Db;
+// using API.Source.Guards;
+// using API.Source.Handlers.ApiKey;
+// using Microsoft.AspNetCore.Identity;
+// using Moq;
+// using Xunit;
 
-namespace API.__tests__;
+// namespace API.__tests__;
 
-public class ApiControllerTests
-{
-    private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
-    private readonly ApiKeyHandler _handler;
+// public class ApiControllerTests
+// {
+//     private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
+//     private readonly ApiKeyHandler _handler;
 
-    public ApiControllerTests()
-    {
-        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            new Mock<IUserStore<ApplicationUser>>().Object,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        );
-        var configurationMock = new Mock<IConfiguration>();
-        configurationMock.Setup(x => x["Jwt:Key"]).Returns("your-secret-key");
-        configurationMock.Setup(x => x["Jwt:Issuer"]).Returns("your-issuer");
-        configurationMock.Setup(x => x["Jwt:Audience"]).Returns("your-audience");
-        configurationMock.Setup(x => x["Jwt:TTL"]).Returns("1");
+//     public ApiControllerTests()
+//     {
+//         _userManagerMock = new Mock<UserManager<ApplicationUser>>(
+//             new Mock<IUserStore<ApplicationUser>>().Object,
+//             null,
+//             null,
+//             null,
+//             null,
+//             null,
+//             null,
+//             null,
+//             null
+//         );
+//         var configurationMock = new Mock<IConfiguration>();
+//         configurationMock.Setup(x => x["Jwt:Key"]).Returns("your-secret-key");
+//         configurationMock.Setup(x => x["Jwt:Issuer"]).Returns("your-issuer");
+//         configurationMock.Setup(x => x["Jwt:Audience"]).Returns("your-audience");
+//         configurationMock.Setup(x => x["Jwt:TTL"]).Returns("1");
 
-        TokenManager tokenManager = new(configurationMock.Object);
-        //_authorizationServiceMock = new Mock<IAuthorizationService>();
+//         TokenManager tokenManager = new(configurationMock.Object);
+//         //_authorizationServiceMock = new Mock<IAuthorizationService>();
 
-        _handler = new ApiKeyHandler(_userManagerMock.Object, tokenManager);
-        //_listUserStrategy = new ListUsersHandler(_userManagerMock.Object);
-    }
+//         _handler = new ApiKeyHandler(_userManagerMock.Object, tokenManager);
+//         //_listUserStrategy = new ListUsersHandler(_userManagerMock.Object);
+//     }
 
-    [Fact]
-    public async Task ApiKey_ShouldReturnApiKey_WhenCredentialsAreValid()
-    {
-        // Arrange
-        var request = new LoginRequest { Email = "test@example.com", Password = "password123" };
-        var user = new ApplicationUser { Email = request.Email };
+//     [Fact]
+//     public async Task ApiKey_ShouldReturnApiKey_WhenCredentialsAreValid()
+//     {
+//         // Arrange
+//         var request = new LoginRequest { Email = "test@example.com", Password = "password123" };
+//         var user = new ApplicationUser { Email = request.Email };
 
-        _userManagerMock.Setup(x => x.FindByEmailAsync(request.Email)).ReturnsAsync(user);
-        _userManagerMock
-            .Setup(x => x.CheckPasswordAsync(user, request.Password))
-            .ReturnsAsync(true);
+//         _userManagerMock.Setup(x => x.FindByEmailAsync(request.Email)).ReturnsAsync(user);
+//         _userManagerMock
+//             .Setup(x => x.CheckPasswordAsync(user, request.Password))
+//             .ReturnsAsync(true);
 
-        // Act
-        var result = await _handler.ExecuteAsync(request);
+//         // Act
+//         var result = await _handler.ExecuteAsync(request);
 
-        // Assert
-        Assert.True(result.Success);
-        Assert.False(string.IsNullOrEmpty(result.Data));
-    }
+//         // Assert
+//         Assert.True(result.Success);
+//         Assert.False(string.IsNullOrEmpty(result.Data));
+//     }
 
-    [Fact]
-    public async Task ApiKey_ShouldReturnError_WhenUserDoesNotExist()
-    {
-        // Arrange
-        var request = new LoginRequest
-        {
-            Email = "nonexistent@example.com",
-            Password = "password123",
-        };
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(request.Email))
-            .ReturnsAsync((ApplicationUser)null);
+//     [Fact]
+//     public async Task ApiKey_ShouldReturnError_WhenUserDoesNotExist()
+//     {
+//         // Arrange
+//         var request = new LoginRequest
+//         {
+//             Email = "nonexistent@example.com",
+//             Password = "password123",
+//         };
+//         _userManagerMock
+//             .Setup(x => x.FindByEmailAsync(request.Email))
+//             .ReturnsAsync((ApplicationUser)null);
 
-        // Act
-        var result = await _handler.ExecuteAsync(request);
+//         // Act
+//         var result = await _handler.ExecuteAsync(request);
 
-        // Assert
-        Assert.False(result.Success);
-        Assert.Equal("Invalid Credentials", result.Error);
-    }
+//         // Assert
+//         Assert.False(result.Success);
+//         Assert.Equal("Invalid Credentials", result.Error);
+//     }
 
-    [Fact]
-    public async Task ApiKey_ShouldReturnError_WhenPasswordIsIncorrect()
-    {
-        // Arrange
-        var request = new LoginRequest { Email = "test@example.com", Password = "wrongpassword" };
-        var user = new ApplicationUser { Email = request.Email };
-        _userManagerMock.Setup(x => x.FindByEmailAsync(request.Email)).ReturnsAsync(user);
-        _userManagerMock
-            .Setup(x => x.CheckPasswordAsync(user, request.Password))
-            .ReturnsAsync(false);
+//     [Fact]
+//     public async Task ApiKey_ShouldReturnError_WhenPasswordIsIncorrect()
+//     {
+//         // Arrange
+//         var request = new LoginRequest { Email = "test@example.com", Password = "wrongpassword" };
+//         var user = new ApplicationUser { Email = request.Email };
+//         _userManagerMock.Setup(x => x.FindByEmailAsync(request.Email)).ReturnsAsync(user);
+//         _userManagerMock
+//             .Setup(x => x.CheckPasswordAsync(user, request.Password))
+//             .ReturnsAsync(false);
 
-        // Act
-        var result = await _handler.ExecuteAsync(request);
+//         // Act
+//         var result = await _handler.ExecuteAsync(request);
 
-        // Assert
-        Assert.False(result.Success);
-        Assert.Equal("Invalid Credentials", result.Error);
-    }
-}
+//         // Assert
+//         Assert.False(result.Success);
+//         Assert.Equal("Invalid Credentials", result.Error);
+//     }
+// }

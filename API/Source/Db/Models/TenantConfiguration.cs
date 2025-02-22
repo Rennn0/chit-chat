@@ -7,7 +7,7 @@ public class TenantConfiguration
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public decimal Price { get; set; }
 

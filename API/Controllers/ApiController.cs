@@ -26,7 +26,7 @@ namespace API.Controllers
         /// <remarks>
         /// This endpoint requires Admin privileges.
         /// </remarks>
-        [Authorize(Policy = Policies.Admin)]
+        [Authorize(Policy = Policies.Admin, AuthenticationSchemes = "ApiKey")]
         [HttpPost(template: "user")]
         public async Task<ResponseModelBase<object>> AddNewUser(
             [FromBody] AddNewUserRequest request
@@ -46,7 +46,7 @@ namespace API.Controllers
         public async Task<ResponseModelBase<string>> Login([FromBody] LoginRequest request)
         {
             return await _factory
-                .GetHandler<LoginRequest, ResponseModelBase<string>>()
+                .GetPipeline<LoginRequest, ResponseModelBase<string>>()
                 .ExecuteAsync(request);
         }
 
@@ -54,7 +54,7 @@ namespace API.Controllers
         /// Retrieves a list of users.
         /// </summary>
         /// <returns>A response model containing a list of application users.</returns>
-        [Authorize(Policy = Policies.Elevated)]
+        [Authorize(AuthenticationSchemes = "ApiKey,Bearer")]
         [HttpGet(template: "users")]
         public async Task<ResponseModelBase<IEnumerable<ApplicationUser>>> ListUsers()
         {
@@ -63,16 +63,21 @@ namespace API.Controllers
                 .ExecuteAsync(new ListUsersRequest());
         }
 
+        [Authorize(Policy = Policies.Admin, AuthenticationSchemes = "ApiKey")]
+        [Authorize(Policy = Policies.Moderator, AuthenticationSchemes = "Bearer")]
         [HttpPost(template: "tenant")]
         public async Task<ResponseModelBase<AddNewTenantResponse>> AddNewTenant(
-            [FromBody] AddNewTenantRequest request
-        )
+                    [FromBody] AddNewTenantRequest request
+                )
         {
             return await _factory
                 .GetPipeline<AddNewTenantRequest, ResponseModelBase<AddNewTenantResponse>>()
                 .ExecuteAsync(request);
         }
 
+        [Authorize(Policy = Policies.Admin, AuthenticationSchemes = "ApiKey")]
+        [Authorize(Policy = Policies.Moderator, AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = Policies.Elevated, AuthenticationSchemes = "Bearer")]
         [HttpGet(template: "tenants")]
         public async Task<ResponseModelBase<IEnumerable<ListTenantsResponse>>> AddNewTenant(
             [FromQuery] ListTenantsRequest request

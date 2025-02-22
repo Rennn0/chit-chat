@@ -30,15 +30,13 @@ public class ListTenantsHandler
         IEnumerable<TenantConfiguration?> tenantConfigs = await _work
             .GetRepository<TenantConfiguration>()
             .GetAllAsync();
-        context.Response.Data = tenantConfigs.Select(tc =>
-            tc is null
-                ? null
-                : new ListTenantsResponse()
-                {
-                    Type = tc.Type,
-                    Id = tc.Id,
-                    Price = tc.Price,
-                }
-        );
+        context.Response.Data = tenantConfigs
+            .Where(tc => tc != null)
+            .Select(tc => new ListTenantsResponse()
+            {
+                Type = tc!.Type,
+                Id = tc.Id,
+                Price = tc.Price,
+            });
     }
 }

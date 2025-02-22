@@ -16,7 +16,7 @@ public class AddNewTenantResponse
 
 public class ListTenantsResponse
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public decimal Price { get; set; }
     public TenantConfiguration.TenantType Type { get; set; }
 }

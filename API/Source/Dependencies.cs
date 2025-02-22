@@ -1,4 +1,5 @@
-﻿using API.Source.Db;
+﻿using System.Text;
+using API.Source.Db;
 using API.Source.Db.Repo;
 using API.Source.Factory;
 using API.Source.Guards;
@@ -8,12 +9,15 @@ using API.Source.Handlers.AddNewUser;
 using API.Source.Handlers.ApiKey;
 using API.Source.Handlers.ListTenants;
 using API.Source.Handlers.ListUsers;
+using API.Source.Handlers.Login;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using llibrary.Logging;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace API.Source;
@@ -45,33 +49,35 @@ public static class Dependencies
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services
-            .AddAuthentication("ApiKey")
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(
+                            configuration["Jwt:Key"] ?? throw new Exception("Jwt key is required")
+                        )
+                    ),
+                };
+            })
             .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthHandler>(
                 "ApiKey",
                 configureOptions: null
             );
 
-        //services
-        //    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        //    .AddJwtBearer(options =>
-        //    {
-        //        options.TokenValidationParameters = new TokenValidationParameters()
-        //        {
-        //            ValidateIssuer = true,
-        //            ValidateAudience = true,
-        //            ValidIssuer = configuration["Jwt:Issuer"],
-        //            ValidAudience = configuration["Jwt:Audience"],
-        //            IssuerSigningKey = new SymmetricSecurityKey(
-        //                Encoding.UTF8.GetBytes(
-        //                    configuration["Jwt:Key"] ?? throw new Exception("Jwt key is required")
-        //                )
-        //            ),
-        //        };
-        //    });
-
         services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo() { Title = "API", Version = "v1" });
+            options.SwaggerDoc("v1", new OpenApiInfo() { Title = "ChitChat API", Version = "v1" });
 
             options.AddSecurityDefinition(
                 "ApiKey",
@@ -82,6 +88,16 @@ public static class Dependencies
                     In = ParameterLocation.Header,
                 }
             );
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "JWT Authorization header using the Bearer scheme."
+            });
 
             options.AddSecurityRequirement(
                 new OpenApiSecurityRequirement()
@@ -97,6 +113,17 @@ public static class Dependencies
                         },
                         new List<string>()
                     },
+                    {
+                        new OpenApiSecurityScheme()
+                        {
+                            Reference = new OpenApiReference()
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer",
+                            },
+                        },
+                        new List<string>()
+                    }
                 }
             );
         });
@@ -153,6 +180,11 @@ public static class Dependencies
         >();
 
         services.AddScoped<
+            IRequestHandler<LoginRequest, ResponseModelBase<string>>,
+            TokenHandler
+        >();
+
+        services.AddScoped<
             IRequestHandler<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
             ListUsersHandler
         >();
@@ -190,6 +222,11 @@ public static class Dependencies
                 ResponseModelBase<IEnumerable<ListTenantsResponse>>
             >,
             RequestPipeline<ListTenantsRequest, ResponseModelBase<IEnumerable<ListTenantsResponse>>>
+        >();
+
+        services.AddScoped<
+            IRequestPipeline<LoginRequest, ResponseModelBase<string>>,
+            RequestPipeline<LoginRequest, ResponseModelBase<string>>
         >();
 
         services.AddScoped<IRequestHandlerFactory, RequestHandlerFactory>();
