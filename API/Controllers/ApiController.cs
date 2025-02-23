@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api")]
+    [Route("[controller]/[action]")]
     [ApiController]
     public class ApiController : ControllerBase
     {
@@ -20,7 +20,11 @@ namespace API.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
 
-        public ApiController(IRequestHandlerFactory factory, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public ApiController(
+            IRequestHandlerFactory factory,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager
+        )
         {
             _factory = factory;
             this.userManager = userManager;
@@ -76,8 +80,8 @@ namespace API.Controllers
         [Authorize(Policy = Policies.Moderator, AuthenticationSchemes = "Bearer")]
         [HttpPost(template: "tenant")]
         public async Task<ResponseModelBase<AddNewTenantResponse>> AddNewTenant(
-                    [FromBody] AddNewTenantRequest request
-                )
+            [FromBody] AddNewTenantRequest request
+        )
         {
             return await _factory
                 .GetPipeline<AddNewTenantRequest, ResponseModelBase<AddNewTenantResponse>>()
@@ -101,40 +105,47 @@ namespace API.Controllers
         }
 
         [HttpGet(template: "login")]
-        [Authorize]
         public IActionResult Login(ILogger<IWarningLogger> logger)
         {
-            // var redirectUrl = "https://127.0.0.1:7282/api/google";
+            var redirectUrl = Url.Action("GoogleResponse", "Api", null, Request.Scheme);
 
-            // logger.LogWarning(redirectUrl);
+            logger.LogWarning(redirectUrl);
 
-            // var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
-            // return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-
-            return Ok();
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(
+                GoogleDefaults.AuthenticationScheme,
+                redirectUrl
+            );
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
-        [HttpGet(template: "google")]
+        [HttpGet(template: "signin-google")]
         public async Task<IActionResult> GoogleResponse()
         {
-            var authResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            var authResult = await HttpContext.AuthenticateAsync(
+                GoogleDefaults.AuthenticationScheme
+            );
             if (!authResult.Succeeded)
             {
                 return BadRequest();
             }
+
             var claims = authResult.Principal.Identities.FirstOrDefault()?.Claims;
-            var email = authResult.Principal.FindFirst(ClaimTypes.Email)?.Value ?? throw new Exception("Email not found");
+            var email =
+                authResult.Principal.FindFirst(ClaimTypes.Email)?.Value
+                ?? throw new Exception("Email not found");
             var user = await userManager.FindByEmailAsync(email);
             if (user is null)
             {
-                user = new ApplicationUser
-                {
-                    Email = email,
-                    UserName = email
-                };
+                user = new ApplicationUser { Email = email, UserName = email };
                 await userManager.CreateAsync(user);
             }
-            await signInManager.SignInAsync(user, isPersistent: false);
+
+            var externalLoginInfo = await signInManager.GetExternalLoginInfoAsync();
+
+            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+            await userManager.AddLoginAsync(user, externalLoginInfo);
             return Ok(new { Claims = claims });
         }
     }

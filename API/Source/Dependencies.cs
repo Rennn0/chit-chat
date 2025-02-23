@@ -15,7 +15,6 @@ using llibrary.Logging;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -36,13 +35,22 @@ public static class Dependencies
             options.TokenLifespan = TimeSpan.FromMinutes(3);
         });
 
+        services.Configure<CookieAuthenticationOptions>(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            options =>
+            {
+                options.Cookie.Name = "ChitChat-AuthCookie";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+            }
+        );
+
         services
             .AddIdentityCore<ApplicationUser>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
                 options.User.RequireUniqueEmail = true;
-                options.SignIn.RequireConfirmedEmail = true;
-                options.SignIn.RequireConfirmedAccount = true;
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationContext>()
@@ -59,14 +67,18 @@ public static class Dependencies
         services
             .AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
                 options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
             })
-            .AddCookie()
             .AddGoogle(options =>
             {
-                options.ClientId = configuration["Google:ClientId"] ?? throw new Exception("Google client id is required");
-                options.ClientSecret = configuration["Google:ClientSecret"] ?? throw new Exception("Google client secret is required");
+                options.ClientId =
+                    configuration["Google:ClientId"]
+                    ?? throw new Exception("Google client id is required");
+                options.ClientSecret =
+                    configuration["Google:ClientSecret"]
+                    ?? throw new Exception("Google client secret is required");
             })
             .AddJwtBearer(options =>
             {
@@ -87,7 +99,8 @@ public static class Dependencies
             .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthHandler>(
                 "ApiKey",
                 configureOptions: null
-            );
+            )
+            .AddIdentityCookies();
 
         services.AddSwaggerGen(options =>
         {
@@ -103,15 +116,18 @@ public static class Dependencies
                 }
             );
 
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-            {
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                Scheme = "Bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = "JWT Authorization header using the Bearer scheme."
-            });
+            options.AddSecurityDefinition(
+                "Bearer",
+                new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                }
+            );
 
             options.AddSecurityRequirement(
                 new OpenApiSecurityRequirement()
@@ -137,7 +153,7 @@ public static class Dependencies
                             },
                         },
                         new List<string>()
-                    }
+                    },
                 }
             );
         });
@@ -178,7 +194,15 @@ public static class Dependencies
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<Program>();
 
-        services.AddControllers();
+        services
+            .AddControllers()
+            .AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft
+                    .Json
+                    .ReferenceLoopHandling
+                    .Ignore
+            );
+        ;
         services.AddEndpointsApiExplorer();
 
         services.AddMemoryCache();
@@ -187,8 +211,8 @@ public static class Dependencies
         services.AddHttpClient<ResendClient>();
         services.Configure<ResendClientOptions>(o =>
         {
-            o.ApiToken = configuration["ResendApiKey"] ?? throw new Exception("Resend API key is required");
-
+            o.ApiToken =
+                configuration["ResendApiKey"] ?? throw new Exception("Resend API key is required");
         });
         services.AddTransient<IResend, ResendClient>();
 
