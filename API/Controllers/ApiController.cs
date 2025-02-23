@@ -1,9 +1,7 @@
-﻿using System.Security.Claims;
-using API.Source;
+﻿using API.Source;
 using API.Source.Db;
 using API.Source.Factory;
 using API.Source.Guards;
-using llibrary.Logging;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
@@ -17,8 +15,8 @@ namespace API.Controllers
     public class ApiController : ControllerBase
     {
         private readonly IRequestHandlerFactory _factory;
-        private readonly UserManager<ApplicationUser> userManager;
-        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public ApiController(
             IRequestHandlerFactory factory,
@@ -27,8 +25,8 @@ namespace API.Controllers
         )
         {
             _factory = factory;
-            this.userManager = userManager;
-            this.signInManager = signInManager;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         /// <summary>
@@ -40,8 +38,8 @@ namespace API.Controllers
         /// This endpoint requires Admin privileges.
         /// </remarks>
         [Authorize(Policy = Policies.Admin, AuthenticationSchemes = "ApiKey")]
-        [HttpPost(template: "user")]
-        public async Task<ResponseModelBase<object>> AddNewUser(
+        [HttpPost]
+        public async Task<ResponseModelBase<object>> ApplicationUser(
             [FromBody] AddNewUserRequest request
         )
         {
@@ -55,7 +53,7 @@ namespace API.Controllers
         /// </summary>
         /// <param name="request">The login request containing email and password.</param>
         /// <returns>A response model containing the generated API key.</returns>
-        [HttpPost(template: "auth")]
+        [HttpPost]
         public async Task<ResponseModelBase<string>> Auth([FromBody] AuthRequest request)
         {
             return await _factory
@@ -68,8 +66,8 @@ namespace API.Controllers
         /// </summary>
         /// <returns>A response model containing a list of application users.</returns>
         [Authorize(AuthenticationSchemes = "ApiKey,Bearer")]
-        [HttpGet(template: "users")]
-        public async Task<ResponseModelBase<IEnumerable<ApplicationUser>>> ListUsers()
+        [HttpGet]
+        public async Task<ResponseModelBase<IEnumerable<ApplicationUser>>> ApplicationUsers()
         {
             return await _factory
                 .GetPipeline<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>()
@@ -78,8 +76,8 @@ namespace API.Controllers
 
         [Authorize(Policy = Policies.Admin, AuthenticationSchemes = "ApiKey")]
         [Authorize(Policy = Policies.Moderator, AuthenticationSchemes = "Bearer")]
-        [HttpPost(template: "tenant")]
-        public async Task<ResponseModelBase<AddNewTenantResponse>> AddNewTenant(
+        [HttpPost]
+        public async Task<ResponseModelBase<AddNewTenantResponse>> Tenant(
             [FromBody] AddNewTenantRequest request
         )
         {
@@ -91,8 +89,8 @@ namespace API.Controllers
         [Authorize(Policy = Policies.Admin, AuthenticationSchemes = "ApiKey")]
         [Authorize(Policy = Policies.Moderator, AuthenticationSchemes = "Bearer")]
         [Authorize(Policy = Policies.Elevated, AuthenticationSchemes = "Bearer")]
-        [HttpGet(template: "tenants")]
-        public async Task<ResponseModelBase<IEnumerable<ListTenantsResponse>>> AddNewTenant(
+        [HttpGet]
+        public async Task<ResponseModelBase<IEnumerable<ListTenantsResponse>>> Tenants(
             [FromQuery] ListTenantsRequest request
         )
         {
@@ -104,49 +102,23 @@ namespace API.Controllers
                 .ExecuteAsync(request);
         }
 
-        [HttpGet(template: "login")]
-        public IActionResult Login(ILogger<IWarningLogger> logger)
+        [HttpGet]
+        public IActionResult GoogleAuth()
         {
-            var redirectUrl = Url.Action("GoogleResponse", "Api", null, Request.Scheme);
-
-            logger.LogWarning(redirectUrl);
-
-            var properties = signInManager.ConfigureExternalAuthenticationProperties(
-                GoogleDefaults.AuthenticationScheme,
-                redirectUrl
-            );
+            AuthenticationProperties properties =
+                _signInManager.ConfigureExternalAuthenticationProperties(
+                    provider: GoogleDefaults.AuthenticationScheme,
+                    Url.Action("GoogleRedirect", "Api")
+                );
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
-        [HttpGet(template: "signin-google")]
-        public async Task<IActionResult> GoogleResponse()
+        [HttpGet]
+        public async Task<ResponseModelBase<string>> GoogleRedirect()
         {
-            var authResult = await HttpContext.AuthenticateAsync(
-                GoogleDefaults.AuthenticationScheme
-            );
-            if (!authResult.Succeeded)
-            {
-                return BadRequest();
-            }
-
-            var claims = authResult.Principal.Identities.FirstOrDefault()?.Claims;
-            var email =
-                authResult.Principal.FindFirst(ClaimTypes.Email)?.Value
-                ?? throw new Exception("Email not found");
-            var user = await userManager.FindByEmailAsync(email);
-            if (user is null)
-            {
-                user = new ApplicationUser { Email = email, UserName = email };
-                await userManager.CreateAsync(user);
-            }
-
-            var externalLoginInfo = await signInManager.GetExternalLoginInfoAsync();
-
-            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-            await userManager.AddLoginAsync(user, externalLoginInfo);
-            return Ok(new { Claims = claims });
+            return await _factory
+                .GetPipeline<AuthRequest.GoogleRedirect, ResponseModelBase<string>>()
+                .ExecuteAsync(new AuthRequest.GoogleRedirect(), HttpContext);
         }
     }
 }

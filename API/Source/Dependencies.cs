@@ -6,9 +6,9 @@ using API.Source.Guards;
 using API.Source.Handlers;
 using API.Source.Handlers.AddNewTenant;
 using API.Source.Handlers.AddNewUser;
+using API.Source.Handlers.Authorization;
 using API.Source.Handlers.ListTenants;
 using API.Source.Handlers.ListUsers;
-using API.Source.Handlers.Login;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using llibrary.Logging;
@@ -20,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Resend;
+using GoogleHandler = API.Source.Handlers.Authorization.GoogleHandler;
 
 namespace API.Source;
 
@@ -75,10 +76,10 @@ public static class Dependencies
             {
                 options.ClientId =
                     configuration["Google:ClientId"]
-                    ?? throw new Exception("Google client id is required");
+                    ?? throw new Exception("GoogleRedirect client id is required");
                 options.ClientSecret =
                     configuration["Google:ClientSecret"]
-                    ?? throw new Exception("Google client secret is required");
+                    ?? throw new Exception("GoogleRedirect client secret is required");
             })
             .AddJwtBearer(options =>
             {
@@ -257,6 +258,11 @@ public static class Dependencies
         >();
 
         services.AddScoped<
+            IRequestHandler<AuthRequest.GoogleRedirect, ResponseModelBase<string>>,
+            GoogleHandler
+        >();
+
+        services.AddScoped<
             IRequestPipeline<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
             RequestPipeline<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>
         >();
@@ -277,6 +283,11 @@ public static class Dependencies
         services.AddScoped<
             IRequestPipeline<AuthRequest, ResponseModelBase<string>>,
             RequestPipeline<AuthRequest, ResponseModelBase<string>>
+        >();
+
+        services.AddScoped<
+            IRequestPipeline<AuthRequest.GoogleRedirect, ResponseModelBase<string>>,
+            RequestPipeline<AuthRequest.GoogleRedirect, ResponseModelBase<string>>
         >();
 
         services.AddScoped<IRequestHandlerFactory, RequestHandlerFactory>();

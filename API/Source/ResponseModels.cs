@@ -18,5 +18,5 @@ public class ListTenantsResponse
 {
     public int Id { get; set; }
     public decimal Price { get; set; }
-    public TenantConfiguration.TenantType Type { get; set; }
+    public TenantConfiguration.TENANT_TYPE Type { get; set; }
 }

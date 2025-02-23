@@ -10,10 +10,11 @@ public class RequestPipeline<TRequest, TResponse> : IRequestPipeline<TRequest, T
         _handlers = handlers;
     }
 
-    public async Task<TResponse> ExecuteAsync(TRequest request)
+    public async Task<TResponse> ExecuteAsync(TRequest request, HttpContext? httpContext = null)
     {
         PipelineContext<TRequest, TResponse> context = new PipelineContext<TRequest, TResponse>(
-            request
+            request,
+            httpContext
         );
 
         foreach (IRequestHandler<TRequest, TResponse> handler in _handlers)

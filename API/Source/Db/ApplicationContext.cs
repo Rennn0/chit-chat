@@ -32,7 +32,7 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser>
                     CreatedTime = DateTimeOffset.UtcNow,
                     UpdatedTime = DateTimeOffset.UtcNow,
                     Price = 0,
-                    Type = TenantConfiguration.TenantType.Free,
+                    Type = TenantConfiguration.TENANT_TYPE.Free,
                 },
                 new TenantConfiguration
                 {
@@ -40,7 +40,7 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser>
                     CreatedTime = DateTimeOffset.UtcNow,
                     UpdatedTime = DateTimeOffset.UtcNow,
                     Price = new decimal(9.99),
-                    Type = TenantConfiguration.TenantType.Basic,
+                    Type = TenantConfiguration.TENANT_TYPE.Basic,
                 },
                 new TenantConfiguration
                 {
@@ -48,7 +48,7 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser>
                     CreatedTime = DateTimeOffset.UtcNow,
                     UpdatedTime = DateTimeOffset.UtcNow,
                     Price = new decimal(19.99),
-                    Type = TenantConfiguration.TenantType.Premium,
+                    Type = TenantConfiguration.TENANT_TYPE.Premium,
                 }
             );
         });

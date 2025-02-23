@@ -11,7 +11,7 @@ public class TenantConfiguration
 
     public decimal Price { get; set; }
 
-    public TenantType Type { get; set; }
+    public TENANT_TYPE Type { get; set; }
 
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public DateTimeOffset CreatedTime { get; set; }
@@ -19,7 +19,7 @@ public class TenantConfiguration
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTimeOffset UpdatedTime { get; set; }
 
-    public enum TenantType
+    public enum TENANT_TYPE
     {
         Free,
         Basic,

@@ -16,14 +16,17 @@ public class AuthRequest
     public string Username { get; set; }
     public string Password { get; set; }
     public string TwoFactorToken { get; set; }
-    public AuthMethod Method { get; set; }
+    public AUTH_METHOD Method { get; set; }
     public bool CreateKeyIfNotExists { get; set; } = false;
-    public enum AuthMethod
+
+    public enum AUTH_METHOD
     {
         ApiKey,
         Token,
-        Verify2FA
+        Verify2Fa,
     }
+
+    public class GoogleRedirect { }
 }
 
 public class ListUsersRequest
@@ -36,7 +39,7 @@ public class ListUsersRequest
 
 public class AddNewTenantRequest
 {
-    public TenantConfiguration.TenantType Type { get; set; }
+    public TenantConfiguration.TENANT_TYPE Type { get; set; }
     public decimal Price { get; set; }
 }
 

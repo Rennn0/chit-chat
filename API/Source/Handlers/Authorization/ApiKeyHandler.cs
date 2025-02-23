@@ -2,7 +2,7 @@
 using API.Source.Guards;
 using Microsoft.AspNetCore.Identity;
 
-namespace API.Source.Handlers.Login
+namespace API.Source.Handlers.Authorization
 {
     public class ApiKeyHandler : IRequestHandler<AuthRequest, ResponseModelBase<string>>
     {
@@ -28,7 +28,7 @@ namespace API.Source.Handlers.Login
 
             if (request.CreateKeyIfNotExists && string.IsNullOrEmpty(user.ApiKey))
             {
-                response.Data = await _tokenManager.GenerateApiKey(user, _userManager);
+                response.Data = await _tokenManager.GenerateApiKeyAsync(user, _userManager);
                 return response;
             }
 
@@ -43,9 +43,11 @@ namespace API.Source.Handlers.Login
             return response;
         }
 
-        public async Task ExecuteAsync(PipelineContext<AuthRequest, ResponseModelBase<string>> context)
+        public async Task ExecuteAsync(
+            PipelineContext<AuthRequest, ResponseModelBase<string>> context
+        )
         {
-            if (context.Request.Method != AuthRequest.AuthMethod.ApiKey)
+            if (context.Request.Method != AuthRequest.AUTH_METHOD.ApiKey)
             {
                 return;
             }

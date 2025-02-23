@@ -16,7 +16,7 @@ public class TokenManager
         _config = configuration;
     }
 
-    public async Task<string> GenerateJwtToken(
+    public async Task<string> GenerateJwtTokenAsync(
         ApplicationUser user,
         UserManager<ApplicationUser> userManager
     )
@@ -42,7 +42,7 @@ public class TokenManager
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public async Task<string?>  GenerateApiKey(
+    public async Task<string?> GenerateApiKeyAsync(
         ApplicationUser user,
         UserManager<ApplicationUser> userManager
     )
