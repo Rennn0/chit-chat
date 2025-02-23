@@ -1,8 +1,13 @@
-﻿using API.Source;
+﻿using System.Security.Claims;
+using API.Source;
 using API.Source.Db;
 using API.Source.Factory;
 using API.Source.Guards;
+using llibrary.Logging;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -12,10 +17,14 @@ namespace API.Controllers
     public class ApiController : ControllerBase
     {
         private readonly IRequestHandlerFactory _factory;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
 
-        public ApiController(IRequestHandlerFactory factory)
+        public ApiController(IRequestHandlerFactory factory, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _factory = factory;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
         }
 
         /// <summary>
@@ -89,6 +98,44 @@ namespace API.Controllers
                     ResponseModelBase<IEnumerable<ListTenantsResponse>>
                 >()
                 .ExecuteAsync(request);
+        }
+
+        [HttpGet(template: "login")]
+        [Authorize]
+        public IActionResult Login(ILogger<IWarningLogger> logger)
+        {
+            // var redirectUrl = "https://127.0.0.1:7282/api/google";
+
+            // logger.LogWarning(redirectUrl);
+
+            // var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            // return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+
+            return Ok();
+        }
+
+        [HttpGet(template: "google")]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var authResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            if (!authResult.Succeeded)
+            {
+                return BadRequest();
+            }
+            var claims = authResult.Principal.Identities.FirstOrDefault()?.Claims;
+            var email = authResult.Principal.FindFirst(ClaimTypes.Email)?.Value ?? throw new Exception("Email not found");
+            var user = await userManager.FindByEmailAsync(email);
+            if (user is null)
+            {
+                user = new ApplicationUser
+                {
+                    Email = email,
+                    UserName = email
+                };
+                await userManager.CreateAsync(user);
+            }
+            await signInManager.SignInAsync(user, isPersistent: false);
+            return Ok(new { Claims = claims });
         }
     }
 }

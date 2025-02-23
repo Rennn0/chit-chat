@@ -13,6 +13,8 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using llibrary.Logging;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +35,7 @@ public static class Dependencies
         {
             options.TokenLifespan = TimeSpan.FromMinutes(3);
         });
+
         services
             .AddIdentityCore<ApplicationUser>(options =>
             {
@@ -56,8 +59,14 @@ public static class Dependencies
         services
             .AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddGoogle(options =>
+            {
+                options.ClientId = configuration["Google:ClientId"] ?? throw new Exception("Google client id is required");
+                options.ClientSecret = configuration["Google:ClientSecret"] ?? throw new Exception("Google client secret is required");
             })
             .AddJwtBearer(options =>
             {
