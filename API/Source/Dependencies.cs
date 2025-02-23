@@ -6,7 +6,6 @@ using API.Source.Guards;
 using API.Source.Handlers;
 using API.Source.Handlers.AddNewTenant;
 using API.Source.Handlers.AddNewUser;
-using API.Source.Handlers.ApiKey;
 using API.Source.Handlers.ListTenants;
 using API.Source.Handlers.ListUsers;
 using API.Source.Handlers.Login;
@@ -19,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Resend;
 
 namespace API.Source;
 
@@ -29,12 +29,17 @@ public static class Dependencies
         IConfiguration configuration
     )
     {
+        services.Configure<DataProtectionTokenProviderOptions>(options =>
+        {
+            options.TokenLifespan = TimeSpan.FromMinutes(3);
+        });
         services
             .AddIdentityCore<ApplicationUser>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedAccount = true;
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationContext>()
@@ -169,19 +174,31 @@ public static class Dependencies
 
         services.AddMemoryCache();
 
+        services.AddOptions();
+        services.AddHttpClient<ResendClient>();
+        services.Configure<ResendClientOptions>(o =>
+        {
+            o.ApiToken = configuration["ResendApiKey"] ?? throw new Exception("Resend API key is required");
+
+        });
+        services.AddTransient<IResend, ResendClient>();
+
         services.AddScoped<
             IRequestHandler<AddNewUserRequest, ResponseModelBase<object>>,
             AddUserHandler
         >();
 
         services.AddScoped<
-            IRequestHandler<LoginRequest, ResponseModelBase<string>>,
+            IRequestHandler<AuthRequest, ResponseModelBase<string>>,
             ApiKeyHandler
         >();
-
         services.AddScoped<
-            IRequestHandler<LoginRequest, ResponseModelBase<string>>,
-            TokenHandler
+            IRequestHandler<AuthRequest, ResponseModelBase<string>>,
+            Handlers.Authorization.TokenHandler
+        >();
+        services.AddScoped<
+            IRequestHandler<AuthRequest, ResponseModelBase<string>>,
+            Handlers.Authorization.TwoFactorHandler
         >();
 
         services.AddScoped<
@@ -225,8 +242,8 @@ public static class Dependencies
         >();
 
         services.AddScoped<
-            IRequestPipeline<LoginRequest, ResponseModelBase<string>>,
-            RequestPipeline<LoginRequest, ResponseModelBase<string>>
+            IRequestPipeline<AuthRequest, ResponseModelBase<string>>,
+            RequestPipeline<AuthRequest, ResponseModelBase<string>>
         >();
 
         services.AddScoped<IRequestHandlerFactory, RequestHandlerFactory>();

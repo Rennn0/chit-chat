@@ -11,16 +11,18 @@ public class AddNewUserRequest
     public List<string> Roles { get; set; } = [];
 }
 
-public class LoginRequest
+public class AuthRequest
 {
     public string Username { get; set; }
     public string Password { get; set; }
+    public string TwoFactorToken { get; set; }
     public AuthMethod Method { get; set; }
     public bool CreateKeyIfNotExists { get; set; } = false;
     public enum AuthMethod
     {
         ApiKey,
-        Token
+        Token,
+        Verify2FA
     }
 }
 
@@ -36,7 +38,6 @@ public class AddNewTenantRequest
 {
     public TenantConfiguration.TenantType Type { get; set; }
     public decimal Price { get; set; }
-    public bool Throw { get; set; } = false;
 }
 
 public class ListTenantsRequest

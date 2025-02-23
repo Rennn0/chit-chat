@@ -42,11 +42,11 @@ namespace API.Controllers
         /// </summary>
         /// <param name="request">The login request containing email and password.</param>
         /// <returns>A response model containing the generated API key.</returns>
-        [HttpPost(template: "auth/login")]
-        public async Task<ResponseModelBase<string>> Login([FromBody] LoginRequest request)
+        [HttpPost(template: "auth")]
+        public async Task<ResponseModelBase<string>> Auth([FromBody] AuthRequest request)
         {
             return await _factory
-                .GetPipeline<LoginRequest, ResponseModelBase<string>>()
+                .GetPipeline<AuthRequest, ResponseModelBase<string>>()
                 .ExecuteAsync(request);
         }
 

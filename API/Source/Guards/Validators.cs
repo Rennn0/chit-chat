@@ -20,7 +20,7 @@ public class AddNewUserRequestValidator : AbstractValidator<AddNewUserRequest>
     }
 }
 
-public class LoginRequestValidator : AbstractValidator<LoginRequest>
+public class LoginRequestValidator : AbstractValidator<AuthRequest>
 {
     public LoginRequestValidator()
     {
