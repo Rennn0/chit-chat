@@ -102,23 +102,50 @@ namespace API.Controllers
                 .ExecuteAsync(request);
         }
 
+        /// <summary>
+        /// Initiates the Google authentication process.
+        /// </summary>
+        /// <param name="redirectUri">The URI to redirect to after authentication.</param>
+        /// <returns>An authentication challenge result.</returns>
         [HttpGet]
-        public IActionResult GoogleAuth()
+        public IActionResult GoogleAuth(string redirectUri)
         {
             AuthenticationProperties properties =
                 _signInManager.ConfigureExternalAuthenticationProperties(
                     provider: GoogleDefaults.AuthenticationScheme,
                     Url.Action("GoogleRedirect", "Api")
                 );
+
+            properties.Items["redirect_uri"] = redirectUri;
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
+        /// <summary>
+        /// Handles the Google authentication redirect.
+        /// </summary>
+        /// <returns>A redirection to the specified URI with a token or error message.</returns>
         [HttpGet]
-        public async Task<ResponseModelBase<string>> GoogleRedirect()
+        public async Task<IActionResult> GoogleRedirect()
         {
-            return await _factory
+            AuthenticateResult authResult = await HttpContext.AuthenticateAsync(
+                GoogleDefaults.AuthenticationScheme
+            );
+
+            if (
+                authResult.Properties is null
+                || !authResult.Properties.Items.TryGetValue("redirect_uri", out string? redirectUri)
+            )
+            {
+                return BadRequest(error: "missing redirect_uri");
+            }
+
+            ResponseModelBase<string> result = await _factory
                 .GetPipeline<AuthRequest.GoogleRedirect, ResponseModelBase<string>>()
                 .ExecuteAsync(new AuthRequest.GoogleRedirect(), HttpContext);
+
+            return result.Success
+                ? Redirect($"{redirectUri}?token={result.Data}")
+                : Redirect($"{redirectUri}?error={result.Error}");
         }
     }
 }

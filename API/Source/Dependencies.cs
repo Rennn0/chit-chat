@@ -13,7 +13,6 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using llibrary.Logging;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -36,22 +35,24 @@ public static class Dependencies
             options.TokenLifespan = TimeSpan.FromMinutes(3);
         });
 
-        services.Configure<CookieAuthenticationOptions>(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            options =>
-            {
-                options.Cookie.Name = "ChitChat-AuthCookie";
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.Lax;
-            }
-        );
+        //services.Configure<CookieAuthenticationOptions>(
+        //    CookieAuthenticationDefaults.AuthenticationScheme,
+        //    options =>
+        //    {
+        //        options.Cookie.Name = "ChitChat-AuthCookie";
+        //        options.Cookie.HttpOnly = true;
+        //        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        //        options.Cookie.SameSite = SameSiteMode.Lax;
+        //    }
+        //);
 
         services
             .AddIdentityCore<ApplicationUser>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
                 options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters =
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationContext>()

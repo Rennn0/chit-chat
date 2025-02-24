@@ -71,7 +71,16 @@ public class GoogleHandler : IRequestHandler<AuthRequest.GoogleRedirect, Respons
                 UserName = nameClaim.Value,
                 EmailConfirmed = true,
             };
-            await _userManager.CreateAsync(user);
+            IdentityResult createdResult = await _userManager.CreateAsync(user);
+            if (!createdResult.Succeeded)
+            {
+                context.Response.Success = false;
+                context.Response.Error = string.Join(
+                    ',',
+                    createdResult.Errors.Select(e => e.Description)
+                );
+                return;
+            }
         }
 
         ExternalLoginInfo? externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
