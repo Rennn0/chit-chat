@@ -17,6 +17,16 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
+    
+    - name: Set version number
+      run: |
+        VERSION="1.0.${{ github.run_number }}"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Update project 
+      run: |
+        sed -i 's|<Version>.*</Version>|<Version>'$VERSION'</Version>' API/API.csproj
+        cat API/API.csproj | grep "<Version>"
 
     - name: Restore dependencies
       run: dotnet restore API/API.csproj

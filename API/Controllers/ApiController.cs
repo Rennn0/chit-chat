@@ -1,4 +1,5 @@
-﻿using API.Source;
+﻿using System.Reflection;
+using API.Source;
 using API.Source.Db;
 using API.Source.Factory;
 using API.Source.Guards;
@@ -28,6 +29,10 @@ namespace API.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
+
+        [HttpGet]
+        public string GetVersion() =>
+            Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
 
         /// <summary>
         /// Adds a new user to the system.
