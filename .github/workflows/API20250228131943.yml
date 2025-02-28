@@ -18,9 +18,16 @@ jobs:
       with:
         dotnet-version: '8.0.x'
     
+    - name: Read current version from csproj
+      run: |
+        CURRENT_VERSION=$(grep -oP '(?<=<Version>)[0-9]+\.[0-9]+(?=\.[0-9]+\.[0-9]+</Version>)' API/API.csproj)
+        echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+
     - name: Set version number
       run: |
-        VERSION="1.0.${{ github.run_number }}"
+        RUN_NUMBER="${{ github.run_number }}"
+        DATE=$(date +'%m%d')  
+        VERSION="${{ env.CURRENT_VERSION }}.${RUN_NUMBER}.${DATE}"
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Update project 
