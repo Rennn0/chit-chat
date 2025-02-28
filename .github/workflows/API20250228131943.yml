@@ -19,13 +19,13 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore API/API.csproj
 
     - name: Build the project
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build API/API.csproj --configuration Release --no-restore
 
     - name: Publish the project
-      run: dotnet publish --configuration Release --output ./publish
+      run: dotnet publish API/API.csproj --configuration Release --output ./publish
 
     - name: Deploy to Azure
       uses: azure/webapps-deploy@v2
