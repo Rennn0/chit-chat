@@ -9,15 +9,16 @@ builder.Services.AddDependencies(builder.Configuration);
 
 WebApplication app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        options.DocumentTitle = "ChitChat API";
-    });
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    options.DocumentTitle = "ChitChat API";
+});
+
+//}
 
 app.UseRouting();
 app.UseHttpsRedirection();
