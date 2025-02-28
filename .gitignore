@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /client/.trex
+
+/API/appsettings.json
+/API/appsettings.json
