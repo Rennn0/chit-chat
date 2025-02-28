@@ -8,6 +8,8 @@ public class Policies
     public const string Elevated = "Elevated";
     public const string None = "None";
     public const string Moderator = "Moderator";
+    public const string Public = "Public";
+
     public static void AdminPolicyConfig(AuthorizationPolicyBuilder builder) =>
         builder.RequireRole(Admin);
 
@@ -16,4 +18,7 @@ public class Policies
 
     public static void ModeratorPolicyConfig(AuthorizationPolicyBuilder builder) =>
         builder.RequireRole(Moderator);
+
+    public static void PublicPolicyConfig(AuthorizationPolicyBuilder builder) =>
+        builder.RequireRole(Policies.None, Policies.Elevated, Policies.Moderator, Policies.Admin);
 }

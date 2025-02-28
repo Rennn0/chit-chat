@@ -91,9 +91,7 @@ namespace API.Controllers
                 .ExecuteAsync(request);
         }
 
-        [Authorize(Policy = Policies.Admin, AuthenticationSchemes = "ApiKey")]
-        [Authorize(Policy = Policies.Moderator, AuthenticationSchemes = "Bearer")]
-        [Authorize(Policy = Policies.Elevated, AuthenticationSchemes = "Bearer")]
+        [Authorize(Policy = Policies.Public, AuthenticationSchemes = "Bearer")]
         [HttpGet]
         public async Task<ResponseModelBase<IEnumerable<ListTenantsResponse>>> Tenants(
             [FromQuery] ListTenantsRequest request

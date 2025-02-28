@@ -192,7 +192,8 @@ public static class Dependencies
             .AddAuthorizationBuilder()
             .AddPolicy(name: Policies.Admin, configurePolicy: Policies.AdminPolicyConfig)
             .AddPolicy(name: Policies.Elevated, configurePolicy: Policies.ElevatedPolicyConfig)
-            .AddPolicy(name: Policies.Moderator, configurePolicy: Policies.ModeratorPolicyConfig);
+            .AddPolicy(name: Policies.Moderator, configurePolicy: Policies.ModeratorPolicyConfig)
+            .AddPolicy(name: Policies.Public, configurePolicy: Policies.PublicPolicyConfig);
 
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<Program>();
