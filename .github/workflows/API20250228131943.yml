@@ -1,48 +1,35 @@
-name: Build and deploy .NET Core application to Web App API20250228131943
+name: Deploy .NET Web API to Azure
+
 on:
   push:
     branches:
-    - master
-env:
-  AZURE_WEBAPP_NAME: API20250228131943
-  AZURE_WEBAPP_PACKAGE_PATH: API/publish
-  CONFIGURATION: Release
-  DOTNET_CORE_VERSION: 8.0.x
-  WORKING_DIRECTORY: API
+      - main
+
 jobs:
-  build:
-    runs-on: ubuntu-22.04
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET SDK
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.x'
-    - name: Restore
-      run: dotnet restore API
-    - name: Build
-      run: dotnet build API --configuration Release --no-restore
-    # - name: Test
-    #   run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
-    - name: Publish
-      run: dotnet publish API --configuration Release --no-build --output API/publish
-    - name: Publish Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: webapp
-        path: API/publish
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - name: Download artifact from build job
-      uses: actions/download-artifact@v3
-      with:
-        name: webapp
-        path: API/publish
-    - name: Deploy to Azure WebApp
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build the project
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Publish the project
+      run: dotnet publish --configuration Release --output ./publish
+
+    - name: Deploy to Azure
       uses: azure/webapps-deploy@v2
       with:
-        app-name: API20250228131943
+        app-name: 'API20250228131943' 
         publish-profile: ${{ secrets.API20250228131943_E5DB }}
-        package: API/publish
+        package: ./publish
