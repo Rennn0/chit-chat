@@ -25,7 +25,7 @@ jobs:
 
     - name: Update project 
       run: |
-        sed -i 's|<Version>.*</Version>|<Version>'$VERSION'</Version>' API/API.csproj
+        sed -i 's|<Version>.*</Version>|<Version>'$VERSION'</Version>|' API/API.csproj
         cat API/API.csproj | grep "<Version>"
 
     - name: Restore dependencies
