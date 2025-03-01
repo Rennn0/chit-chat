@@ -32,8 +32,7 @@ namespace API.Source.Handlers.Authorization
             ResponseModelBase<string> response = new ResponseModelBase<string>();
 
             if (
-                user is null
-                || user.Email is null
+                user?.Email is null
                 || !await _userManager.CheckPasswordAsync(user, request.Password)
             )
             {

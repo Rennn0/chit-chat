@@ -1,14 +1,9 @@
 ﻿using System.Text;
 using API.Source.Db;
 using API.Source.Db.Repo;
+using API.Source.Extensions;
 using API.Source.Factory;
 using API.Source.Guards;
-using API.Source.Handlers;
-using API.Source.Handlers.AddNewTenant;
-using API.Source.Handlers.AddNewUser;
-using API.Source.Handlers.Authorization;
-using API.Source.Handlers.ListTenants;
-using API.Source.Handlers.ListUsers;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using llibrary.Logging;
@@ -19,7 +14,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Resend;
-using GoogleHandler = API.Source.Handlers.Authorization.GoogleHandler;
 
 namespace API.Source;
 
@@ -34,17 +28,6 @@ public static class Dependencies
         {
             options.TokenLifespan = TimeSpan.FromMinutes(3);
         });
-
-        //services.Configure<CookieAuthenticationOptions>(
-        //    CookieAuthenticationDefaults.AuthenticationScheme,
-        //    options =>
-        //    {
-        //        options.Cookie.Name = "ChitChat-AuthCookie";
-        //        options.Cookie.HttpOnly = true;
-        //        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        //        options.Cookie.SameSite = SameSiteMode.Lax;
-        //    }
-        //);
 
         services
             .AddIdentityCore<ApplicationUser>(options =>
@@ -220,79 +203,7 @@ public static class Dependencies
         });
         services.AddTransient<IResend, ResendClient>();
 
-        services.AddScoped<
-            IRequestHandler<AddNewUserRequest, ResponseModelBase<object>>,
-            AddUserHandler
-        >();
-
-        services.AddScoped<
-            IRequestHandler<AuthRequest, ResponseModelBase<string>>,
-            ApiKeyHandler
-        >();
-        services.AddScoped<
-            IRequestHandler<AuthRequest, ResponseModelBase<string>>,
-            Handlers.Authorization.TokenHandler
-        >();
-        services.AddScoped<
-            IRequestHandler<AuthRequest, ResponseModelBase<string>>,
-            Handlers.Authorization.TwoFactorHandler
-        >();
-
-        services.AddScoped<
-            IRequestHandler<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
-            ListUsersHandler
-        >();
-        services.AddScoped<
-            IRequestHandler<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
-            FilterUsersHandler
-        >();
-
-        services.AddScoped<
-            IRequestHandler<AddNewTenantRequest, ResponseModelBase<AddNewTenantResponse>>,
-            AddNewTenantHandler
-        >();
-
-        services.AddScoped<
-            IRequestHandler<
-                ListTenantsRequest,
-                ResponseModelBase<IEnumerable<ListTenantsResponse>>
-            >,
-            ListTenantsHandler
-        >();
-
-        services.AddScoped<
-            IRequestHandler<AuthRequest.GoogleRedirect, ResponseModelBase<string>>,
-            GoogleHandler
-        >();
-
-        services.AddScoped<
-            IRequestPipeline<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>,
-            RequestPipeline<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>
-        >();
-
-        services.AddScoped<
-            IRequestPipeline<AddNewTenantRequest, ResponseModelBase<AddNewTenantResponse>>,
-            RequestPipeline<AddNewTenantRequest, ResponseModelBase<AddNewTenantResponse>>
-        >();
-
-        services.AddScoped<
-            IRequestPipeline<
-                ListTenantsRequest,
-                ResponseModelBase<IEnumerable<ListTenantsResponse>>
-            >,
-            RequestPipeline<ListTenantsRequest, ResponseModelBase<IEnumerable<ListTenantsResponse>>>
-        >();
-
-        services.AddScoped<
-            IRequestPipeline<AuthRequest, ResponseModelBase<string>>,
-            RequestPipeline<AuthRequest, ResponseModelBase<string>>
-        >();
-
-        services.AddScoped<
-            IRequestPipeline<AuthRequest.GoogleRedirect, ResponseModelBase<string>>,
-            RequestPipeline<AuthRequest.GoogleRedirect, ResponseModelBase<string>>
-        >();
-
+        services.RegisterHandlersFromAssembly(typeof(Program).Assembly);
         services.AddScoped<IRequestHandlerFactory, RequestHandlerFactory>();
 
         return services;

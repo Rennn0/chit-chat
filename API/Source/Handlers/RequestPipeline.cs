@@ -19,8 +19,24 @@ public class RequestPipeline<TRequest, TResponse> : IRequestPipeline<TRequest, T
 
         foreach (IRequestHandler<TRequest, TResponse> handler in _handlers)
         {
-            await handler.ExecuteAsync(context);
+            try
+            {
+                await handler.ExecuteAsync(context);
+            }
+            catch (Exception e)
+            {
+                context.HasError = true;
+                context.AggregatedErrors.AddLast(
+                    new PipelineContext<TRequest, TResponse>.PipelineAggregatedError()
+                    {
+                        Message = $"Handler {handler.GetType().Name} failed: {e.Message}",
+                        StackTrace = e.StackTrace,
+                    }
+                );
+            }
         }
+
+        // TODO logging
 
         return context.Response ?? new TResponse();
     }
