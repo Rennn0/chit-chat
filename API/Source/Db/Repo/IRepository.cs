@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using API.Source.Exceptions;
 
 namespace API.Source.Db.Repo;
 
@@ -20,6 +21,8 @@ public interface IUnitOfWork : IDisposable
         where TEntity : class;
 
     Task BeginTransactionAsync();
+
+    /// <exception cref="TransactionFailedException"></exception>
     Task CommitAsync();
     Task RollbackAsync();
 }

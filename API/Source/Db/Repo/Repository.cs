@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using System.Runtime.ExceptionServices;
+using API.Source.Exceptions;
 using llibrary.Guards;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -71,7 +71,7 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(ApplicationContext context)
     {
         _context = context;
-        _repositories = new Dictionary<Type, object>();
+        _repositories = [];
         _transaction = null;
     }
 
@@ -114,12 +114,7 @@ public class UnitOfWork : IUnitOfWork
         catch (Exception exception)
         {
             await RollbackAsync();
-            ExceptionDispatchInfo.Throw(exception);
-        }
-        finally
-        {
-            _transaction?.Dispose();
-            _transaction = null;
+            throw new TransactionFailedException(exception.Message, exception.StackTrace);
         }
     }
 
