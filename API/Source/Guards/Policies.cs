@@ -20,5 +20,5 @@ public class Policies
         builder.RequireRole(Moderator);
 
     public static void PublicPolicyConfig(AuthorizationPolicyBuilder builder) =>
-        builder.RequireRole(Policies.None, Policies.Elevated, Policies.Moderator, Policies.Admin);
+        builder.RequireRole(None, Elevated, Moderator, Admin);
 }
