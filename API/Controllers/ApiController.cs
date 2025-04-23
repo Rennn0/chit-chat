@@ -37,7 +37,7 @@ namespace API.Controllers
 
         [HttpGet]
         public IReadOnlyCollection<string> Checkins() =>
-            s_checkIns.List.Select(dto => dto.ToString("T")).ToList();
+            s_checkIns.List.OrderByDescending(x => x).Select(dto => dto.ToString("G")).ToList();
 
         [HttpGet]
         public string GetVersion() =>
