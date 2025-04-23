@@ -14,7 +14,7 @@ public class CircularList<T> : IEnumerable<T>
             m_list.RemoveFirst();
         }
 
-        m_list.AddFirst(item);
+        m_list.AddLast(item);
     }
 
     public IReadOnlyCollection<T> List => m_list;

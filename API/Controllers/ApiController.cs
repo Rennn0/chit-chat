@@ -33,7 +33,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public void CheckIn() => s_checkIns.Add(DateTimeOffset.UtcNow);
+        public void CheckIn() => s_checkIns.Add(DateTimeOffset.Now);
 
         [HttpGet]
         public IReadOnlyCollection<string> Checkins() =>
