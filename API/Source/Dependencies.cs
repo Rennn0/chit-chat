@@ -151,6 +151,7 @@ public static class Dependencies
 
             return factory.CreateLogger<IWarningLogger>();
         });
+
         services.AddTransient<ILogger<IInformationLogger>>(sp =>
         {
             using ILoggerFactory factory = LoggerFactory.Create(c => c.AddDebug());

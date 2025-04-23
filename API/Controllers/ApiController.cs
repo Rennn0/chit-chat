@@ -3,6 +3,7 @@ using API.Source;
 using API.Source.Db;
 using API.Source.Factory;
 using API.Source.Guards;
+using API.Source.Libs;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
@@ -15,9 +16,10 @@ namespace API.Controllers
     [ApiController]
     public class ApiController : ControllerBase
     {
-        private readonly IRequestHandlerFactory _factory;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IRequestHandlerFactory m_factory;
+        private readonly UserManager<ApplicationUser> m_userManager;
+        private readonly SignInManager<ApplicationUser> m_signInManager;
+        private static readonly CircularList<DateTimeOffset> s_checkIns = [];
 
         public ApiController(
             IRequestHandlerFactory factory,
@@ -25,10 +27,17 @@ namespace API.Controllers
             SignInManager<ApplicationUser> signInManager
         )
         {
-            _factory = factory;
-            _userManager = userManager;
-            _signInManager = signInManager;
+            m_factory = factory;
+            m_userManager = userManager;
+            m_signInManager = signInManager;
         }
+
+        [HttpGet]
+        public void CheckIn() => s_checkIns.Add(DateTimeOffset.UtcNow);
+
+        [HttpGet]
+        public IReadOnlyCollection<string> Checkins() =>
+            s_checkIns.List.Select(dto => dto.ToString("T")).ToList();
 
         [HttpGet]
         public string GetVersion() =>
@@ -48,7 +57,7 @@ namespace API.Controllers
             [FromBody] AddNewUserRequest request
         )
         {
-            return await _factory
+            return await m_factory
                 .GetHandler<AddNewUserRequest, ResponseModelBase<object>>()
                 .ExecuteAsync(request);
         }
@@ -61,7 +70,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ResponseModelBase<string>> Auth([FromBody] AuthRequest request)
         {
-            return await _factory
+            return await m_factory
                 .GetPipeline<AuthRequest, ResponseModelBase<string>>()
                 .ExecuteAsync(request);
         }
@@ -74,7 +83,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ResponseModelBase<IEnumerable<ApplicationUser>>> ApplicationUsers()
         {
-            return await _factory
+            return await m_factory
                 .GetPipeline<ListUsersRequest, ResponseModelBase<IEnumerable<ApplicationUser>>>()
                 .ExecuteAsync(new ListUsersRequest());
         }
@@ -86,7 +95,7 @@ namespace API.Controllers
             [FromBody] AddNewTenantRequest request
         )
         {
-            return await _factory
+            return await m_factory
                 .GetPipeline<AddNewTenantRequest, ResponseModelBase<AddNewTenantResponse>>()
                 .ExecuteAsync(request);
         }
@@ -97,7 +106,7 @@ namespace API.Controllers
             [FromQuery] ListTenantsRequest request
         )
         {
-            return await _factory
+            return await m_factory
                 .GetPipeline<
                     ListTenantsRequest,
                     ResponseModelBase<IEnumerable<ListTenantsResponse>>
@@ -114,7 +123,7 @@ namespace API.Controllers
         public IActionResult GoogleAuth(string redirectUri)
         {
             AuthenticationProperties properties =
-                _signInManager.ConfigureExternalAuthenticationProperties(
+                m_signInManager.ConfigureExternalAuthenticationProperties(
                     provider: GoogleDefaults.AuthenticationScheme,
                     Url.Action("GoogleRedirect", "Api")
                 );
@@ -142,7 +151,7 @@ namespace API.Controllers
                 return BadRequest(error: "missing redirect_uri");
             }
 
-            ResponseModelBase<string> result = await _factory
+            ResponseModelBase<string> result = await m_factory
                 .GetPipeline<AuthRequest.GoogleRedirect, ResponseModelBase<string>>()
                 .ExecuteAsync(new AuthRequest.GoogleRedirect(), HttpContext);
 

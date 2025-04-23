@@ -10,14 +10,14 @@ namespace llibrary.Logging
 {
     public static class Extensions
     {
-        const string DefaultDebugOutputTemplate =
+        private const string c_defaultDebugOutputTemplate =
             "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
 
         public static LoggerConfiguration Debug(
             this LoggerSinkConfiguration sinkConfiguration,
             LogEventLevel logEventLevel = LevelAlias.Minimum,
             IFormatProvider? formatProvider = null,
-            string template = DefaultDebugOutputTemplate
+            string template = c_defaultDebugOutputTemplate
         )
         {
             Guard.AgainstNull(sinkConfiguration, nameof(sinkConfiguration));
@@ -46,11 +46,9 @@ namespace llibrary.Logging
             public void Emit(LogEvent logEvent)
             {
                 Console.WriteLine(logEvent.MessageTemplate);
-                using (StringWriter sw = new StringWriter())
-                {
-                    _formatter.Format(logEvent, sw);
-                    System.Diagnostics.Debug.WriteLine(sw.ToString());
-                }
+                using StringWriter sw = new StringWriter();
+                _formatter.Format(logEvent, sw);
+                System.Diagnostics.Debug.WriteLine(sw.ToString());
             }
         }
     }
