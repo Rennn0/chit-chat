@@ -36,8 +36,11 @@ namespace API.Controllers
         public void CheckIn() => s_checkIns.Add(DateTimeOffset.Now);
 
         [HttpGet]
-        public IReadOnlyCollection<string> Checkins() =>
-            s_checkIns.List.OrderByDescending(x => x).Select(dto => dto.ToString("G")).ToList();
+        public IReadOnlyCollection<string> Checkins([FromQuery] int offsetMinutes = 0) =>
+            s_checkIns
+                .List.OrderByDescending(x => x)
+                .Select(dto => dto.ToOffset(TimeSpan.FromMinutes(offsetMinutes)).ToString("G"))
+                .ToList();
 
         [HttpGet]
         public string GetVersion() =>
