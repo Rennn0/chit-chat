@@ -33,6 +33,14 @@ namespace API.Controllers
             m_signInManager = signInManager;
         }
 
+        [HttpGet("{username}")]
+        public IReadOnlyCollection<Appointment> Appointments(string username) =>
+            s_appointments
+                .Where(a => a.Host == username)
+                .OrderBy(a => a.Start)
+                .ToList()
+                .AsReadOnly();
+
         [HttpGet]
         public IReadOnlyCollection<Appointment> Appointments(DateTime start, DateTime end) =>
             s_appointments

@@ -9,13 +9,14 @@ public class CircularList<T> : IEnumerable<T>
 
     public void Add(T item)
     {
-    lock(this){
-        if (m_list.Count >= c_cap)
+        lock (this)
         {
-            m_list.RemoveFirst();
-        }
+            if (m_list.Count >= c_cap)
+            {
+                m_list.RemoveFirst();
+            }
 
-        m_list.AddLast(item);
+            m_list.AddLast(item);
         }
     }
 
