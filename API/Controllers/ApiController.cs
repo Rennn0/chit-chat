@@ -33,6 +33,13 @@ namespace API.Controllers
             m_signInManager = signInManager;
         }
 
+        [HttpDelete]
+        public void Appointment(Guid id)
+        {
+            Appointment appointment = s_appointments.FirstOrDefault(a => a.Host == id.ToString());
+            s_appointments.Remove(appointment);
+        }
+
         [HttpGet("{username}")]
         public IReadOnlyCollection<Appointment> Appointments(string username) =>
             s_appointments
@@ -42,9 +49,13 @@ namespace API.Controllers
                 .AsReadOnly();
 
         [HttpGet]
-        public IReadOnlyCollection<Appointment> Appointments(DateTime start, DateTime end) =>
+        public IReadOnlyCollection<Appointment> Appointments(
+            DateTime start,
+            DateTime end,
+            int room
+        ) =>
             s_appointments
-                .Where(a => a.Start >= start && a.End <= end)
+                .Where(a => a.Start >= start && a.End <= end && a.Room == room)
                 .OrderBy(a => a.Start)
                 .ToList()
                 .AsReadOnly();
@@ -57,6 +68,7 @@ namespace API.Controllers
                 throw new InvalidOperationException("Appointment overlaps with an existing one.");
             }
 
+            appointment = appointment with { Id = Guid.NewGuid() };
             s_appointments.AddLast(appointment);
         }
 
