@@ -20,6 +20,7 @@ namespace API.Controllers
         private readonly UserManager<ApplicationUser> m_userManager;
         private readonly SignInManager<ApplicationUser> m_signInManager;
         private static readonly CircularList<DateTimeOffset> s_checkIns = [];
+        private static readonly LinkedList<Appointment> s_appointments = [];
 
         public ApiController(
             IRequestHandlerFactory factory,
@@ -30,6 +31,25 @@ namespace API.Controllers
             m_factory = factory;
             m_userManager = userManager;
             m_signInManager = signInManager;
+        }
+
+        [HttpGet]
+        public IReadOnlyCollection<Appointment> Appointments(DateTime start, DateTime end) =>
+            s_appointments
+                .Where(a => a.Start >= start && a.End <= end)
+                .OrderBy(a => a.Start)
+                .ToList()
+                .AsReadOnly();
+
+        [HttpPost]
+        public void Appointment([FromBody] Appointment appointment)
+        {
+            if (s_appointments.Any(a => a.Start < appointment.End && a.End > appointment.Start))
+            {
+                throw new InvalidOperationException("Appointment overlaps with an existing one.");
+            }
+
+            s_appointments.AddLast(appointment);
         }
 
         [HttpGet]
