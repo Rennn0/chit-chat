@@ -36,7 +36,7 @@ namespace API.Controllers
         [HttpDelete]
         public void Appointment(Guid id)
         {
-            Appointment appointment = s_appointments.FirstOrDefault(a => a.Host == id.ToString());
+            Appointment appointment = s_appointments.FirstOrDefault(a => a.Id == id);
             s_appointments.Remove(appointment);
         }
 
