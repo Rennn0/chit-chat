@@ -63,7 +63,13 @@ namespace API.Controllers
         [HttpPost]
         public void Appointment([FromBody] Appointment appointment)
         {
-            if (s_appointments.Any(a => a.Start < appointment.End && a.End > appointment.Start))
+            if (
+                s_appointments.Any(a =>
+                    a.Start < appointment.End
+                    && a.End > appointment.Start
+                    && a.Room == appointment.Room
+                )
+            )
             {
                 throw new InvalidOperationException("Appointment overlaps with an existing one.");
             }
